@@ -62,6 +62,7 @@ class DataReader:
 
         if dataplus_format:
             logger.debug('dataplus format')
+            metadata = {'voxelsize_mm': [1, 1, 1]}
             datap = metadata
             datap['data3d'] = data3d
             logger.debug('datap keys () : ' + str(datap.keys()))
