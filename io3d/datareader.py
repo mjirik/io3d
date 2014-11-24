@@ -35,7 +35,7 @@ class DataReader:
 
     def Get3DData(self, datapath, qt_app=None,
                   dataplus_format=False, gui=False,
-                  start=0, stop=None, step=1):
+                  start=0, stop=None, step=1, convert_to_gray=True):
         """
         :datapath directory with input data
         :qt_app if it is set to None (as default) all dialogs for series
@@ -60,6 +60,13 @@ class DataReader:
         else:
             logger.error('Data path "%s" not found' % (datapath))
 
+        if convert_to_gray:
+            if len(data3d.shape) > 3:
+# @TODO implement better rgb2gray
+                data3d = data3d[:,:,:,0]
+
+
+ 
         if dataplus_format:
             logger.debug('dataplus format')
             # metadata = {'voxelsize_mm': [1, 1, 1]}
