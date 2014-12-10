@@ -1,3 +1,5 @@
+# Fallowing command is used to upload to pipy
+#    python setup.py register sdist upload
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from os import path
 
