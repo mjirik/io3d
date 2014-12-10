@@ -66,7 +66,7 @@ class DataReader:
                 data3d = data3d[:,:,:,0]
 
 
- 
+
         if dataplus_format:
             logger.debug('dataplus format')
             # metadata = {'voxelsize_mm': [1, 1, 1]}
@@ -121,6 +121,7 @@ class DataReader:
     def __ReadFromFile(self, datapath):
         path, ext = os.path.splitext(datapath)
         if ext in ('.pklz', '.pkl'):
+            logger.debug('pklz format detected')
             import misc
             data = misc.obj_from_file(datapath, filetype='pkl')
             data3d = data.pop('data3d')
@@ -132,6 +133,7 @@ class DataReader:
             metadata.update(data)
 
         else:
+            logger.debug('file format "' + ext + '"')
             # reading raw file
             import SimpleITK as sitk
             image = sitk.ReadImage(datapath)

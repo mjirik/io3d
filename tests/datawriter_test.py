@@ -1,25 +1,24 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-
 # import funkcí z jiného adresáře
+import unittest
 import sys
 import os.path
 import os
 import copy
 
-path_to_script = os.path.dirname(os.path.abspath(__file__))
+# path_to_script = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
 # sys.path.append(os.path.join(path_to_script, "../extern/py3DSeedEditor/"))
 # sys.path.append(os.path.join(path_to_script, "../src/"))
-import unittest
 
 import shutil
 
 
 import numpy as np
 
+from nose.plugins.attrib import attr
 import dicom
 dicom.debug(False)
 
@@ -28,10 +27,29 @@ import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
 
-import py3DSeedEditor as pyed
+import sed3 as pyed
 
 class DicomWriterTest(unittest.TestCase):
-    interactivetTest = False
+
+    @attr('actual')
+    def test_write_dicom_from_scratch(self):
+        """
+        Reads dicom data and from slices and stores into one Dicom file. This
+        file is then readed and compared with input data.
+        """
+        filename = 'tests/output_dcm3d.dcm'
+        dr = dreader.DataReader()
+        data3d, metadata = dr.Get3DData(
+            'sample_data/jatra_5mm/'
+            #'sample_data/volumetrie/'
+        )
+        dw = dwriter.DataWriter()
+        dw.Write3DData(data3d, filename, filetype='dcm', metadata=metadata)
+
+        data3d_n, metadata_n = dr.Get3DData(filename)
+        self.assertEqual(data3d[10, 11, 12], data3d_n[10, 11, 12])
+        os.remove(filename)
+
 #    def setUp(self):
 #        #self.dcmdir = os.path.join(path_to_script, '../sample_data/jatra_06mm_jenjatraplus/')
 #        self.dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
@@ -39,9 +57,7 @@ class DicomWriterTest(unittest.TestCase):
 #        reader = dcmr.DicomReader(self.dcmdir)
 #        self.data3d = reader.get_3Ddata()
 #        self.metadata = reader.get_metaData()
-
     def test_write_and_read(self):
-
         filename = 'test_file.dcm'
         data = (np.random.random([30,100,120])*30).astype(np.int16)
         data[0:5,20:60,60:70,] += 30
@@ -149,5 +165,7 @@ class DicomWriterTest(unittest.TestCase):
 
         #os.remove(filename)
         shutil.rmtree(filedir)
+
+
 if __name__ == "__main__":
     unittest.main()
