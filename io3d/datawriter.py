@@ -12,7 +12,13 @@ logger = logging.getLogger(__name__)
 import os.path
 
 import dicom
+import rawN
 # from sys import argv
+
+
+def write(data3d, path, filetype='dcm', metadata=None):
+    dw = DataWriter()
+    dw.Write3DData(data3d, path, filetype, metadata)
 
 
 class DataWriter:
@@ -36,6 +42,9 @@ class DataWriter:
             vsz = mtd['voxelsize_mm']
             dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             sitk.WriteImage(dim, path)
+        elif filetype in ['rawiv']:
+            rawN.write(path, data3d, metadata)
+
         else:
             logger.error('Unknown filetype: "' + filetype + '"')
 
