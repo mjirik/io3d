@@ -36,6 +36,8 @@ class DataWriter:
             vsz = mtd['voxelsize_mm']
             dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             sitk.WriteImage(dim, path)
+        else:
+            logger.error('Unknown filetype: "' + filetype + '"')
 
             # data = dicom.read_file(onefile)
 
