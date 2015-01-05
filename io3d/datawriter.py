@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Simple program for ITK image read/write in Python
-#import itk
+# import itk
 
 
 import numpy as np
@@ -12,10 +12,11 @@ logger = logging.getLogger(__name__)
 import os.path
 
 import dicom
-#from sys import argv
+# from sys import argv
 
 
 class DataWriter:
+
     def Write3DData(self, data3d, path, filetype='dcm', metadata=None):
         """
         data3d: input ndarray data
@@ -27,16 +28,16 @@ class DataWriter:
         if metadata is not None:
             mtd.update(metadata)
 
-        if filetype in ['dcm', 'DCM', 'dicom']:
+        if filetype in ['dcm', 'DCM', 'dicom', 'vtk']:
             import SimpleITK as sitk
-            #pixelType = itk.UC
-            #imageType = itk.Image[pixelType, 2]
+            # pixelType = itk.UC
+            # imageType = itk.Image[pixelType, 2]
             dim = sitk.GetImageFromArray(data3d)
             vsz = mtd['voxelsize_mm']
             dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             sitk.WriteImage(dim, path)
 
-            #data = dicom.read_file(onefile)
+            # data = dicom.read_file(onefile)
 
     def DataCopyWithOverlay(self, dcmfilelist, out_dir, overlays):
         """
@@ -48,7 +49,7 @@ class DataWriter:
 
         """
         dcmlist = dcmfilelist
-        #data3d = []
+        # data3d = []
 
         for i in range(len(dcmlist)):
             onefile = dcmlist[i]
@@ -66,9 +67,9 @@ class DataWriter:
             head, tail = os.path.split(os.path.normpath(onefile))
             filename_out = os.path.join(out_dir, tail)
 
-#save
+# save
             data.save_as(filename_out)
-            #import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
 
     def add_overlay_to_slice_file(
         self,
@@ -98,8 +99,8 @@ class DataWriter:
         dicom_tag1 = 0x6000 + 2 * i_overlay
 
         #  data (0x6000, 0x3000)
-        #WR = 'OW'
-        #WM = 1
+        # WR = 'OW'
+        # WM = 1
 
         # On (60xx,0010) and (60xx,0011) is stored overlay size
         row_el = dicom.dataelem.DataElement(
@@ -116,7 +117,7 @@ class DataWriter:
         )
         data[col_el.tag] = col_el
 
-## arrange values to bit array
+# arrange values to bit array
         overlay_linear = np.reshape(overlay, np.prod(overlay.shape))
 
     # allocation of dataspace
@@ -143,7 +144,7 @@ class DataWriter:
 #                byte_as_int = ord(overlay_raw[i])
 #                decoded_linear[i*n_bits + k] = (byte_as_int >> k) & 0b1
 #
-        #overlay = np.array(pol)
+        # overlay = np.array(pol)
 
         overlay_el = dicom.dataelem.DataElement(
             (dicom_tag1, 0x3000),
