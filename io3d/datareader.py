@@ -19,10 +19,8 @@ logger = logging.getLogger(__name__)
 
 # -------------------- my scripts ------------
 
-try:
-    import dcmreaddata as dcmr
-except:
-    from pysegbase import dcmreaddata as dcmr
+import dcmreaddata as dcmr
+
 
 # import numpy as np
 
@@ -55,6 +53,7 @@ class DataReader:
             data3d, metadata = self.__ReadFromFile(datapath)
 
         elif os.path.exists(datapath):
+            # print "read from directory"
             data3d, metadata = self.__ReadFromDirectory(
                 datapath, start, stop, step)
         else:
@@ -78,7 +77,9 @@ class DataReader:
             return data3d, metadata
 
     def __ReadFromDirectory(self, datapath, start, stop, step):
+        # print 'read from dir start ' + datapath
         if dcmr.is_dicom_dir(datapath):  # reading dicom
+            # print 'dcmdir'
             logger.debug('Dir - DICOM')
             reader = dcmr.DicomReader(datapath, qt_app=None, gui=True)
             data3d = reader.get_3Ddata(start, stop, step)
