@@ -1,6 +1,8 @@
 io3d
 ====
 
+[![Build Status](https://travis-ci.org/mjirik/io3d.svg?branch=master)](https://travis-ci.org/mjirik/io3d)
+
 3D data read and write
 
 
