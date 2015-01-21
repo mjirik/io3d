@@ -18,7 +18,7 @@ import numpy as np
 
 class RawIOTest(unittest.TestCase):
 
-    @attr('interactive')
+    # @attr('interactive')
     def test_rawiv_read(self):
         import io3d.rawN
         # import sed3
