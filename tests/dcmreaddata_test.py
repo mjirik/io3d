@@ -149,7 +149,23 @@ class DicomReaderTest(unittest.TestCase):
         # sss.visualization()
         # import pdb; pdb.set_trace()
 
-    @attr('actual')
+    @attr('interactive')
+    def test_dcmread_vincentka(self):
+
+        dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        reader = dcmr.DicomReader(dcmdir)
+        data3d = reader.get_3Ddata()
+        metadata = reader.get_metaData()
+        import sed3
+        ed = sed3.sed3(data3d)
+        ed.show()
+# slice size is 512x512
+        self.assertEqual(data3d.shape[2], 512)
+# voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+
     def test_jpeg_series(self):
         # import io3d
         # import ipdb
