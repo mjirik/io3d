@@ -28,6 +28,7 @@ class DataWriter:
         data3d: input ndarray data
         path: output path
         metadata: {'voxelsize_mm': [1, 1, 1]}
+        filetype: dcm, vtk, rawiv, image_stack
 
         """
         mtd = {'voxelsize_mm': [1, 1, 1]}
@@ -44,6 +45,8 @@ class DataWriter:
             sitk.WriteImage(dim, path)
         elif filetype in ['rawiv']:
             rawN.write(path, data3d, metadata)
+        elif filetype in ['image_stack']:
+            self.save_image_stack(data3d, path)
 
         else:
             logger.error('Unknown filetype: "' + filetype + '"')

@@ -203,6 +203,27 @@ class DicomWriterTest(unittest.TestCase):
         )
         shutil.rmtree(testdatadir)
 
+    def test_save_image_stack_with_writer(self):
+        testdatadir = 'test_svimstack_with_writer'
+        data3d = self.generate_waving_data(
+            szx=30, szy=20, szz=10, value=150, dtype=np.uint8)
+        dw = dwriter.DataWriter()
+
+        dw.Write3DData(data3d, testdatadir + '/soubory.png',
+                       filetype='image_stack')
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+            testdatadir
+        )
+        # import sed3
+        # ed = sed3.sed3(data3dnew)
+        # ed.show()
+        self.assertEqual(
+            np.sum(np.abs(data3d - data3dnew)),
+            0
+        )
+        shutil.rmtree(testdatadir)
+
 
 if __name__ == "__main__":
     unittest.main()
