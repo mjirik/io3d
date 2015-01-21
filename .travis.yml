@@ -6,7 +6,9 @@ python:
   # - "3.3"
   # - "3.4"
 # command to install dependencies
-install: "pip install -r requirements.txt"
+install:
+    - "pip install ."
+    - "pip install -r requirements.txt"
 # command to run tests
 before_install:
     - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip && unzip io3d_sample_data.zip
