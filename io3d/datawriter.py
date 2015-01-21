@@ -171,7 +171,6 @@ class DataWriter:
 
         if not os.path.exists(datadir):
             os.mkdir(datadir)
-        pass
         databasename, dataext = os.path.splitext(dataname)
 
         for i in range(0, data3d.shape[0]):
