@@ -166,6 +166,28 @@ class DataWriter:
 
         return data
 
+    def save_image_stack(self, data3d, filepattern):
+        datadir, dataname = os.path.split(filepattern)
+
+        if not os.path.exists(datadir):
+            os.mkdir(datadir)
+        pass
+        databasename, dataext = os.path.splitext(dataname)
+
+        for i in range(0, data3d.shape[0]):
+            newfilename = os.path.join(
+                datadir,
+                databasename + "%05d" % (i,) + dataext)
+            # print newfilename
+            data2d = data3d[i, :, :]
+            import SimpleITK as sitk
+            # pixelType = itk.UC
+            # imageType = itk.Image[pixelType, 2]
+            dim = sitk.GetImageFromArray(data2d)
+            # vsz = mtd['voxelsize_mm']
+            # dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
+            sitk.WriteImage(dim, newfilename)
+
 
 def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
                            crinfo, orig_shape):

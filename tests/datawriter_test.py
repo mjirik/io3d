@@ -161,6 +161,48 @@ class DicomWriterTest(unittest.TestCase):
         # os.remove(filename)
         shutil.rmtree(filedir)
 
+    def generate_waving_data(self, szx, szy, szz, value=150, dtype=np.uint8):
+        """
+        generating smooth non constant data
+        """
+        data3d = np.zeros([szz, szx, szx], dtype=dtype)
+        for i in range(0, data3d.shape[0]):
+            x = int(np.sin(i*2*np.pi/(szz - 40.0))*((szx-2)/2) + szx/2)
+            y = int(np.cos(i*2*np.pi/(0.3*(szz - 4.0)))*((szy-2)/2) + szy/2)
+            # x = int(np.sin(i*2*np.pi/40.0)*((szx-2)/2) + szx/2)
+            print x, '   ', y
+            data3d[i, 0:x, y:-1] = value
+        return data3d
+
+    @attr('actual')
+    def test_save_image_stack(self):
+        testdatadir = 'test_svimstack'
+        szx = 30
+        szy = 20
+        szz = 120
+        data3d = self.generate_waving_data(
+            szx, szy, szz, value=150, dtype=np.uint8)
+        # import sed3
+        # ed = sed3.sed3(data3d)
+        # ed.show()
+        #
+        dw = dwriter.DataWriter()
+
+        dw.save_image_stack(data3d, testdatadir + '/soubory.png')
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+            testdatadir
+            # 'sample_data/volumetrie/'
+        )
+        # import sed3
+        # ed = sed3.sed3(data3dnew)
+        # ed.show()
+        self.assertEqual(
+            np.sum(np.abs(data3d - data3dnew)),
+            0
+        )
+        shutil.rmtree(testdatadir)
+
 
 if __name__ == "__main__":
     unittest.main()
