@@ -61,10 +61,8 @@ class DataReader:
 
         if convert_to_gray:
             if len(data3d.shape) > 3:
-# @TODO implement better rgb2gray
-                data3d = data3d[:,:,:,0]
-
-
+                # @TODO implement better rgb2gray
+                data3d = data3d[:, :, :, 0]
 
         if dataplus_format:
             logger.debug('dataplus format')
@@ -95,7 +93,7 @@ class DataReader:
                 try:
                     sitk.ReadImage(os.path.join(datapath, f))
                 except:
-                    logger.warning("Cant load file: "+str(f))
+                    logger.warning("Cant load file: " + str(f))
                     continue
                 flist.append(os.path.join(datapath, f))
             flist.sort()
