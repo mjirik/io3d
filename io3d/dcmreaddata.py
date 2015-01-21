@@ -78,13 +78,12 @@ def is_dicom_dir(datapath):
             return True
 # @todo not working and I dont know why
         try:
-            dicom.read_file(f)
+            dicom.read_file(os.path.join(datapath, f))
 
             retval = True
         except:
             import traceback
             traceback.print_exc
-            pass
 
         if retval:
             return True
@@ -234,6 +233,7 @@ class DicomReader():
         """
         data3d = []
         dcmlist = self.dcmlist
+        # print 'stsp ', start, stop, step
 
         if stop is None:
             stop = len(dcmlist)
@@ -246,7 +246,6 @@ class DicomReader():
         printRescaleWarning = False
         for i in xrange(start, stop, step):
             onefile = dcmlist[i]
-            logger.info(onefile)
             data = dicom.read_file(onefile)
             data2d = data.pixel_array
             # mport pdb; pdb.set_trace()
@@ -284,7 +283,8 @@ class DicomReader():
             data3d[-i - 1, :, :] = new_data2d
 
             logger.debug("Data size: " + str(data3d.nbytes)
-                         + ', shape: ' + str(shp2) + 'x' + str(len(dcmlist)))
+                         + ', shape: ' + str(shp2) + 'x' + str(len(dcmlist))
+                         + ' file ' + onefile)
         if printRescaleWarning:
             print "Automatic Rescale with slope 0.5"
             logger.warning("Automatic Rescale with slope 0.5")

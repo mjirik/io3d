@@ -149,22 +149,43 @@ class DicomReaderTest(unittest.TestCase):
         # sss.visualization()
         # import pdb; pdb.set_trace()
 
-    @attr('interactive')
-    def test_dcmread_vincentka(self):
+    # @attr('actual')
+    def test_is_dicomdir(self):
+        """
+        files in vincentka_sample have no extension
+        """
+        dcmdir = 'sample_data/vincentka_sample/'
+        self.assertTrue(dcmr.is_dicom_dir(dcmdir))
 
-        dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
+    @attr('actual')
+    def test_compare_dcmread_and_dataread(self):
+
+        # dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
+        dcmdir = 'sample_data/vincentka_sample/'
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         reader = dcmr.DicomReader(dcmdir)
         data3d = reader.get_3Ddata()
-        metadata = reader.get_metaData()
-        import sed3
-        ed = sed3.sed3(data3d)
-        ed.show()
+        # metadata = reader.get_metaData()
+        # import sed3
+        # ed = sed3.sed3(data3d)
+        # ed.show()
+
+        import io3d
+        dr = io3d.datareader.DataReader()
+        ddata3d, dmetadata = dr.Get3DData(dcmdir)
+        # import sed3
+        # ed = sed3.sed3(ddata3d)
+        # ed.show()
+        self.assertEqual(
+            0,
+            np.sum(np.abs(ddata3d - data3d))
+        )
+
 # slice size is 512x512
-        self.assertEqual(data3d.shape[2], 512)
+        # self.assertEqual(data3d.shape[2], 512)
 # voxelsize depth = 5 mm
-        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+        # self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
     def test_jpeg_series(self):
         # import io3d

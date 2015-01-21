@@ -29,7 +29,6 @@ import io3d.datareader as dreader
 
 class DicomWriterTest(unittest.TestCase):
 
-    @attr('big_dataset')
     @attr('dataset')
     def test_write_dicom_from_scratch(self):
         """
@@ -188,7 +187,7 @@ class DicomWriterTest(unittest.TestCase):
         #
         dw = dwriter.DataWriter()
 
-        dw.save_image_stack(data3d, testdatadir + '/soubory.png')
+        dw.save_image_stack(data3d, testdatadir + '/soubory.dcm')
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
             testdatadir
