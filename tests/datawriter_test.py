@@ -187,7 +187,7 @@ class DicomWriterTest(unittest.TestCase):
         #
         dw = dwriter.DataWriter()
 
-        dw.save_image_stack(data3d, testdatadir + '/soubory.dcm')
+        dw.save_image_stack(data3d, testdatadir + '/soubory.png')
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
             testdatadir
