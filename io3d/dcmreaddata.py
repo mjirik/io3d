@@ -116,7 +116,7 @@ class DicomReader():
             counts, bins = self.status_dir()
 
             if len(bins) > 1:
-                if self.series_number is None:
+                if self.series_number is None: # pragma: no cover
                     if (qt_app is not None) or gui:
                         if qt_app is None:
 
