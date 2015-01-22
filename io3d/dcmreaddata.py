@@ -498,8 +498,9 @@ class DicomReader():
             dcmdirplus = self.create_dir()
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
-                # misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
-                obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                print "dcmdirplus ", dcmdirplus
+                # obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
                 # bj_to_file(dcmdir, dcmdiryamlpath )
 
         dcmdir = dcmdirplus['filesinfo']
