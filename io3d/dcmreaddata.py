@@ -46,23 +46,23 @@ __version__ = [1, 3]
 #     return obj
 #
 #
-# def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
-#     """
-#     Writes annotation in file
-#     """
-#     if filetype == 'yaml':
-#         import yaml
-#         f = open(filename, 'w')
-#         yaml.dump(obj, f)
-#     elif filetype == 'pickle':
-#         import pickle
-#         f = open(filename, 'wb')
-#         pickle.dump(obj, f, -1)
-#     else:
-#         logger.error('Unknown filetype')
-#
-#     f.close
-#
+def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
+    """
+    Writes annotation in file
+    """
+    if filetype == 'yaml':
+        import yaml
+        f = open(filename, 'w')
+        yaml.dump(obj, f)
+    elif filetype == 'pickle':
+        import pickle
+        f = open(filename, 'wb')
+        pickle.dump(obj, f, -1)
+    else:
+        logger.error('Unknown filetype')
+
+    f.close
+
 
 def is_dicom_dir(datapath):
     """
@@ -498,7 +498,8 @@ class DicomReader():
             dcmdirplus = self.create_dir()
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
-                misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                # misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                obj_to_file(dcmdirplus, dicomdirfile, ftype)
                 # bj_to_file(dcmdir, dcmdiryamlpath )
 
         dcmdir = dcmdirplus['filesinfo']
