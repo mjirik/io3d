@@ -404,12 +404,12 @@ class DicomReader():
 
         return series_info
 
-    def print_series_info(self, series_info):
+    def print_series_info(self, series_info, minimal_series_number=1):
         """
         Print series_info from dcmdirstats
         """
         strinfo = ''
-        if len(series_info) > 1:
+        if len(series_info) > minimal_series_number:
             for serie_number in series_info.keys():
                 strl = str(serie_number) + " ("\
                     + str(series_info[serie_number]['Count'])
