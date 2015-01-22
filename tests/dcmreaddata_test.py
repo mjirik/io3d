@@ -180,7 +180,7 @@ class DicomReaderTest(unittest.TestCase):
 
         import io3d
         dr = io3d.datareader.DataReader()
-        datap = dr.Get3DData(dcmdir, datapus_format=True)
+        datap = dr.Get3DData(dcmdir, dataplus_format=True)
         ddata3d = datap['data3d']
         # import sed3
         # ed = sed3.sed3(ddata3d)
