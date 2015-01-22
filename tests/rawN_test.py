@@ -7,20 +7,22 @@
 # Distributed under terms of the MIT license.
 
 """
-
+Module for testing format rawiv
 """
 import logging
 logger = logging.getLogger(__name__)
 import unittest
 from nose.plugins.attrib import attr
 import numpy as np
+import os
+
+import io3d.rawN
 
 
 class RawIOTest(unittest.TestCase):
 
     # @attr('interactive')
     def test_rawiv_read(self):
-        import io3d.rawN
         # import sed3
         data3d, metadata = io3d.rawN.read('sample_data/ct_head.rawiv')
         # ed = sed3.sed3(data3d)
@@ -31,7 +33,6 @@ class RawIOTest(unittest.TestCase):
 
     @attr('actual')
     def test_rawiv_write(self):
-        import io3d.rawN
         data3d = (np.random.rand(6, 5, 4) * 10).astype(np.uint8)
         metadata = {
             'voxelsize_mm': [1, 1, 1]
@@ -44,6 +45,7 @@ class RawIOTest(unittest.TestCase):
         self.assertEqual(data3d[1, 2, 3], data3dout[1, 2, 3])
         self.assertEqual(data3d[4, 2, 1], data3dout[4, 2, 1])
         self.assertEqual(data3d[4, 2, 3], data3dout[4, 2, 3])
+        os.remove(filename)
 
         # ed = sed3.sed3(data3d)
         # ed.show()
