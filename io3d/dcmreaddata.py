@@ -20,6 +20,7 @@ import traceback
 
 import logging
 logger = logging.getLogger(__name__)
+import misc
 
 
 __version__ = [1, 3]

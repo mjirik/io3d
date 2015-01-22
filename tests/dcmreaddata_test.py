@@ -106,11 +106,14 @@ class DicomReaderTest(unittest.TestCase):
         reader = dcmr.DicomReader(dcmdir)
         data3d = reader.get_3Ddata()
         metadata = reader.get_metaData()
+        stats = reader.dcmdirstats()
+
 # slice size is 512x512
         self.assertEqual(data3d.shape[2], 512)
 # voxelsize depth = 5 mm
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
+        self.assertEqual(stats[7]['Modality'], 'CT')
     def test_dcmread_series_number(self):
 
         dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
