@@ -25,43 +25,43 @@ logger = logging.getLogger(__name__)
 __version__ = [1, 3]
 
 
-def obj_from_file(filename='annotation.yaml', filetype='yaml'):
-    """
-    Read object from file
-    """
-    if filetype == 'yaml':
-        import yaml
-        f = open(filename, 'r')
-        obj = yaml.load(f)
-    elif filetype == 'pickle':
-        import pickle
-        f = open(filename, 'rb')
-        obj = pickle.load(f)
-    else:
-        logger.error('Unknown filetype')
-
-    f.close()
-
-    return obj
-
-
-def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
-    """
-    Writes annotation in file
-    """
-    if filetype == 'yaml':
-        import yaml
-        f = open(filename, 'w')
-        yaml.dump(obj, f)
-    elif filetype == 'pickle':
-        import pickle
-        f = open(filename, 'wb')
-        pickle.dump(obj, f, -1)
-    else:
-        logger.error('Unknown filetype')
-
-    f.close
-
+# def obj_from_file(filename='annotation.yaml', filetype='yaml'):
+#     """
+#     Read object from file
+#     """
+#     if filetype == 'yaml':
+#         import yaml
+#         f = open(filename, 'r')
+#         obj = yaml.load(f)
+#     elif filetype == 'pickle':
+#         import pickle
+#         f = open(filename, 'rb')
+#         obj = pickle.load(f)
+#     else:
+#         logger.error('Unknown filetype')
+#
+#     f.close()
+#
+#     return obj
+#
+#
+# def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
+#     """
+#     Writes annotation in file
+#     """
+#     if filetype == 'yaml':
+#         import yaml
+#         f = open(filename, 'w')
+#         yaml.dump(obj, f)
+#     elif filetype == 'pickle':
+#         import pickle
+#         f = open(filename, 'wb')
+#         pickle.dump(obj, f, -1)
+#     else:
+#         logger.error('Unknown filetype')
+#
+#     f.close
+#
 
 def is_dicom_dir(datapath):
     """
@@ -87,7 +87,6 @@ def is_dicom_dir(datapath):
 
         if retval:
             return True
-            print f
     return False
 
 
@@ -485,7 +484,7 @@ class DicomReader():
         ftype = 'pickle'
         # if exist dicomdir file and is in correct version, use it
         if os.path.exists(dicomdirfile):
-            dcmdirplus = obj_from_file(dicomdirfile, ftype)
+            dcmdirplus = misc.obj_from_file(dicomdirfile, ftype)
             try:
                 if dcmdirplus['version'] == __version__:
                     createdcmdir = False
@@ -498,7 +497,7 @@ class DicomReader():
             dcmdirplus = self.create_dir()
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
-                obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
                 # bj_to_file(dcmdir, dcmdiryamlpath )
 
         dcmdir = dcmdirplus['filesinfo']
