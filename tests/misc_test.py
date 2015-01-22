@@ -42,10 +42,44 @@ class MiscTest(unittest.TestCase):
 
         os.remove(filename)
 
+    def test_obj_to_and_from_file_pklz_with_auto(self):
+        testdata = np.random.random([4, 4, 3])
+        test_object = {'a': 1, 'data': testdata}
+
+        filename = 'test_obj_to_and_from_file_with_auto.pklz'
+        misc.obj_to_file(test_object, filename, 'auto')
+        saved_object = misc.obj_from_file(filename, 'auto')
+
+        self.assertTrue(saved_object['a'] == 1)
+        self.assertTrue(saved_object['data'][1, 1, 1] == testdata[1, 1, 1])
+
+        os.remove(filename)
     # def test_obj_to_and_from_file_exeption(self):
     #    test_object = [1]
     #    filename = 'test_obj_to_and_from_file_exeption'
     #    self.assertRaises(misc.obj_to_file(test_object, filename ,'yaml'))
+
+    def test_suggest_filename(self):
+        """
+        Testing some files. Not testing recursion in filenames. It is situation
+        if there exist file0, file1, file2 and input file is file
+        """
+        filename = "mujsoubor"
+        # import ipdb; ipdb.set_trace() # BREAKPOINT
+        new_filename = misc.suggest_filename(filename, exists=True)
+        self.assertTrue(new_filename == "mujsoubor2")
+
+        filename = "mujsoubor112"
+        new_filename = misc.suggest_filename(filename, exists=True)
+        self.assertTrue(new_filename == "mujsoubor113")
+
+        filename = "mujsoubor-2.txt"
+        new_filename = misc.suggest_filename(filename, exists=True)
+        self.assertTrue(new_filename == "mujsoubor-3.txt")
+
+        filename = "mujsoubor-a24.txt"
+        new_filename = misc.suggest_filename(filename, exists=False)
+        self.assertTrue(new_filename == "mujsoubor-a24.txt")
 
     def test_obj_to_and_from_file_with_directories(self):
         import shutil
