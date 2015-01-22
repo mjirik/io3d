@@ -120,8 +120,12 @@ def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
         f.close
     elif filetype in ('pickle', 'pkl'):
         f = open(filename, 'wb')
-        import cPickle as pickle
-        pickle.dump(obj, f)
+        try:
+            import cPickle as pickle
+            pickle.dump(obj, f)
+        except:
+            import pickle
+            pickle.dump(obj, f)
         f.close
     elif filetype in ('streamingpicklezip', 'spklz'):
         # this is not working :-(
