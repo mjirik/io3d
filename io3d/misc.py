@@ -120,8 +120,6 @@ def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
         f.close
     elif filetype in ('pickle', 'pkl'):
         f = open(filename, 'wb')
-        print 'filename ', filename
-        print 'content ', obj
         logger.info("filename " + filename)
         # import cPickle as pickle
         import pickle
