@@ -622,7 +622,7 @@ help = {
 voxels. Various zoom can be used for each axis: -z [1,0.5,2.5]'
 }
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     parser = OptionParser(description='Read DIOCOM data.')
     parser.add_option('-i', '--dcmdir', action='store',
                       dest='dcmdir', default=None,
