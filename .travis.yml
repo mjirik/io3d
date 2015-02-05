@@ -8,7 +8,7 @@ python:
 virtualenv:
   system_site_packages: true
 before_install:
-    - sudo apt-get install -qq python-numpy python-scipy
+    - sudo apt-get install -qq $(< apt_requirements.txt)
     - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip && unzip io3d_sample_data.zip
 # command to install dependencies
 install:
