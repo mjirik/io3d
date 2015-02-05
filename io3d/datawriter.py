@@ -47,11 +47,22 @@ class DataWriter:
             rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
             self.save_image_stack(data3d, path)
+        elif filetype in ['hdf5']:
+            self.save_hdf5(data3d, path, metadata)
 
         else:
             logger.error('Unknown filetype: "' + filetype + '"')
 
             # data = dicom.read_file(onefile)
+
+    def save_hdf5(self, data3d, path, metadata):
+        # TODO this is not implemented in proper way
+        import h5py
+        f = h5py.File(path, "w")
+        f.create_dataset('data3d', data=data3d, compression='gzip')
+        # f.create_dataset('metadata', data=metadata, compression='gzip')
+        f.flush()
+        f.close()
 
     def DataCopyWithOverlay(self, dcmfilelist, out_dir, overlays):
         """

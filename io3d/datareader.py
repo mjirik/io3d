@@ -24,6 +24,18 @@ import dcmreaddata as dcmr
 
 # import numpy as np
 
+def read(datapath, qt_app=None,
+         dataplus_format=False, gui=False,
+         start=0, stop=None, step=1, convert_to_gray=True):
+    """
+    Simple read function. Internally call DataReader.Get3DData()
+    """
+    dr = DataReader()
+    return dr.Get3DData(
+        datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format,
+        gui=gui, start=start, stop=stop, step=step,
+        convert_to_gray=convert_to_gray)
+
 
 class DataReader:
 
@@ -117,10 +129,28 @@ class DataReader:
 
     def __ReadFromFile(self, datapath):
         path, ext = os.path.splitext(datapath)
-        if ext in ('.pklz', '.pkl'):
+        ext = ext[1:]
+        if ext in ('pklz', 'pkl'):
             logger.debug('pklz format detected')
             import misc
             data = misc.obj_from_file(datapath, filetype='pkl')
+            data3d = data.pop('data3d')
+            # etadata must have series_number
+            metadata = {
+                'series_number': 0,
+                'datadir': datapath
+            }
+            metadata.update(data)
+
+        elif ext in ['hdf5']:
+            data = self.read_hdf5(datapath)
+            data3d = data.pop('data3d')
+            # etadata must have series_number
+            metadata = {
+                'series_number': 0,
+                'datadir': datapath
+            }
+            metadata.update(data)
             data3d = data.pop('data3d')
             # etadata must have series_number
             metadata = {
@@ -159,6 +189,21 @@ class DataReader:
                 spacing[1],
             ]
         return data3d, metadata
+
+    def read_hdf5(self, datapath):
+        """
+        Method is not implemented
+        """
+# TODO implement this better, this is not working
+
+        import h5py
+        f = h5py.File(datapath, 'r')
+        import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
+        datap = {}
+        for item in f.attrs.keys():
+            datap[item] = f.attrs['item']
+        f.close()
+        return datap
 
     def GetOverlay(self):
         """ Generates dictionary of ovelays

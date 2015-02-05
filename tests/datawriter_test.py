@@ -80,6 +80,36 @@ class DicomWriterTest(unittest.TestCase):
                          newmetadata['voxelsize_mm'][2])
         os.remove(filename)
 
+    def test_write_hdf5(self):
+        filename = 'test_file.hdf5'
+        data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
+        data[0:5, 20:60, 60:70] += 30
+        metadata = {'voxelsize_mm': [1, 2, 3]}
+        dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
+
+    # @attr('interactive')
+    @attr('interactive')
+    def test_write_and_read_hdf5(self):
+        filename = 'test_file.hdf5'
+        data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
+        data[0:5, 20:60, 60:70] += 30
+        metadata = {'voxelsize_mm': [1, 2, 3]}
+        dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
+
+        aaa = dreader.read(filename)
+
+        # hack with -1024, because of wrong data reading
+        self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
+        self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
+        self.assertEqual(metadata['voxelsize_mm'][0],
+                         newmetadata['voxelsize_mm'][0])
+# @TODO there is a bug in SimpleITK. slice voxel size must be same
+        # self. assertEqual(metadata['voxelsize_mm'][1],
+        #                   newmetadata['voxelsize_mm'][1])
+        self.assertEqual(metadata['voxelsize_mm'][2],
+                         newmetadata['voxelsize_mm'][2])
+        os.remove(filename)
+
     def test_add_overlay_and_read_one_file_with_overlay(self):
         filename = 'tests_outputs/test_file.dcm'
         filedir = os.path.dirname(filename)
