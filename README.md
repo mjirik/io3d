@@ -18,7 +18,12 @@ You can use 3D viewer sed3 for visualization
     pip install sed3
 
 
-Example
+Example 1 
+===
+
+    python io3d/datareader.py -i ./sample_data/jatra_5mm/
+
+Example 2
 ===
 
     import io3d
@@ -31,6 +36,8 @@ Example
 
 Test data
 ===
+
+[io3d_sample_data](http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip)
 
 [ct_head.rawiv](http://mgltools.scripps.edu/downloads/tars/releases/DocTars/DOCPACKS/Vision/doc/Tutorial/headandslice/ct_head.rawiv)
 
