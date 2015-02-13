@@ -22,6 +22,7 @@ import dicom
 dicom.debug(False)
 
 #
+import io3d
 import io3d.dcmreaddata as dcmr
 
 
@@ -33,6 +34,16 @@ class DicomReaderTest(unittest.TestCase):
 #        reader = dcmr.DicomReader(self.dcmdir)
 #        self.data3d = reader.get_3Ddata()
 #        self.metadata = reader.get_metaData()
+
+    def test_dicomread_read(self):
+        dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
+        #dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        #self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir)
+#slice size is 512x512
+        self.assertEqual(data3d.shape[2],512)
+# voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0],5)
 
     def test_DicomReader_overlay(self):
         # import matplotlib.pyplot as plt
