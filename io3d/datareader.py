@@ -63,9 +63,11 @@ class DataReader:
 
         datapath = os.path.normpath(datapath)
         if os.path.isfile(datapath):
+            logger.debug('file read recognized')
             data3d, metadata = self.__ReadFromFile(datapath)
 
         elif os.path.exists(datapath):
+            logger.debug('directory read recognized')
             # print "read from directory"
             data3d, metadata = self.__ReadFromDirectory(
                 datapath, start, stop, step)

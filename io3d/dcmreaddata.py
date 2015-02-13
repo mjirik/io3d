@@ -12,6 +12,7 @@ $ dcmreaddata -d sample_data -o head.mat
 import sys
 import os
 import dicom
+import re
 import numpy as np
 from optparse import OptionParser
 from scipy.io import savemat
@@ -321,7 +322,11 @@ class DicomReader():
                                + traceback.format_exc())
                 voxeldepth = 0
 
-        pixelsize_mm = data.PixelSpacing
+        try:
+            pixelsize_mm = data.PixelSpacing
+        except:
+            logger.warning('Problem with PixelSpacing. Using [1,1]')
+            pixelsize_mm = [1, 1]
         voxelsize_mm = [
             voxeldepth,
             float(pixelsize_mm[0]),
@@ -505,6 +510,26 @@ class DicomReader():
         dcmdir = dcmdirplus['filesinfo']
         return dcmdir
 
+    def __get_slice_location(self, dcmdata, teil):
+        if hasattr(dcmdata, 'SliceLocation'):
+            return float(dcmdata.SliceLocation)
+        else:
+            logger.warning(
+                "Estimating SliceLocation wiht image number and SliceThickness"
+            )
+            print teil
+
+            i = map(int, re.findall('\d+', teil))
+            i = i[-1]
+            return float(i * float(dcmdata.SliceThickness))
+
+    def __get_series_number(self, dcmdata):
+
+        if dcmdata.SeriesNumber == '':
+            return 0
+        else:
+            return dcmdata.SeriesNumber
+
     def create_dir(self):
         """
         Function crates list of all files in dicom dir with all IDs
@@ -517,9 +542,12 @@ class DicomReader():
             head, teil = os.path.split(filepath)
             try:
                 dcmdata = dicom.read_file(filepath)
+                # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
                 metadataline = {'filename': teil,
-                                'SeriesNumber': dcmdata.SeriesNumber,
-                                'SliceLocation': float(dcmdata.SliceLocation),
+                                'SeriesNumber': self.__get_series_number(
+                                    dcmdata),
+                                'SliceLocation': self.__get_slice_location(
+                                    dcmdata, teil)
                                 }
 
                 # ry:
@@ -534,6 +562,8 @@ class DicomReader():
             except:
                 if head != self.dicomdir_filename:
                     print 'Dicom read problem with file ' + filepath
+                import traceback
+                logger.debug(traceback.format_exc())
 
         files.sort(key=lambda x: x['SliceLocation'])
 
