@@ -92,7 +92,7 @@ def read_pkl_and_pklz(filename):
     return fcontent
 
 
-def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
+def obj_to_file(obj, filename, filetype='yaml'):
     '''Writes annotation in file.
 
     Filetypes:
