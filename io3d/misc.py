@@ -44,14 +44,14 @@ def suggest_filename(file_path, exists=None):
     return file_path
 
 
-def obj_from_file(filename='annotation.yaml', filetype='yaml'):
+def obj_from_file(filename='annotation.yaml', filetype='auto'):
     ''' Read object from file '''
 
     if filetype == 'auto':
         _, ext = os.path.splitext(filename)
         filetype = ext[1:]
 
-    if filetype == 'yaml':
+    if filetype in ('yaml', 'yml'):
         import yaml
         f = open(filename, 'rb')
         obj = yaml.load(f)
@@ -92,7 +92,7 @@ def read_pkl_and_pklz(filename):
     return fcontent
 
 
-def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
+def obj_to_file(obj, filename, filetype='auto'):
     '''Writes annotation in file.
 
     Filetypes:
@@ -113,7 +113,7 @@ def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
         _, ext = os.path.splitext(filename)
         filetype = ext[1:]
 
-    if filetype == 'yaml':
+    if filetype in ('yaml', 'yml'):
         f = open(filename, 'wb')
         import yaml
         yaml.dump(obj, f)
