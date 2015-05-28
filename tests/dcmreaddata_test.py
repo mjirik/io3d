@@ -45,6 +45,30 @@ class DicomReaderTest(unittest.TestCase):
 # voxelsize depth = 5 mm
         self.assertEqual(metadata['voxelsize_mm'][0],5)
 
+    def test_dicomread_read_corrupted_dcmdir_file(self):
+        dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
+        pth_dicomdir = os.path.join(
+                path_to_script, '../sample_data/jatra_5mm/dicomdir.pkl')
+        pth_dicomdir_bck = os.path.join(
+                path_to_script, '../sample_data/jatra_5mm/dicomdir.pkl.bck')
+        import shutil
+# Backup file
+        shutil.copy2(pth_dicomdir, pth_dicomdir_bck)
+# create corrupted file
+
+        f = open(pth_dicomdir, 'w')
+        f.write('asdfasdfas')
+        f.close()
+
+        #dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        #self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir)
+#slice size is 512x512
+        self.assertEqual(data3d.shape[2],512)
+# voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+        shutil.copy2(pth_dicomdir_bck, pth_dicomdir)
+
     def test_DicomReader_overlay(self):
         # import matplotlib.pyplot as plt
 

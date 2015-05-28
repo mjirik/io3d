@@ -490,8 +490,8 @@ class DicomReader():
         ftype = 'pickle'
         # if exist dicomdir file and is in correct version, use it
         if os.path.exists(dicomdirfile):
-            dcmdirplus = misc.obj_from_file(dicomdirfile, ftype)
             try:
+                dcmdirplus = misc.obj_from_file(dicomdirfile, ftype)
                 if dcmdirplus['version'] == __version__:
                     createdcmdir = False
                 dcmdir = dcmdirplus['filesinfo']
