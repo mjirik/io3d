@@ -504,7 +504,12 @@ class DicomReader():
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
                 # obj_to_file(dcmdirplus, dicomdirfile, ftype)
-                misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                try:
+                    misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                except:
+                    logger.warning('Cannot write dcmdir file')
+                    traceback.print_exc()
+
                 # bj_to_file(dcmdir, dcmdiryamlpath )
 
         dcmdir = dcmdirplus['filesinfo']
