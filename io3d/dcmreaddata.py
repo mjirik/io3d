@@ -279,6 +279,10 @@ class DicomReader():
                 print 'problem with RescaleSlope and RescaleIntercept'
                 traceback.print_exc()
                 print '----------'
+                
+                new_data2d = (np.float(1) * data2d)\
+                    + np.float(0)
+
             # first readed slide is at the end
 
             data3d[-i - 1, :, :] = new_data2d
