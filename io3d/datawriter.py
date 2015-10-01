@@ -37,6 +37,7 @@ class DataWriter:
             data3d = d3d
         except:
             pass
+
         if filetype == 'auto'
             path, ext = os.path.splitext(path)
             filetype = ext[1:]
