@@ -16,7 +16,7 @@ import rawN
 # from sys import argv
 
 
-def write(data3d, path, filetype='dcm', metadata=None):
+def write(data3d, path, filetype='auto', metadata=None):
     dw = DataWriter()
     dw.Write3DData(data3d, path, filetype, metadata)
 
@@ -36,7 +36,7 @@ class DataWriter:
             metadata = data3d
             data3d = d3d
         except:
-        pass
+            pass
         if filetype == 'auto'
             path, ext = os.path.splitext(path)
             filetype = ext[1:]
