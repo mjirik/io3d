@@ -23,7 +23,7 @@ def write(data3d, path, filetype='dcm', metadata=None):
 
 class DataWriter:
 
-    def Write3DData(self, data3d, path, filetype='dcm', metadata=None):
+    def Write3DData(self, data3d, path, filetype='auto', metadata=None):
         """
         data3d: input ndarray data
         path: output path
@@ -31,6 +31,16 @@ class DataWriter:
         filetype: dcm, vtk, rawiv, image_stack
 
         """
+        try:
+            d3d = data3d.pop('data3d')
+            metadata = data3d
+            data3d = d3d
+        except:
+        pass
+        if filetype == 'auto'
+            path, ext = os.path.splitext(path)
+            filetype = ext[1:]
+
         mtd = {'voxelsize_mm': [1, 1, 1]}
         if metadata is not None:
             mtd.update(metadata)
@@ -49,6 +59,11 @@ class DataWriter:
             self.save_image_stack(data3d, path)
         elif filetype in ['hdf5']:
             self.save_hdf5(data3d, path, metadata)
+        elif filetype in ['pkl', 'pklz']:
+            import misc
+            metadata['data3d'] = data3d
+            datap = metadata
+            misc.obj_to_file(datap, path)
 
         else:
             logger.error('Unknown filetype: "' + filetype + '"')
