@@ -279,6 +279,10 @@ class DicomReader():
                 print 'problem with RescaleSlope and RescaleIntercept'
                 traceback.print_exc()
                 print '----------'
+                
+                new_data2d = (np.float(1) * data2d)\
+                    + np.float(0)
+
             # first readed slide is at the end
 
             data3d[-i - 1, :, :] = new_data2d
@@ -504,7 +508,12 @@ class DicomReader():
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
                 # obj_to_file(dcmdirplus, dicomdirfile, ftype)
-                misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                try:
+                    misc.obj_to_file(dcmdirplus, dicomdirfile, ftype)
+                except:
+                    logger.warning('Cannot write dcmdir file')
+                    traceback.print_exc()
+
                 # bj_to_file(dcmdir, dcmdiryamlpath )
 
         dcmdir = dcmdirplus['filesinfo']
