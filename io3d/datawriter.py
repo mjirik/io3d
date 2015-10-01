@@ -38,7 +38,7 @@ class DataWriter:
         except:
             pass
 
-        if filetype == 'auto'
+        if filetype == 'auto':
             path, ext = os.path.splitext(path)
             filetype = ext[1:]
 
