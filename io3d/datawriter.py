@@ -39,7 +39,7 @@ class DataWriter:
             pass
 
         if filetype == 'auto':
-            path, ext = os.path.splitext(path)
+            startpath, ext = os.path.splitext(path)
             filetype = ext[1:]
 
         mtd = {'voxelsize_mm': [1, 1, 1]}
@@ -64,6 +64,7 @@ class DataWriter:
             import misc
             metadata['data3d'] = data3d
             datap = metadata
+
             misc.obj_to_file(datap, path)
 
         else:
