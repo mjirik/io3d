@@ -1,0 +1,4 @@
+package: io3d
+script:
+      - conda build .
+build_targets: conda
