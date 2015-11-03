@@ -57,6 +57,9 @@ class DataReader:
         one structure.
         """
 
+        if not os.path.exists(datapath):
+            logger.error("Path '" + datapath + "' does not exist")
+            return
         if qt_app is None and gui is True:
             from PyQt4.QtGui import QApplication
             qt_app = QApplication(sys.argv)
