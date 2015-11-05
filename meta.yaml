@@ -4,7 +4,7 @@ package:
 
 source:
 # this is used for build from git hub
-  git_rev: 1.0.25
+  git_rev: v1.0.25
   git_url: https://github.com/mjirik/io3d.git
 
 # this is used for pypi 
@@ -38,12 +38,14 @@ requirements:
     - numpy
     - scipy
     - pydicom
+    - pyyaml
 
   run:
     - python
     - numpy
     - scipy
     - pydicom
+    - pyyaml
 
 test:
   # Python imports
