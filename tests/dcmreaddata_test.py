@@ -325,7 +325,7 @@ class DicomReaderTest(unittest.TestCase):
 #
 
     def test_idx_data(self):
-        io3d.
+        io3d.read("/home/mjirik/data/medical/orig/cvd-matrm3/microscopy_data/MM358-001-uint8.idx")
 
 
 if __name__ == "__main__":

@@ -165,6 +165,10 @@ class DataReader:
             }
             metadata.update(data)
 
+        elif ext in ['idx']:
+            import idxformat
+            idxreader = idxformat.IDXReader()
+            data3d, metadata = idxreader.read(datapath)
         else:
             logger.debug('file format "' + ext + '"')
             # reading raw file
