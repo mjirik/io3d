@@ -4,4 +4,6 @@ __all__ = ['dcmreaddata', 'datareader', 'datawriter', 'rawN']
 from dcmreaddata import DicomReader
 from datawriter import DataWriter
 from datareader import DataReader
+from datareader import read
+from datawriter import write
 

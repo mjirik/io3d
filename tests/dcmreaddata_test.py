@@ -324,5 +324,9 @@ class DicomReaderTest(unittest.TestCase):
 #
 #
 
+    def test_idx_data(self):
+        io3d.
+
+
 if __name__ == "__main__":
     unittest.main()
