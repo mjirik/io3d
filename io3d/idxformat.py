@@ -8,6 +8,7 @@ import numpy as np
 import os.path as op
 import logging
 logger = logging.getLogger(__name__)
+import sed3
 
 class IDXReader:
     def _init__(self):
@@ -42,7 +43,8 @@ class IDXReader:
             logger.error("Unknown data type")
 
         data = np.fromfile(filename, dtype=dtype)
-        d3 = np.reshape(data,[1024,1024,-1])
+        shape = [1024, 1024, 5]
+        d3 = np.reshape(data[:np.prod(shape)],shape)
         print "all ok"
 
 
