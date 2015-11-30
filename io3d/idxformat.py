@@ -42,9 +42,12 @@ class IDXReader:
         else:
             logger.error("Unknown data type")
 
-        data = np.fromfile(filename, dtype=dtype)
-        shape = [1024, 1024, 5]
+        data = np.fromfile(filename, dtype=np.uint8)
+        shape = [1024, 1024, 10]
         d3 = np.reshape(data[:np.prod(shape)],shape)
+
+        ed = sed3.sed3(d3[:200, :200, :])
+        ed.show()
         print "all ok"
 
 
