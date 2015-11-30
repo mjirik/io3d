@@ -11,7 +11,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='1.0.25',
+    version='1.0.26',
     url='https://github.com/mjirik/io3d',
     author='Miroslav Jirik',
     author_email='miroslav.jirik@gmail.com',
