@@ -46,7 +46,7 @@ class DataWriter:
         if metadata is not None:
             mtd.update(metadata)
 
-        if filetype in ['dcm', 'DCM', 'dicom', 'vtk']:
+        if filetype in ['dcm', 'DCM', 'dicom', 'vtk', 'tiff', 'tif']:
             import SimpleITK as sitk
             # pixelType = itk.UC
             # imageType = itk.Image[pixelType, 2]
