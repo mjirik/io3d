@@ -79,7 +79,7 @@ def read_pkl_and_pklz(filename):
         f.close()
     except IOError as e:
         # if the problem is in not gzip file
-        logger.warning("Input gzip exception: " + str(e))
+        logger.info("Input gzip exception: " + str(e))
         f = open(filename, 'rb')
         fcontent = f.read()
         f.close()

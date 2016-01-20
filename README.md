@@ -18,7 +18,7 @@ You can use 3D viewer sed3 for visualization
     pip install sed3
 
 
-Example 1 
+Example 1
 ===
 
     python io3d/datareader.py -i ./sample_data/jatra_5mm/
