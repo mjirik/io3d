@@ -1,3 +1,0 @@
-python-numpy
-python-scipy
-python-h5py
