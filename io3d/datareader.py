@@ -208,12 +208,24 @@ class DataReader:
 
         import h5py
         f = h5py.File(datapath, 'r')
-        import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
+        # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
+        dd = self.__read_h5_key(f)
         datap = {}
         for item in f.attrs.keys():
             datap[item] = f.attrs['item']
         f.close()
         return datap
+
+    def __read_h5_key(self, grp):
+        import h5py
+        import numpy as np
+        retval = {}
+        for key in grp.keys():
+            data = grp.get(key)
+            if type(data) == h5py.Dataset:
+                retval[key] = np.array(data)
+
+        return retval
 
     def GetOverlay(self):
         """ Generates dictionary of ovelays

@@ -29,6 +29,27 @@ import io3d.datareader as dreader
 
 class DicomWriterTest(unittest.TestCase):
 
+    # def test_write_h5(self):
+    #     """
+    #     Reads dicom data and from slices and stores into one Dicom file. This
+    #     file is then readed and compared with input data.
+    #     """
+    #     filename = 'tests/output_dcm3d.dcm'
+    #     dr = dreader.DataReader()
+    #     data3d, metadata = dr.Get3DData(
+    #         'sample_data/jatra_5mm/'
+    #         # 'sample_data/volumetrie/'
+    #     )
+    #     # import pdb; pdb.set_trace()
+    #
+    #
+    #     dw = dwriter.DataWriter()
+    #     dw.Write3DData(data3d, filename, filetype='dcm', metadata=metadata)
+    #
+    #     data3d_n, metadata_n = dr.Get3DData(filename)
+    #     self.assertEqual(data3d[10, 11, 12], data3d_n[10, 11, 12])
+    #     os.remove(filename)
+
     @attr('dataset')
     def test_write_dicom_from_scratch(self):
         """
