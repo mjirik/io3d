@@ -58,7 +58,7 @@ class DataWriter:
             rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
             self.save_image_stack(data3d, path)
-        elif filetype in ['hdf5']:
+        elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
             self.save_hdf5(data3d, path, metadata)
         elif filetype in ['pkl', 'pklz']:
             import misc
