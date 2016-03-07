@@ -137,12 +137,12 @@ class DicomWriterTest(unittest.TestCase):
         metadata = {'voxelsize_mm': [1, 2, 3]}
         dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
 
-        aaa = dreader.read(filename)
+        newdata, newmetadata = dreader.read(filename)
 
         # hack with -1024, because of wrong data reading
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
         self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
-        self.assertEqual(metadata['voxelsize_mm'][0],
+        self.assertEqual(newmetadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
 # @TODO there is a bug in SimpleITK. slice voxel size must be same
         # self. assertEqual(metadata['voxelsize_mm'][1],

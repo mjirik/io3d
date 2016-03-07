@@ -151,13 +151,10 @@ class DataReader:
         elif ext in ['hdf5']:
             data = self.read_hdf5(datapath)
             data3d = data.pop('data3d')
-            # etadata must have series_number
-            metadata = {
-                'series_number': 0,
-                'datadir': datapath
-            }
-            metadata.update(data)
-            data3d = data.pop('data3d')
+
+            # back compatibility
+            if 'metadata' in data.keys():
+                data = data['metadata']
             # etadata must have series_number
             metadata = {
                 'series_number': 0,
@@ -210,11 +207,11 @@ class DataReader:
         f = h5py.File(datapath, 'r')
         # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
         dd = self.__read_h5_key(f)
-        datap = {}
-        for item in f.attrs.keys():
-            datap[item] = f.attrs['item']
+        # datap = {}
+        # for item in f.attrs.keys():
+        #     datap[item] = f.attrs['item']
         f.close()
-        return datap
+        return dd
 
     def __read_h5_key(self, grp):
         import h5py
@@ -224,6 +221,11 @@ class DataReader:
             data = grp.get(key)
             if type(data) == h5py.Dataset:
                 retval[key] = np.array(data)
+            elif type(data) == h5py.Group:
+                retval[key] = self.__read_h5_key(data)
+            else:
+                retval[key] = data
+
 
         return retval
 
