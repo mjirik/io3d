@@ -88,16 +88,26 @@ class DataWriter:
         import numpy as np
         retval = {}
         for key in dct.keys():
-            data = dct[key]
-            if type(data) == np.ndarray:
-                grp.create_dataset(key, data=data)
-            elif type(data) == list:
-                grp.create_dataset(key, data=data)
-            elif type(data) == dict:
-                subgrp = grp.create_group('key')
-                self.__write_h5_key(subgrp, data)
-            else:
-                grp[key] = data
+            try:
+                data = dct[key]
+                if type(data) == np.ndarray:
+                    if data.dtype == np.dtype('O'):
+                        logger.warning("problem with dtype('O')")
+                        print "Press 'c' for continue"
+                        from PyQt4 import QtCore; QtCore.pyqtRemoveInputHook()
+                        import ipdb; ipdb.set_trace()
+                    else:
+                        grp.create_dataset(key, data=data)
+                elif type(data) == list:
+                    grp.create_dataset(key, data=data)
+                elif type(data) == dict:
+                    subgrp = grp.create_group('key')
+                    self.__write_h5_key(subgrp, data)
+                else:
+                    grp[key] = data
+            except:
+                import traceback
+                logger.warning(traceback.format_exc())
 
 
         return retval
