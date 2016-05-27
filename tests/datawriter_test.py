@@ -21,6 +21,7 @@ import dicom
 dicom.debug(False)
 
 #
+import io3d
 import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
@@ -245,8 +246,41 @@ class DicomWriterTest(unittest.TestCase):
         return data3d
 
     @attr('actual')
+    def test_save_image_stack_based_on_filename(self):
+        testdatadir = 'test_svimstack2'
+        if os.path.exists(testdatadir):
+            shutil.rmtree(testdatadir)
+        szx = 30
+        szy = 20
+        szz = 120
+        data3d = self.generate_waving_data(
+            szx, szy, szz, value=150, dtype=np.uint8)
+        # import sed3
+        # ed = sed3.sed3(data3d)
+        # ed.show()
+        #
+        io3d.write(data3d, testdatadir + "/soubory{:04d}.tiff")
+
+
+
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+            testdatadir
+            # 'sample_data/volumetrie/'
+        )
+        # import sed3
+        # ed = sed3.sed3(data3dnew)
+        # ed.show()
+        self.assertEqual(
+            np.sum(np.abs(data3d - data3dnew)),
+            0
+        )
+        shutil.rmtree(testdatadir)
+
     def test_save_image_stack(self):
         testdatadir = 'test_svimstack'
+        if os.path.exists(testdatadir):
+            shutil.rmtree(testdatadir)
         szx = 30
         szy = 20
         szz = 120

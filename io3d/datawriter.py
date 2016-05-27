@@ -17,6 +17,14 @@ import rawN
 
 
 def write(data3d, path, filetype='auto', metadata=None):
+    """
+
+    :param data3d: input ndarray
+    :param path: output path, if braces are in the name ("dir/file{:04d}.dcm"), image stack is produced
+    :param filetype: dcm, png, h5, ... "image_stack"
+    :param metadata: metadata f.e. {'voxelsize_mm': [3,2,2]}
+    :return:
+    """
     dw = DataWriter()
     dw.Write3DData(data3d, path, filetype, metadata)
 
@@ -46,6 +54,17 @@ class DataWriter:
         if metadata is not None:
             mtd.update(metadata)
 
+        if path.find('{') >= 0:
+            filetype = 'image_stack'
+            # one_file_per_slice = True
+
+    #     if one_file_per_slice:
+    #         self._one_file_per_slice(self, data3d, path, filetype, metadata)
+    #     else:
+    #         self._all_in_one_file(self, data3d, path, filetype, metadata)
+    #
+    # def _all_in_one_file(self, data3d, path, filetype, metadata):
+
         if filetype in ['dcm', 'DCM', 'dicom', 'vtk', 'tiff', 'tif']:
             import SimpleITK as sitk
             # pixelType = itk.UC
@@ -57,7 +76,7 @@ class DataWriter:
         elif filetype in ['rawiv']:
             rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
-            self.save_image_stack(data3d, path)
+            self.save_image_stack(data3d, path, metadata)
         elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
             self.save_hdf5(data3d, path, metadata)
         elif filetype in ['pkl', 'pklz']:
@@ -228,25 +247,34 @@ class DataWriter:
 
         return data
 
-    def save_image_stack(self, data3d, filepattern):
+    def save_image_stack(self, data3d, filepattern, metadata=None):
         datadir, dataname = os.path.split(filepattern)
 
         if not os.path.exists(datadir):
             os.mkdir(datadir)
         databasename, dataext = os.path.splitext(dataname)
 
-        for i in range(0, data3d.shape[0]):
-            newfilename = os.path.join(
+
+        if filepattern.find('{') < 0:
+            # filepattern does not contain place for integer
+            filepattern = os.path.join(
                 datadir,
-                databasename + "%05d" % (i,) + dataext)
-            # print newfilename
+                databasename + "{:05d}" + dataext)
+        # print filepattern
+
+        for i in range(0, data3d.shape[0]):
+            newfilename = filepattern.format(i)
+            logger.debug(newfilename)
             data2d = data3d[i, :, :]
             import SimpleITK as sitk
             # pixelType = itk.UC
             # imageType = itk.Image[pixelType, 2]
             dim = sitk.GetImageFromArray(data2d)
-            # vsz = mtd['voxelsize_mm']
-            # dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
+
+            if metadata is not None:
+                vsz = np.asarray(metadata['voxelsize_mm']).astype('double')
+                dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
+            # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
 
 
