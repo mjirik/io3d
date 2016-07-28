@@ -93,11 +93,12 @@ class DicomWriterTest(unittest.TestCase):
         # hack with -1024, because of wrong data reading
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
         self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
+        # print metadata["voxelsize_mm"]
+        # print newmetadata["voxelsize_mm"]
         self.assertEqual(metadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
-# @TODO there is a bug in SimpleITK. slice voxel size must be same
-        # self. assertEqual(metadata['voxelsize_mm'][1],
-        #                   newmetadata['voxelsize_mm'][1])
+        self. assertEqual(metadata['voxelsize_mm'][1],
+                          newmetadata['voxelsize_mm'][1])
         self.assertEqual(metadata['voxelsize_mm'][2],
                          newmetadata['voxelsize_mm'][2])
         os.remove(filename)

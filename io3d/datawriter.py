@@ -65,14 +65,11 @@ class DataWriter:
     #
     # def _all_in_one_file(self, data3d, path, filetype, metadata):
 
-        if filetype in ['dcm', 'DCM', 'dicom', 'vtk', 'tiff', 'tif']:
-            import SimpleITK as sitk
-            # pixelType = itk.UC
-            # imageType = itk.Image[pixelType, 2]
-            dim = sitk.GetImageFromArray(data3d)
-            vsz = mtd['voxelsize_mm']
-            dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
-            sitk.WriteImage(dim, path)
+        if filetype in ['vtk', 'tiff', 'tif']:
+            self._write_with_sitk(path, data3d, mtd)
+        elif filetype in ['dcm', 'DCM', 'dicom']:
+            self._write_with_sitk(path, data3d, mtd)
+            self._fix_sitk_bug(path, metadata)
         elif filetype in ['rawiv']:
             rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
@@ -90,6 +87,26 @@ class DataWriter:
             logger.error('Unknown filetype: "' + filetype + '"')
 
             # data = dicom.read_file(onefile)
+
+    def _write_with_sitk(self,path, data3d, metadata):
+        import SimpleITK as sitk
+        mtd=metadata
+        dim = sitk.GetImageFromArray(data3d)
+        vsz = mtd['voxelsize_mm']
+        dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
+        sitk.WriteImage(dim, path)
+
+    def _fix_sitk_bug(self, path, metadata):
+        """
+        There is a bug in simple ITK for Z axis in 3D images. This is a fix
+        :param path:
+        :param metadata:
+        :return:
+        """
+        import dicom
+        ds = dicom.read_file(path)
+        ds.SpacingBetweenSlices = metadata["voxelsize_mm"][0]
+        dicom.write_file(path, ds)
 
     def save_hdf5(self, data3d, path, metadata):
         # TODO this is not implemented in proper way
