@@ -15,8 +15,6 @@ import logging
 logger = logging.getLogger(__name__)
 import argparse
 
-
-
 from PyQt4.QtGui import QGridLayout, QLabel,\
     QPushButton, QLineEdit, QApplication
 from PyQt4 import QtGui
@@ -27,34 +25,42 @@ import copy
 
 import datareader
 
+
 class LoadDataWidget(QtGui.QWidget):
 
-    def __init__(self, dictionary):
+    def __init__(
+            self,
+            datapath=None,
+            loadfiledir='',
+            loaddir='',
+            show_message_function=None,
+            after_function=None
+    ) :
         super(LoadDataWidget, self).__init__()
 
         # status function can be used to proceed messages out of this module
         # it is defined fcn(str)
-        self.showMessageFunction = None
-        self.loadfiledir = ''
-        self.loaddir = ''
-        self.datapath = None
-        self.afterFunction = None
+        self.show_message_function = show_message_function
+        self.loadfiledir = loadfiledir
+        self.loaddir = loaddir
+        self.datapath = datapath
+        self.after_function = after_function
 
-        self.initUI()
+        self.datap = None
 
+        self.init_ui()
 
-
-    def initUI(self):
+    def init_ui(self):
         self.mainLayout = QGridLayout(self)
         # self.mainLayout.addWidget(QLabel("Key"), 0, 1)
         # self.mainLayout.addWidget(QLabel("Value"), 0, 2)
-        btnLoadFile = QPushButton("Load file", self)
-        btnLoadFile.clicked.connect(self.readDataFileDialog)
-        self.mainLayout.addWidget(btnLoadFile, 0, 0)
+        btn_load_file = QPushButton("Load file", self)
+        btn_load_file.clicked.connect(self.read_data_file_dialog)
+        self.mainLayout.addWidget(btn_load_file, 0, 0)
 
-        btnLoadFile = QPushButton("Load dir", self)
-        btnLoadFile.clicked.connect(self.readDataDirDialog)
-        self.mainLayout.addWidget(btnLoadFile, 0, 1)
+        btn_load_file = QPushButton("Load dir", self)
+        btn_load_file.clicked.connect(self.read_data_dir_dialog)
+        self.mainLayout.addWidget(btn_load_file, 0, 1)
 
         self.text_dcm_dir = QLabel('data path:')
         self.text_dcm_data = QLabel('data description:')
@@ -119,8 +125,8 @@ class LoadDataWidget(QtGui.QWidget):
             dcmdir = None
         return dcmdir
 
-    def readDataFileDialog(self):
-        self.__showMessage('Reading data file...')
+    def read_data_file_dialog(self):
+        self.__show_message('Reading data file...')
         QApplication.processEvents()
 
         self.datapath = self.__get_datafile(
@@ -129,17 +135,16 @@ class LoadDataWidget(QtGui.QWidget):
         )
 
         if self.datapath is None:
-            self.__showMessage('No data path specified!')
+            self.__show_message('No data path specified!')
             return
         head, teil = os.path.split(self.datapath)
         self.loadfiledir = head
 
-        self.readDataFromPreparedDatapath()
+        self.read_data_from_prepared_datapath()
 
-    def readDataDirDialog(self):
-        self.__showMessage('Reading data file...')
+    def read_data_dir_dialog(self):
+        self.__show_message('Reading data file...')
         QApplication.processEvents()
-
 
         self.datapath = self.__get_datadir(
             app=True,
@@ -147,17 +152,16 @@ class LoadDataWidget(QtGui.QWidget):
         )
 
         if self.datapath is None:
-            self.__showMessage('No DICOM directory specified!')
+            self.__show_message('No DICOM directory specified!')
             return
         # head, teil = os.path.split(oseg.datapath)
         self.loaddir = copy.copy(self.datapath)
 
-        self.readDataFromPreparedDatapath()
+        self.read_data_from_prepared_datapath()
 
         # print "Transferred: {0}\tOut of: {1}".format(transferred, toBeTransferred)
 
-
-    def readDataFromPreparedDatapath(self):
+    def read_data_from_prepared_datapath(self):
         """
         Function is called in the end of process
         :return:
@@ -167,34 +171,35 @@ class LoadDataWidget(QtGui.QWidget):
 
         self.datap = reader.Get3DData(self.datapath, dataplus_format=True)
 
+        _set_label_text(self.text_dcm_dir, _make_text_short(self.datapath), self.datapath)
+        _set_label_text(self.text_dcm_data, self.get_data_info())
+        if self.after_function is not None:
+            self.after_function()
+        self.__show_message('Data read finished')
 
-        self.__setLabelText(self.text_dcm_dir, self.__makeTextShort(self.datapath), self.datapath)
-        self.__setLabelText(self.text_dcm_data, self.getDataInfo())
-        if self.afterFunction is not None:
-            self.afterFunction()
-        self.__showMessage('Data read finished')
-
-    def __makeTextShort(self, text, max_lenght=40):
-        return text[:int(max_lenght/2)] + ".." + text[-int(max_lenght/2):]
-
-    def __setLabelText(self, obj, text, tooltip=None):
-        dlab = str(obj.text())
-        obj.setText(dlab[:dlab.find(':')] + ': %s' % text)
-        if tooltip is not None:
-            obj.setToolTip(tooltip)
-
-    def getDataInfo(self):
+    def get_data_info(self):
         vx_size = self.datap['voxelsize_mm']
         vsize = tuple([float(ii) for ii in vx_size])
         ret = ' %dx%dx%d,  %fx%fx%f mm' % (self.datap['data3d'].shape + vsize)
 
         return ret
 
-    def __showMessage(self, msg):
+    def __show_message(self, msg):
         logger.debug(msg)
 
-        if self.showMessageFunction is not None:
-            self.showMessageFunction(msg)
+        if self.show_message_function is not None:
+            self.show_message_function(msg)
+
+
+def _make_text_short(text, max_lenght=40):
+    return text[:int(max_lenght/2)] + ".." + text[-int(max_lenght/2):]
+
+
+def _set_label_text(obj, text, tooltip=None):
+    dlab = str(obj.text())
+    obj.setText(dlab[:dlab.find(':')] + ': %s' % text)
+    if tooltip is not None:
+        obj.setToolTip(tooltip)
 
 
 def main():
@@ -224,10 +229,16 @@ def main():
     #     help='input file'
     # )
     parser.add_argument(
-        '--dict',
-        default="{'jatra':2, 'ledviny':7}",
+        '-ld', '--loaddir',
+        default="",
         # required=True,
-        help='input dict'
+        help='init dir for dir dialog'
+    )
+    parser.add_argument(
+        '-lf', '--loadfiledir',
+        default="",
+        # required=True,
+        help='init dir for file dialog'
     )
     parser.add_argument(
         '-d', '--debug', action='store_true',
@@ -241,10 +252,10 @@ def main():
 
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})
-    w = LoadDataWidget(dictionary=eval(args.dict))
+    w = LoadDataWidget(loaddir=args.loaddir, loadfiledir=args.loadfiledir)
     w.resize(250, 150)
     w.move(300, 300)
-    w.setWindowTitle('Simple')
+    w.setWindowTitle('io3dQtWidget')
     w.show()
 
     sys.exit(app.exec_())
