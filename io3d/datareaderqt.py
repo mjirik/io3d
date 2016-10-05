@@ -26,7 +26,7 @@ import copy
 import datareader
 
 
-class LoadDataWidget(QtGui.QWidget):
+class DataReaderWidget(QtGui.QWidget):
 
     def __init__(
             self,
@@ -34,9 +34,10 @@ class LoadDataWidget(QtGui.QWidget):
             loadfiledir='',
             loaddir='',
             show_message_function=None,
-            after_function=None
+            after_function=None,
+            before_function=None
     ) :
-        super(LoadDataWidget, self).__init__()
+        super(DataReaderWidget, self).__init__()
 
         # status function can be used to proceed messages out of this module
         # it is defined fcn(str)
@@ -45,6 +46,7 @@ class LoadDataWidget(QtGui.QWidget):
         self.loaddir = loaddir
         self.datapath = datapath
         self.after_function = after_function
+        self.before_function = before_function
 
         self.datap = None
 
@@ -129,6 +131,9 @@ class LoadDataWidget(QtGui.QWidget):
         self.__show_message('Reading data file...')
         QApplication.processEvents()
 
+        if self.before_function is not None:
+            self.before_function(self)
+
         self.datapath = self.__get_datafile(
             app=True,
             directory=self.loadfiledir
@@ -145,6 +150,9 @@ class LoadDataWidget(QtGui.QWidget):
     def read_data_dir_dialog(self):
         self.__show_message('Reading data file...')
         QApplication.processEvents()
+
+        if self.before_function is not None:
+            self.before_function(self)
 
         self.datapath = self.__get_datadir(
             app=True,
@@ -174,7 +182,7 @@ class LoadDataWidget(QtGui.QWidget):
         _set_label_text(self.text_dcm_dir, _make_text_short(self.datapath), self.datapath)
         _set_label_text(self.text_dcm_data, self.get_data_info())
         if self.after_function is not None:
-            self.after_function()
+            self.after_function(self)
         self.__show_message('Data read finished')
 
     def get_data_info(self):
@@ -201,6 +209,15 @@ def _set_label_text(obj, text, tooltip=None):
     if tooltip is not None:
         obj.setToolTip(tooltip)
 
+
+def my_before_fcn(arg):
+    arg.loadfiledir = os.path.expanduser("~")
+
+
+def my_after_fcn(arg):
+    print arg
+    print arg.loaddir
+    print arg.loadfiledir
 
 def main():
     logger = logging.getLogger()
@@ -252,7 +269,8 @@ def main():
 
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})
-    w = LoadDataWidget(loaddir=args.loaddir, loadfiledir=args.loadfiledir)
+    w = DataReaderWidget(loaddir=args.loaddir, loadfiledir=args.loadfiledir,
+                         after_function=my_after_fcn, before_function=my_before_fcn)
     w.resize(250, 150)
     w.move(300, 300)
     w.setWindowTitle('io3dQtWidget')

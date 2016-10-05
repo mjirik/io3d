@@ -39,7 +39,7 @@ Example 3 - Qt Widget
 
     import io3d.datareaderqt
     app = QtGui.QApplication(sys.argv)    
-    w = io3d.datereaderqt.LoadDataWidget()
+    w = io3d.datereaderqt.DatareaderWidget()
     w.show()
     app.exec_()
     datap = w.datap
