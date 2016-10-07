@@ -3,8 +3,8 @@
 
 # import funkcí z jiného adresáře
 import unittest
-import os.path
 import os
+import os.path as op
 
 # path_to_script = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
@@ -26,9 +26,14 @@ import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
 # import sed3 as pyed
+SAMPLE_DATA_DIR = "sample_data"
 
 
 class DicomWriterTest(unittest.TestCase):
+    def setUp(self):
+        import imtools
+        import imtools.sample_data
+        imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
 
     # def test_write_h5(self):
     #     """
@@ -60,7 +65,7 @@ class DicomWriterTest(unittest.TestCase):
         filename = 'tests/output_dcm3d.dcm'
         dr = dreader.DataReader()
         data3d, metadata = dr.Get3DData(
-            'sample_data/jatra_5mm/'
+            op.join(SAMPLE_DATA_DIR, '/jatra_5mm/')
             # 'sample_data/volumetrie/'
         )
         dw = dwriter.DataWriter()
@@ -172,7 +177,7 @@ class DicomWriterTest(unittest.TestCase):
         dw = dwriter.DataWriter()
         dw.add_overlay_to_slice_file(
             # 'sample_data/jatra_5mm/IM-0001-0019.dcm',
-            'sample_data/volumetrie/volumetry_slice.DCM',
+            op.join(SAMPLE_DATA_DIR, 'volumetrie/volumetry_slice.DCM'),
             overlay,
             i_overlay,
             filename
@@ -205,7 +210,7 @@ class DicomWriterTest(unittest.TestCase):
 # open copied data to obtain dcmfilefilelist
         dr = dreader.DataReader()
         data3d, metadata = dr.Get3DData(
-            'sample_data/jatra_5mm/'
+            op.join(SAMPLE_DATA_DIR, 'jatra_5mm/')
             # 'sample_data/volumetrie/'
         )
 # for test we are working only with small number of files (n_files)
