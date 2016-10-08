@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
+logger = logging.getLogger(__name__)
 # import funkcí z jiného adresáře
 import unittest
 import os
@@ -26,14 +28,14 @@ import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
 # import sed3 as pyed
-SAMPLE_DATA_DIR = "sample_data"
+SAMPLE_DATA_DIR = "./sample_data"
 
 
 class DicomWriterTest(unittest.TestCase):
-    def setUp(self):
-        import imtools
-        import imtools.sample_data
-        imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
+    # def setUp(self):
+    #     import imtools
+    #     import imtools.sample_data
+    #     imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
 
     # def test_write_h5(self):
     #     """
@@ -64,8 +66,11 @@ class DicomWriterTest(unittest.TestCase):
         """
         filename = 'tests/output_dcm3d.dcm'
         dr = dreader.DataReader()
+        path_to_data = op.join(SAMPLE_DATA_DIR, 'jatra_5mm')
+        logger.debug(SAMPLE_DATA_DIR)
+        logger.debug(path_to_data)
         data3d, metadata = dr.Get3DData(
-            op.join(SAMPLE_DATA_DIR, '/jatra_5mm/')
+            path_to_data
             # 'sample_data/volumetrie/'
         )
         dw = dwriter.DataWriter()
@@ -87,6 +92,7 @@ class DicomWriterTest(unittest.TestCase):
         data[0:5, 20:60, 60:70] += 30
         metadata = {'voxelsize_mm': [1, 2, 3]}
         dw = dwriter.DataWriter()
+        logger.debug(filename)
         dw.Write3DData(data, filename, filetype='dcm', metadata=metadata)
 
         dr = dreader.DataReader()
@@ -333,6 +339,16 @@ class DicomWriterTest(unittest.TestCase):
             0
         )
         shutil.rmtree(testdatadir)
+
+    def test_SimpleITK(self):
+        path = "new_dcmfile.dcm"
+        data3d = np.zeros([10, 15, 20], dtype='int16')
+        vsz = np.asarray([2,3,1.5])
+
+        import SimpleITK as sitk
+        dim = sitk.GetImageFromArray(data3d)
+        dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
+        sitk.WriteImage(dim, path)
 
 
 if __name__ == "__main__":

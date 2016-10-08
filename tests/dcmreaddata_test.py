@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+logger = logging.getLogger(__name__)
 # import funkcí z jiného adresáře
 # import sys
 import os.path
@@ -30,10 +32,10 @@ SAMPLE_DATA_DIR = "sample_data"
 class DicomReaderTest(unittest.TestCase):
     interactivetTest = False
 
-    def setUp(self):
-        import imtools
-        import imtools.sample_data
-        imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
+    # def setUp(self):
+    #     import imtools
+    #     import imtools.sample_data
+    #     imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
 #    def setUp(self):
 #        self.dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
 # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)

@@ -1,4 +1,5 @@
 numpy
 scipy
 h5py
-SimpleITK
+SimpleITK=0.9.* # problem with dicom write
+libpng=1.5.13 # kvuli simpleik 0.9.
