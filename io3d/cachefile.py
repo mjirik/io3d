@@ -19,7 +19,7 @@ import io3d
 
 class CacheFile():
     def __init__(self, filename):
-        self.filename = filename
+        self.filename = op.expanduser(filename)
 
     def __update(self):
         if op.exists(self.filename):
