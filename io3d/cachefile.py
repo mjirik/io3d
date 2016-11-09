@@ -21,15 +21,18 @@ class CacheFile():
     def __init__(self, filename):
         self.filename = filename
 
-        if op.exists(filename):
-            self.data = io3d.misc.obj_from_file(filename)
+    def __update(self):
+        if op.exists(self.filename):
+            self.data = io3d.misc.obj_from_file(self.filename)
         else:
             self.data = {}
 
     def get(self, key):
+        self.__update()
         return self.data[key]
 
     def get_or_none(self, key):
+        self.__update()
         if key in self.data.keys():
             return self.data[key]
         else:

@@ -82,6 +82,11 @@ class DataReaderWidget(QtGui.QWidget):
         Draw a dialog for directory selection.
         """
 
+        if self.cache is not None:
+            self.loadfiledir = self.cache.get_or_none('loadfiledir')
+
+        if self.loadfiledir is None:
+            self.loadfiledir = ''
         directory=self.loadfiledir
         from PyQt4.QtGui import QFileDialog
         if app:
@@ -105,6 +110,11 @@ class DataReaderWidget(QtGui.QWidget):
             dcmdir = dcmdir.encode("utf8")
         else:
             dcmdir = None
+
+
+        head, teil = os.path.split(dcmdir)
+        if self.cache is not None:
+            self.cache.update('loadfiledir', head)
         return dcmdir
 
     def __get_datadir(self, app=False):
@@ -144,7 +154,6 @@ class DataReaderWidget(QtGui.QWidget):
             dcmdir = dcmdir.encode("utf8")
         else:
             dcmdir = None
-
 
         if self.cache is not None:
             self.cache.update('loaddir', dcmdir)
