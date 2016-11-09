@@ -40,6 +40,16 @@ class DataReaderWidget(QtGui.QWidget):
             cachefile=None
 
     ) :
+        """
+
+        :param datapath: is also output var. Describes path to selected data
+        :param loadfiledir: init dir fo file dialog
+        :param loaddir: init dir for dir dialog
+        :param show_message_function:
+        :param after_function:
+        :param before_function:
+        :param cachefile:
+        """
         super(DataReaderWidget, self).__init__()
 
         # status function can be used to proceed messages out of this module
