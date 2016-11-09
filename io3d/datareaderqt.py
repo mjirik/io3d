@@ -24,6 +24,7 @@ import copy
 
 
 import datareader
+import cachefile as cachef
 
 
 class DataReaderWidget(QtGui.QWidget):
@@ -35,7 +36,9 @@ class DataReaderWidget(QtGui.QWidget):
             loaddir='',
             show_message_function=None,
             after_function=None,
-            before_function=None
+            before_function=None,
+            cachefile=None
+
     ) :
         super(DataReaderWidget, self).__init__()
 
@@ -47,6 +50,11 @@ class DataReaderWidget(QtGui.QWidget):
         self.datapath = datapath
         self.after_function = after_function
         self.before_function = before_function
+        self.cachefile = cachefile
+        if self.cachefile is not None:
+            self.cache = cachef.CacheFile(self.cachefile)
+        else:
+            self.cache = None
 
         self.datap = None
 
@@ -69,11 +77,12 @@ class DataReaderWidget(QtGui.QWidget):
         self.mainLayout.addWidget(self.text_dcm_dir, 1, 0, 1, 2)
         self.mainLayout.addWidget(self.text_dcm_data, 2, 0, 1, 2)
 
-    def __get_datafile(self, app=False, directory=''):
+    def __get_datafile(self, app=False):
         """
         Draw a dialog for directory selection.
         """
 
+        directory=self.loadfiledir
         from PyQt4.QtGui import QFileDialog
         if app:
             dcmdir = QFileDialog.getOpenFileName(
@@ -98,10 +107,20 @@ class DataReaderWidget(QtGui.QWidget):
             dcmdir = None
         return dcmdir
 
-    def __get_datadir(self, app=False, directory=''):
+    def __get_datadir(self, app=False):
         """
         Draw a dialog for directory selection.
         """
+        # if 'datadir' in self.oseg.cache.data.keys():
+        # if :
+        #     directory = self.oseg.input_datapath_start
+        if self.cache is not None:
+            self.loaddir = self.cache.get_or_none('loaddir')
+
+        if self.loaddir is None:
+            self.loaddir = ''
+
+        directory = self.loaddir
 
         from PyQt4.QtGui import QFileDialog
         if app:
@@ -125,6 +144,10 @@ class DataReaderWidget(QtGui.QWidget):
             dcmdir = dcmdir.encode("utf8")
         else:
             dcmdir = None
+
+
+        if self.cache is not None:
+            self.cache.update('loaddir', dcmdir)
         return dcmdir
 
     def read_data_file_dialog(self):
@@ -136,8 +159,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         self.datapath = self.__get_datafile(
             app=True,
-            directory=self.loadfiledir
-        )
+            )
 
         if self.datapath is None:
             self.__show_message('No data path specified!')
@@ -155,8 +177,7 @@ class DataReaderWidget(QtGui.QWidget):
             self.before_function(self)
 
         self.datapath = self.__get_datadir(
-            app=True,
-            directory=self.loaddir
+            app=True
         )
 
         if self.datapath is None:
@@ -260,6 +281,12 @@ def main():
     parser.add_argument(
         '-d', '--debug', action='store_true',
         help='Debug mode')
+    parser.add_argument(
+        '-cf', '--cachefile',
+        default=None,
+        # required=True,
+        help='cache file for last load dir path info'
+    )
     args = parser.parse_args()
 
     if args.debug:
@@ -270,7 +297,8 @@ def main():
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})
     w = DataReaderWidget(loaddir=args.loaddir, loadfiledir=args.loadfiledir,
-                         after_function=my_after_fcn, before_function=my_before_fcn)
+                         cachefile=args.cachefile,
+                             after_function=my_after_fcn, before_function=my_before_fcn)
     w.resize(250, 150)
     w.move(300, 300)
     w.setWindowTitle('io3dQtWidget')
