@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 import os.path
 
+import re
 import dicom
 import rawN
 import misc
@@ -335,6 +336,23 @@ def get_unoccupied_series_number(filepattern, series_number=1):
         filename = fn
 
     return series_number
+
+def filepattern_fill_series_number(filepattern, series_number):
+    rexp1 = r"({\s*seriesn\s*:?.*?})"
+    rexp2 = r"({\s*series_number\s*:?.*?})"
+
+    sub1 = re.findall(rexp1, filepattern)
+    sub2 = re.findall(rexp2, filepattern)
+
+    for single_pattern in sub1:
+        pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+        filepattern = re.sub(rexp1, pattern, filepattern)
+
+    for single_pattern in sub2:
+        pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+        filepattern = re.sub(rexp2, pattern, filepattern)
+
+    return filepattern
 
 def filename_format(filepattern, series_number=1, slice_number=0, slice_position=0.0):
     """

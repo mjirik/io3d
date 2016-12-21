@@ -380,5 +380,12 @@ class DicomWriterTest(unittest.TestCase):
         sitk.WriteImage(dim, path)
 
 
+    def test_fill_series_number(self):
+        import io3d.datawriter
+
+        out = io3d.datawriter.filepattern_fill_series_number("{seriesn:03d}/{slicen:06d}", series_number=15)
+        self.assertEqual(out, '015/{slicen:06d}')
+
+
 if __name__ == "__main__":
     unittest.main()
