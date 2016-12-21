@@ -13,6 +13,15 @@ import os.path
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
 
+def old_str_format_to_new(string):
+    """
+    convert old format style to new style. Works for digits only
+    %05d is converted to {:05d}
+    :param string:
+    :return:
+    """
+    import re
+    return re.sub(r"%(\d*d)", r"{:\1}", string)
 
 def suggest_filename(file_path, exists=None):
     """

@@ -170,6 +170,8 @@ class DataReaderWidget(QtGui.QWidget):
         return dcmdir
 
     def read_data_file_dialog(self):
+
+
         self.__show_message('Reading data file...')
         QApplication.processEvents()
 

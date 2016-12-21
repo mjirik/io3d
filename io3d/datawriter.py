@@ -13,6 +13,7 @@ import os.path
 
 import dicom
 import rawN
+import misc
 # from sys import argv
 
 
@@ -20,7 +21,8 @@ def write(data3d, path, filetype='auto', metadata=None):
     """
 
     :param data3d: input ndarray
-    :param path: output path, if braces are in the name ("dir/file{:04d}.dcm"), image stack is produced
+    :param path: output path, if braces are in the name ("dir/file{:04d}.dcm"), image stack is produced .
+    Check function filename_format() for more details.
     :param filetype: dcm, png, h5, ... "image_stack"
     :param metadata: metadata f.e. {'voxelsize_mm': [3,2,2]}
     :return:
@@ -34,9 +36,11 @@ class DataWriter:
     def Write3DData(self, data3d, path, filetype='auto', metadata=None):
         """
         data3d: input ndarray data
-        path: output path
+        path: output path, to specify slice number advanced formatting options (like {:06d}) can be used
+        Check function filename_format() for more details.
         metadata: {'voxelsize_mm': [1, 1, 1]}
         filetype: dcm, vtk, rawiv, image_stack
+
 
         """
         try:
@@ -264,11 +268,22 @@ class DataWriter:
 
         return data
 
-    def save_image_stack(self, data3d, filepattern, metadata=None):
-        datadir, dataname = os.path.split(filepattern)
+    def _makedirs(self, filepattern, series_number=None):
+        filename = get_first_filename(filepattern, series_number=series_number)
+        datadir, dataname = os.path.split(filename)
 
         if not os.path.exists(datadir):
-            os.mkdir(datadir)
+            os.makedirs(datadir)
+
+    def save_image_stack(self, data3d, filepattern, metadata=None):
+
+        if (metadata is not None) and "series_number" in metadata.keys():
+            series_number = int(metadata["series_number"])
+        else:
+            series_number = get_unoccupied_series_number(filepattern)
+
+        self._makedirs(filepattern, series_number=series_number)
+        datadir, dataname = os.path.split(filepattern)
         databasename, dataext = os.path.splitext(dataname)
 
 
@@ -278,9 +293,17 @@ class DataWriter:
                 datadir,
                 databasename + "{:05d}" + dataext)
         # print filepattern
+        if (metadata is not None) and "voxelsize_mm" in metadata.keys():
+            z_position = metadata["voxelsize_mm"][0]
+            z_vs = metadata["voxelsize_mm"][0]
+        else:
+            z_position = 0.0
+            z_vs = 1.0
+
 
         for i in range(0, data3d.shape[0]):
-            newfilename = filepattern.format(i)
+            newfilename = filename_format(filepattern, slice_number=i, slice_position=z_position, series_number=series_number)
+            # newfilename = filepattern.format(i)
             logger.debug(newfilename)
             data2d = data3d[i, :, :]
             import SimpleITK as sitk
@@ -293,6 +316,50 @@ class DataWriter:
                 dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
+            z_position += z_vs
+
+def get_first_filename(filepattern, series_number=None):
+    if series_number is None:
+        series_number = get_unoccupied_series_number(filepattern)
+    return filename_format(filepattern, series_number=series_number)
+
+def get_unoccupied_series_number(filepattern, series_number=1):
+    filename = filename_format(filepattern, series_number=series_number)
+
+    while os.path.exists(filename):
+        series_number += 1
+        fn = filename_format(filepattern, series_number=series_number)
+        if fn == filename:
+            # no series number is used in filepattern
+            return series_number -1
+        filename = fn
+
+    return series_number
+
+def filename_format(filepattern, series_number=1, slice_number=0, slice_position=0.0):
+    """
+
+    :param filepattern: advanced format options can be used in filepattern.
+    Fallowing keys can be used: slice_number, slicen, series_number, seriesn, series_position, seriesp.
+    For example '{:06d}.jpg', '{series_number:03d}/{series_position:07.3f}.png'
+    :param series_number:
+    :param slice_number:
+    :param slice_position:
+    :param change_series_number_if_file_exists:
+    :return:
+    """
+    filepattern = misc.old_str_format_to_new(filepattern)
+
+
+    filename = filepattern.format(
+        slice_number,
+        slice_number=slice_number,
+        slice_position=slice_position,
+        series_number=series_number,
+        slicen=slice_number,
+        slicep=slice_position,
+        seriesn=series_number)
+    return filename
 
 
 def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,

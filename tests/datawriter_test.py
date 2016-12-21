@@ -289,6 +289,35 @@ class DicomWriterTest(unittest.TestCase):
         )
         shutil.rmtree(testdatadir)
 
+    def test_save_image_stack_with_unique_series_number_based_on_filename(self):
+        testdatadir = 'test_svimstack2'
+        if os.path.exists(testdatadir):
+            shutil.rmtree(testdatadir)
+        szx = 30
+        szy = 20
+        szz = 120
+        data3d = self.generate_waving_data(
+            szx, szy, szz, value=150, dtype=np.uint8)
+        io3d.write(data3d, testdatadir + "/{series_number:03d}/soubory{slice_position:07.3f}.tiff")
+        # second time there should be directory 002/
+        io3d.write(data3d, testdatadir + "/{series_number:03d}/soubory{slice_position:07.3f}.tiff")
+
+
+
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+            testdatadir + "/002/"
+            # 'sample_data/volumetrie/'
+        )
+        # import sed3
+        # ed = sed3.sed3(data3dnew)
+        # ed.show()
+        self.assertEqual(
+            np.sum(np.abs(data3d - data3dnew)),
+            0
+        )
+        shutil.rmtree(testdatadir)
+
     def test_save_image_stack(self):
         testdatadir = 'test_svimstack'
         if os.path.exists(testdatadir):
