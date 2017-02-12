@@ -312,7 +312,7 @@ class DataWriter:
         total_number = data3d.shape[0]
         for i in range(total_number):
             if self.progress_callback is not None:
-                self.progress_callback(value=i minimum=0, maximum=total_number)
+                self.progress_callback(value=i, minimum=0, maximum=total_number)
             if self.stop_writing:
                 break
             newfilename = filename_format(filepattern, slice_number=i, slice_position=z_position, series_number=series_number)
