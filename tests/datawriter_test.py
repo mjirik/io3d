@@ -129,6 +129,7 @@ class DicomWriterTest(unittest.TestCase):
         metadata = {'voxelsize_mm': [1, 2, 3]}
         dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
 
+
     # @attr('interactive')
     @attr('interactive')
     def test_write_and_read_hdf5(self):

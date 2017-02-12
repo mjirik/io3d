@@ -30,13 +30,17 @@ def write(data3d, path, filetype='auto', metadata=None):
 
 
 class DataWriter:
+    def __init__(self):
+        self.stop_writing = False
+        self.progress_callback = None
 
-    def Write3DData(self, data3d, path, filetype='auto', metadata=None):
+    def Write3DData(self, data3d, path, filetype='auto', metadata=None, progress_callback=None):
         """
         data3d: input ndarray data
         path: output path
         metadata: {'voxelsize_mm': [1, 1, 1]}
         filetype: dcm, vtk, rawiv, image_stack
+        progress_callback: fuction for progressbar f.e. callback(value, minimum, maximum)
 
         """
         try:
@@ -45,6 +49,9 @@ class DataWriter:
             data3d = d3d
         except:
             pass
+
+        if progress_callback is not None:
+            self.progress_callback = progress_callback
 
         if filetype == 'auto':
             startpath, ext = os.path.splitext(path)
@@ -261,8 +268,14 @@ class DataWriter:
                 datadir,
                 databasename + "{:05d}" + dataext)
         # print filepattern
+        total_number = data3d.shape[0]
 
-        for i in range(0, data3d.shape[0]):
+        for i in range(total_number):
+            if self.progress_callback is not None:
+                self.progress_callback(value=i, minimum=0, maximum=total_number)
+
+            if self.stop_writing:
+                break
             newfilename = filepattern.format(i)
             logger.debug(newfilename)
             data2d = data3d[i, :, :]
@@ -276,6 +289,8 @@ class DataWriter:
                 dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
+    def stop(self):
+        self.stop_writing = True
 
 
 def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,

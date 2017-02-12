@@ -323,6 +323,22 @@ class DicomReaderTest(unittest.TestCase):
 #
 #
 #
+    def test_write_read_hdf5(self):
+        import io3d.datawriter as dwriter
+        import io3d.datareader as dreader
+        import h5py
+        filename = 'test_file.hdf5'
+        data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
+        data[0:5, 20:60, 60:70] += 30
+        metadata = {'voxelsize_mm': [1, 2, 3]}
+        dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
+
+        fi = h5py.File(filename, "r")
+        for key in fi.keys():
+            fi [key]
+
+        datap = dreader.read(filename)
+        print datap
 
     def test_idx_data(self):
         io3d.read("/home/mjirik/data/medical/orig/cvd-matrm3/microscopy_data/MM358-001-uint8.idx")
