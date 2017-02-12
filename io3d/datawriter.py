@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 
 import os.path
 
+import re
 import dicom
 import rawN
+import misc
 # from sys import argv
 
 
@@ -20,7 +22,8 @@ def write(data3d, path, filetype='auto', metadata=None):
     """
 
     :param data3d: input ndarray
-    :param path: output path, if braces are in the name ("dir/file{:04d}.dcm"), image stack is produced
+    :param path: output path, if braces are in the name ("dir/file{:04d}.dcm"), image stack is produced .
+    Check function filename_format() for more details.
     :param filetype: dcm, png, h5, ... "image_stack"
     :param metadata: metadata f.e. {'voxelsize_mm': [3,2,2]}
     :return:
@@ -37,10 +40,12 @@ class DataWriter:
     def Write3DData(self, data3d, path, filetype='auto', metadata=None, progress_callback=None):
         """
         data3d: input ndarray data
-        path: output path
+        path: output path, to specify slice number advanced formatting options (like {:06d}) can be used
+        Check function filename_format() for more details.
         metadata: {'voxelsize_mm': [1, 1, 1]}
         filetype: dcm, vtk, rawiv, image_stack
         progress_callback: fuction for progressbar f.e. callback(value, minimum, maximum)
+
 
         """
         try:
@@ -72,14 +77,11 @@ class DataWriter:
     #
     # def _all_in_one_file(self, data3d, path, filetype, metadata):
 
-        if filetype in ['dcm', 'DCM', 'dicom', 'vtk', 'tiff', 'tif']:
-            import SimpleITK as sitk
-            # pixelType = itk.UC
-            # imageType = itk.Image[pixelType, 2]
-            dim = sitk.GetImageFromArray(data3d)
-            vsz = mtd['voxelsize_mm']
-            dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
-            sitk.WriteImage(dim, path)
+        if filetype in ['vtk', 'tiff', 'tif']:
+            self._write_with_sitk(path, data3d, mtd)
+        elif filetype in ['dcm', 'DCM', 'dicom']:
+            self._write_with_sitk(path, data3d, mtd)
+            self._fix_sitk_bug(path, metadata)
         elif filetype in ['rawiv']:
             rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
@@ -97,6 +99,26 @@ class DataWriter:
             logger.error('Unknown filetype: "' + filetype + '"')
 
             # data = dicom.read_file(onefile)
+
+    def _write_with_sitk(self,path, data3d, metadata):
+        import SimpleITK as sitk
+        mtd=metadata
+        dim = sitk.GetImageFromArray(data3d)
+        vsz = mtd['voxelsize_mm']
+        dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
+        sitk.WriteImage(dim, path)
+
+    def _fix_sitk_bug(self, path, metadata):
+        """
+        There is a bug in simple ITK for Z axis in 3D images. This is a fix
+        :param path:
+        :param metadata:
+        :return:
+        """
+        import dicom
+        ds = dicom.read_file(path)
+        ds.SpacingBetweenSlices = metadata["voxelsize_mm"][0]
+        dicom.write_file(path, ds)
 
     def save_hdf5(self, data3d, path, metadata):
         # TODO this is not implemented in proper way
@@ -254,11 +276,22 @@ class DataWriter:
 
         return data
 
-    def save_image_stack(self, data3d, filepattern, metadata=None):
-        datadir, dataname = os.path.split(filepattern)
+    def _makedirs(self, filepattern, series_number=None):
+        filename = get_first_filename(filepattern, series_number=series_number)
+        datadir, dataname = os.path.split(filename)
 
         if not os.path.exists(datadir):
-            os.mkdir(datadir)
+            os.makedirs(datadir)
+
+    def save_image_stack(self, data3d, filepattern, metadata=None):
+
+        if (metadata is not None) and "series_number" in metadata.keys():
+            series_number = int(metadata["series_number"])
+        else:
+            series_number = get_unoccupied_series_number(filepattern)
+
+        self._makedirs(filepattern, series_number=series_number)
+        datadir, dataname = os.path.split(filepattern)
         databasename, dataext = os.path.splitext(dataname)
 
 
@@ -268,15 +301,22 @@ class DataWriter:
                 datadir,
                 databasename + "{:05d}" + dataext)
         # print filepattern
-        total_number = data3d.shape[0]
+        if (metadata is not None) and "voxelsize_mm" in metadata.keys():
+            z_position = metadata["voxelsize_mm"][0]
+            z_vs = metadata["voxelsize_mm"][0]
+        else:
+            z_position = 0.0
+            z_vs = 1.0
 
+
+        total_number = data3d.shape[0]
         for i in range(total_number):
             if self.progress_callback is not None:
-                self.progress_callback(value=i, minimum=0, maximum=total_number)
-
+                self.progress_callback(value=i minimum=0, maximum=total_number)
             if self.stop_writing:
                 break
-            newfilename = filepattern.format(i)
+            newfilename = filename_format(filepattern, slice_number=i, slice_position=z_position, series_number=series_number)
+            # newfilename = filepattern.format(i)
             logger.debug(newfilename)
             data2d = data3d[i, :, :]
             import SimpleITK as sitk
@@ -289,8 +329,70 @@ class DataWriter:
                 dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
+
     def stop(self):
         self.stop_writing = True
+            z_position += z_vs
+
+def get_first_filename(filepattern, series_number=None):
+    if series_number is None:
+        series_number = get_unoccupied_series_number(filepattern)
+    return filename_format(filepattern, series_number=series_number)
+
+def get_unoccupied_series_number(filepattern, series_number=1):
+    filename = filename_format(filepattern, series_number=series_number)
+
+    while os.path.exists(filename):
+        series_number += 1
+        fn = filename_format(filepattern, series_number=series_number)
+        if fn == filename:
+            # no series number is used in filepattern
+            return series_number -1
+        filename = fn
+
+    return series_number
+
+def filepattern_fill_series_number(filepattern, series_number):
+    rexp1 = r"({\s*seriesn\s*:?.*?})"
+    rexp2 = r"({\s*series_number\s*:?.*?})"
+
+    sub1 = re.findall(rexp1, filepattern)
+    sub2 = re.findall(rexp2, filepattern)
+
+    for single_pattern in sub1:
+        pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+        filepattern = re.sub(rexp1, pattern, filepattern)
+
+    for single_pattern in sub2:
+        pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+        filepattern = re.sub(rexp2, pattern, filepattern)
+
+    return filepattern
+
+def filename_format(filepattern, series_number=1, slice_number=0, slice_position=0.0):
+    """
+
+    :param filepattern: advanced format options can be used in filepattern.
+    Fallowing keys can be used: slice_number, slicen, series_number, seriesn, series_position, seriesp.
+    For example '{:06d}.jpg', '{series_number:03d}/{series_position:07.3f}.png'
+    :param series_number:
+    :param slice_number:
+    :param slice_position:
+    :param change_series_number_if_file_exists:
+    :return:
+    """
+    filepattern = misc.old_str_format_to_new(filepattern)
+
+
+    filename = filepattern.format(
+        slice_number,
+        slice_number=slice_number,
+        slice_position=slice_position,
+        series_number=series_number,
+        slicen=slice_number,
+        slicep=slice_position,
+        seriesn=series_number)
+    return filename
 
 
 def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,

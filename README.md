@@ -33,6 +33,19 @@ Example 2
 
     ed = sed3.sed3(datap['data3d'])
     ed.show()
+    
+Example 3 - Qt Widget
+=====================
+
+    import io3d.datareaderqt
+    app = QtGui.QApplication(sys.argv)    
+    w = io3d.datereaderqt.DatareaderWidget()
+    w.show()
+    app.exec_()
+    datap = w.datap
+    
+![load_widget](imgs/load_widget.png)
+
 
 Test data
 ===

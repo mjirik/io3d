@@ -166,36 +166,47 @@ class DataReader:
             import idxformat
             idxreader = idxformat.IDXReader()
             data3d, metadata = idxreader.read(datapath)
+        elif ext in ['dcm', 'DCM', 'dicom']:
+            data3d, metadata = self._read_with_sitk(datapath)
+            metadata = self._fix_sitk_bug(datapath, metadata)
         else:
             logger.debug('file format "' + ext + '"')
             # reading raw file
-            import SimpleITK as sitk
-            image = sitk.ReadImage(datapath)
-            # mage =
-            # sitk.ReadImage('/home/mjirik/data/medical/data_orig/sliver07/01/liver-orig001.mhd') #  noqa
-            # z = image.GetSize()
+            data3d, metadata = self._read_with_sitk(datapath)
 
-            # ata3d = sitk.Image(sz[0],sz[1],sz[2], sitk.sitkInt16)
-
-            # or i in range(0,sz[0]):
-            #    print i
-            #    for j in range(0,sz[1]):
-            #        for k in range(0,sz[2]):
-            #            data3d[i,j,k]=image[i,j,k]
-
-            data3d = sitk.GetArrayFromImage(image)  # + 1024
-            # ata3d = np.transpose(data3d)
-            # ata3d = np.rollaxis(data3d,1)
-            metadata = {}  # reader.get_metaData()
-            metadata['series_number'] = 0  # reader.series_number
-            metadata['datadir'] = datapath
-            spacing = image.GetSpacing()
-            metadata['voxelsize_mm'] = [
-                spacing[2],
-                spacing[0],
-                spacing[1],
-            ]
         return data3d, metadata
+
+    def _read_with_sitk(self, datapath):
+        import SimpleITK as sitk
+        image = sitk.ReadImage(datapath)
+
+        data3d = sitk.GetArrayFromImage(image)  # + 1024
+        metadata = {}  # reader.get_metaData()
+        metadata['series_number'] = 0  # reader.series_number
+        metadata['datadir'] = datapath
+        spacing = image.GetSpacing()
+        metadata['voxelsize_mm'] = [
+            spacing[2],
+            spacing[0],
+            spacing[1],
+        ]
+        return data3d, metadata
+
+    def _fix_sitk_bug(self, path, metadata):
+        """
+        There is a bug in simple ITK for Z axis in 3D images. This is a fix
+        :param path:
+        :param metadata:
+        :return:
+        """
+        import dicom
+        ds = dicom.read_file(path)
+        try:
+            metadata["voxelsize_mm"][0] = ds.SpacingBetweenSlices
+        except:
+            logger.warning("Read dicom 'SpacingBetweenSlices' failed")
+
+        return metadata
 
     def read_hdf5(self, datapath):
         """

@@ -1,10 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
+logger = logging.getLogger(__name__)
 # import funkcí z jiného adresáře
 import unittest
-import os.path
 import os
+import os.path as op
 
 # path_to_script = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
@@ -26,9 +28,14 @@ import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
 # import sed3 as pyed
+SAMPLE_DATA_DIR = "./sample_data"
 
 
 class DicomWriterTest(unittest.TestCase):
+    # def setUp(self):
+    #     import imtools
+    #     import imtools.sample_data
+    #     imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
 
     # def test_write_h5(self):
     #     """
@@ -59,8 +66,11 @@ class DicomWriterTest(unittest.TestCase):
         """
         filename = 'tests/output_dcm3d.dcm'
         dr = dreader.DataReader()
+        path_to_data = op.join(SAMPLE_DATA_DIR, 'jatra_5mm')
+        logger.debug(SAMPLE_DATA_DIR)
+        logger.debug(path_to_data)
         data3d, metadata = dr.Get3DData(
-            'sample_data/jatra_5mm/'
+            path_to_data
             # 'sample_data/volumetrie/'
         )
         dw = dwriter.DataWriter()
@@ -82,6 +92,7 @@ class DicomWriterTest(unittest.TestCase):
         data[0:5, 20:60, 60:70] += 30
         metadata = {'voxelsize_mm': [1, 2, 3]}
         dw = dwriter.DataWriter()
+        logger.debug(filename)
         dw.Write3DData(data, filename, filetype='dcm', metadata=metadata)
 
         dr = dreader.DataReader()
@@ -93,11 +104,12 @@ class DicomWriterTest(unittest.TestCase):
         # hack with -1024, because of wrong data reading
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
         self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
+        # print metadata["voxelsize_mm"]
+        # print newmetadata["voxelsize_mm"]
         self.assertEqual(metadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
-# @TODO there is a bug in SimpleITK. slice voxel size must be same
-        # self. assertEqual(metadata['voxelsize_mm'][1],
-        #                   newmetadata['voxelsize_mm'][1])
+        self. assertEqual(metadata['voxelsize_mm'][1],
+                          newmetadata['voxelsize_mm'][1])
         self.assertEqual(metadata['voxelsize_mm'][2],
                          newmetadata['voxelsize_mm'][2])
         os.remove(filename)
@@ -172,7 +184,7 @@ class DicomWriterTest(unittest.TestCase):
         dw = dwriter.DataWriter()
         dw.add_overlay_to_slice_file(
             # 'sample_data/jatra_5mm/IM-0001-0019.dcm',
-            'sample_data/volumetrie/volumetry_slice.DCM',
+            op.join(SAMPLE_DATA_DIR, 'volumetrie/volumetry_slice.DCM'),
             overlay,
             i_overlay,
             filename
@@ -205,7 +217,7 @@ class DicomWriterTest(unittest.TestCase):
 # open copied data to obtain dcmfilefilelist
         dr = dreader.DataReader()
         data3d, metadata = dr.Get3DData(
-            'sample_data/jatra_5mm/'
+            op.join(SAMPLE_DATA_DIR, 'jatra_5mm/')
             # 'sample_data/volumetrie/'
         )
 # for test we are working only with small number of files (n_files)
@@ -278,6 +290,35 @@ class DicomWriterTest(unittest.TestCase):
         )
         shutil.rmtree(testdatadir)
 
+    def test_save_image_stack_with_unique_series_number_based_on_filename(self):
+        testdatadir = 'test_svimstack2'
+        if os.path.exists(testdatadir):
+            shutil.rmtree(testdatadir)
+        szx = 30
+        szy = 20
+        szz = 120
+        data3d = self.generate_waving_data(
+            szx, szy, szz, value=150, dtype=np.uint8)
+        io3d.write(data3d, testdatadir + "/{series_number:03d}/soubory{slice_position:07.3f}.tiff")
+        # second time there should be directory 002/
+        io3d.write(data3d, testdatadir + "/{series_number:03d}/soubory{slice_position:07.3f}.tiff")
+
+
+
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+            testdatadir + "/002/"
+            # 'sample_data/volumetrie/'
+        )
+        # import sed3
+        # ed = sed3.sed3(data3dnew)
+        # ed.show()
+        self.assertEqual(
+            np.sum(np.abs(data3d - data3dnew)),
+            0
+        )
+        shutil.rmtree(testdatadir)
+
     def test_save_image_stack(self):
         testdatadir = 'test_svimstack'
         if os.path.exists(testdatadir):
@@ -328,6 +369,23 @@ class DicomWriterTest(unittest.TestCase):
             0
         )
         shutil.rmtree(testdatadir)
+
+    def test_SimpleITK(self):
+        path = "new_dcmfile.dcm"
+        data3d = np.zeros([10, 15, 20], dtype='int16')
+        vsz = np.asarray([2,3,1.5])
+
+        import SimpleITK as sitk
+        dim = sitk.GetImageFromArray(data3d)
+        dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
+        sitk.WriteImage(dim, path)
+
+
+    def test_fill_series_number(self):
+        import io3d.datawriter
+
+        out = io3d.datawriter.filepattern_fill_series_number("{seriesn:03d}/{slicen:06d}", series_number=15)
+        self.assertEqual(out, '015/{slicen:06d}')
 
 
 if __name__ == "__main__":
