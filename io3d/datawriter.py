@@ -315,6 +315,7 @@ class DataWriter:
                 self.progress_callback(value=i, minimum=0, maximum=total_number)
             if self.stop_writing:
                 break
+            z_position += z_vs
             newfilename = filename_format(filepattern, slice_number=i, slice_position=z_position, series_number=series_number)
             # newfilename = filepattern.format(i)
             logger.debug(newfilename)
@@ -332,7 +333,6 @@ class DataWriter:
 
     def stop(self):
         self.stop_writing = True
-            z_position += z_vs
 
 def get_first_filename(filepattern, series_number=None):
     if series_number is None:
