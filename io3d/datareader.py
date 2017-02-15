@@ -56,6 +56,8 @@ class DataReader:
         :dataplus_format is new data format. Metadata and data are returned in
         one structure.
         """
+        self.orig_datapath = datapath
+        datapath = os.path.expanduser(datapath)
 
         if not os.path.exists(datapath):
             logger.error("Path '" + datapath + "' does not exist")

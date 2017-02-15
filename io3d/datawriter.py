@@ -48,6 +48,10 @@ class DataWriter:
 
 
         """
+
+        self.orig_path = path
+        path = os.path.expanduser(path)
+
         try:
             d3d = data3d.pop('data3d')
             metadata = data3d
