@@ -335,11 +335,13 @@ class DataWriter:
         self.stop_writing = True
 
 def get_first_filename(filepattern, series_number=None):
+    filepattern = os.path.expanduser(filepattern)
     if series_number is None:
         series_number = get_unoccupied_series_number(filepattern)
     return filename_format(filepattern, series_number=series_number)
 
 def get_unoccupied_series_number(filepattern, series_number=1):
+    filepattern = os.path.expanduser(filepattern)
     filename = filename_format(filepattern, series_number=series_number)
 
     while os.path.exists(filename):
