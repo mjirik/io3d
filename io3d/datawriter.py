@@ -429,8 +429,8 @@ def filepattern_fill_series_number(filepattern, series_number):
 
     # for string like series number there should be ignored (removed) the formating part
     if type(series_number) is str:
-        rexp1 = r"{\s*seriesn\s(:?.*?})"
-        rexp2 = r"{\s*series_number\s*(:?.*?})"
+        rexp1 = r"{\s*seriesn\s(:?.*?)}"
+        rexp2 = r"{\s*series_number\s*(:?.*?)}"
         filepattern = re.sub(rexp1, "", filepattern)
         filepattern = re.sub(rexp2, "", filepattern)
 
