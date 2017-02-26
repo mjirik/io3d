@@ -358,7 +358,76 @@ def get_unoccupied_series_number(filepattern, series_number=1):
 
     return series_number
 
+# def _fill_filepattern_based_on_rexp(rexp1, filepattern, something_to_fill):
+#     if type(something_to_fill) is str:
+#         sub1 = re.sub(rexp1, "", filepattern)
+#
+#     # now it looks for series number
+#     rexp1 = r"({\s*seriesn\s*:?.*?})"
+#     rexp2 = r"({\s*series_number\s*:?.*?})"
+#
+#     sub1 = re.findall(rexp1, filepattern)
+#     sub2 = re.findall(rexp2, filepattern)
+#
+#     for single_pattern in sub1:
+#         pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+#         filepattern = re.sub(rexp1, pattern, filepattern)
+#
+#     for single_pattern in sub2:
+#         pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+#         filepattern = re.sub(rexp2, pattern, filepattern)
+
+def filepattern_fill_slice_number_or_position(filepattern, slice_description):
+    # for string like series number there should be ignored (removed) the formating part
+    if type(slice_description) is str:
+        rexp1 = r"{\s*slicen\s(:?.*?})"
+        rexp2 = r"{\s*slice_number\s*(:?.*?})"
+        rexp3 = r"{\s*slicep\s(:?.*?})"
+        rexp4 = r"{\s*slice_position\s*(:?.*?})"
+        filepattern = re.sub(rexp1, "", filepattern)
+        filepattern = re.sub(rexp2, "", filepattern)
+        filepattern = re.sub(rexp3, "", filepattern)
+        filepattern = re.sub(rexp4, "", filepattern)
+
+    # now it looks for series number
+    rexp1 = r"({\s*slicen\s*:?.*?})"
+    rexp2 = r"({\s*slice_number\s*:?.*?})"
+    rexp3 = r"({\s*slicep\s*:?.*?})"
+    rexp4 = r"({\s*slice_position\s*:?.*?})"
+
+    sub1 = re.findall(rexp1, filepattern)
+    sub2 = re.findall(rexp2, filepattern)
+    sub3 = re.findall(rexp3, filepattern)
+    sub4 = re.findall(rexp4, filepattern)
+
+    for single_pattern in sub1:
+        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        filepattern = re.sub(rexp1, pattern, filepattern)
+
+    for single_pattern in sub2:
+        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        filepattern = re.sub(rexp2, pattern, filepattern)
+
+    for single_pattern in sub3:
+        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        filepattern = re.sub(rexp1, pattern, filepattern)
+
+    for single_pattern in sub4:
+        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        filepattern = re.sub(rexp2, pattern, filepattern)
+
+    return filepattern
+
 def filepattern_fill_series_number(filepattern, series_number):
+
+    # for string like series number there should be ignored (removed) the formating part
+    if type(series_number) is str:
+        rexp1 = r"{\s*seriesn\s(:?.*?})"
+        rexp2 = r"{\s*series_number\s*(:?.*?})"
+        filepattern = re.sub(rexp1, "", filepattern)
+        filepattern = re.sub(rexp2, "", filepattern)
+
+    # now it looks for series number
     rexp1 = r"({\s*seriesn\s*:?.*?})"
     rexp2 = r"({\s*series_number\s*:?.*?})"
 
