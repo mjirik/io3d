@@ -319,7 +319,6 @@ class DataWriter:
                 self.progress_callback(value=i, minimum=0, maximum=total_number)
             if self.stop_writing:
                 break
-            z_position += z_vs
             newfilename = filename_format(filepattern, slice_number=i, slice_position=z_position, series_number=series_number)
             # newfilename = filepattern.format(i)
             logger.debug(newfilename)
@@ -334,6 +333,7 @@ class DataWriter:
                 dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
+            z_position += z_vs
 
     def stop(self):
         self.stop_writing = True
