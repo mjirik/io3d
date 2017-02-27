@@ -120,6 +120,23 @@ class PathManipulationTest(unittest.TestCase):
         out = io3d.datawriter.filepattern_fill_series_number("{seriesn:03d}/{slicen:06d}", series_number=15)
         self.assertEqual(out, '015/{slicen:06d}')
 
+    def test_fill_series_number_delete(self):
+        import io3d.datawriter
+
+        out = io3d.datawriter.filepattern_fill_series_number("{seriesn:03d}/{slicen:06d}", series_number="")
+        self.assertEqual(out, '/{slicen:06d}')
+
+    def test_fill_slice_number_delete(self):
+        import io3d.datawriter
+
+        out = io3d.datawriter.filepattern_fill_slice_number_or_position("{seriesn:03d}/ra{slicen:06d}.jpg", "")
+        self.assertEqual(out, '{seriesn:03d}/ra.jpg')
+
+    def test_fill_slice_number(self):
+        import io3d.datawriter
+
+        out = io3d.datawriter.filepattern_fill_slice_number_or_position("{seriesn:03d}/ra{slicen:06d}.jpg", 10)
+        self.assertEqual(out, '{seriesn:03d}/ra000010.jpg')
 
 if __name__ == "__main__":
     unittest.main()
