@@ -13,8 +13,8 @@ import os.path
 
 import re
 import dicom
-import rawN
-import misc
+from . import rawN
+from . import misc
 # from sys import argv
 
 
@@ -93,7 +93,7 @@ class DataWriter:
         elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
             self.save_hdf5(data3d, path, metadata)
         elif filetype in ['pkl', 'pklz']:
-            import misc
+            from . import misc
             metadata['data3d'] = data3d
             datap = metadata
 
@@ -121,7 +121,7 @@ class DataWriter:
         """
         import dicom
         ds = dicom.read_file(path)
-        ds.SpacingBetweenSlices = metadata["voxelsize_mm"][0]
+        ds.SpacingBetweenSlices = str(metadata["voxelsize_mm"][0])[:16]
         dicom.write_file(path, ds)
 
     def save_hdf5(self, data3d, path, metadata):
@@ -145,7 +145,7 @@ class DataWriter:
                 if type(data) == np.ndarray:
                     if data.dtype == np.dtype('O'):
                         logger.warning("problem with dtype('O')")
-                        print "Press 'c' for continue"
+                        print("Press 'c' for continue")
                         from PyQt4 import QtCore; QtCore.pyqtRemoveInputHook()
                         import ipdb; ipdb.set_trace()
                     else:
@@ -304,7 +304,7 @@ class DataWriter:
             filepattern = os.path.join(
                 datadir,
                 databasename + "{:05d}" + dataext)
-        # print filepattern
+        # print(filepattern)
         if (metadata is not None) and "voxelsize_mm" in metadata.keys():
             z_position = metadata["voxelsize_mm"][0]
             z_vs = metadata["voxelsize_mm"][0]

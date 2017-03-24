@@ -23,8 +23,8 @@ import os.path
 import copy
 
 
-import datareader
-import cachefile as cachef
+from . import datareader
+from . import cachefile as cachef
 
 
 class DataReaderWidget(QtGui.QWidget):
@@ -209,7 +209,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         self.read_data_from_prepared_datapath()
 
-        # print "Transferred: {0}\tOut of: {1}".format(transferred, toBeTransferred)
+        # print("Transferred: {0}\tOut of: {1}".format(transferred, toBeTransferred))
 
     def read_data_from_prepared_datapath(self):
         """
@@ -257,9 +257,9 @@ def my_before_fcn(arg):
 
 
 def my_after_fcn(arg):
-    print arg
-    print arg.loaddir
-    print arg.loadfiledir
+    print(arg)
+    print(arg.loaddir)
+    print(arg.loadfiledir)
 
 def main():
     logger = logging.getLogger()

@@ -42,7 +42,7 @@ class PathManipulationTest(unittest.TestCase):
             x = int(np.sin(i*2*np.pi/(szz - 40.0))*((szx-2)/2) + szx/2)
             y = int(np.cos(i*2*np.pi/(0.3*(szz - 4.0)))*((szy-2)/2) + szy/2)
             # x = int(np.sin(i*2*np.pi/40.0)*((szx-2)/2) + szx/2)
-            # print x, '   ', y
+            # print(x, '   ', y)
             data3d[i, 0:x, y:-1] = value
         return data3d
     #

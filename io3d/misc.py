@@ -35,7 +35,7 @@ def suggest_filename(file_path, exists=None):
 
     if exists:
         file_path, file_extension = os.path.splitext(file_path)
-        # print file_path
+        # print(file_path)
         m = re.search(r"\d+$", file_path)
         if m is None:
             # cislo = 2
@@ -68,7 +68,8 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
     elif filetype in ('pickle', 'pkl', 'pklz', 'picklezip'):
         fcontent = read_pkl_and_pklz(filename)
         # import pickle
-        import cPickle as pickle
+        if sys.version_info[0] < 3: import cPickle as pickle
+        else: import _pickle as pickle
         # import sPickle as pickle
         obj = pickle.loads(fcontent)
     else:
@@ -125,12 +126,13 @@ def obj_to_file(obj, filename, filetype='auto'):
     if filetype in ('yaml', 'yml'):
         f = open(filename, 'wb')
         import yaml
-        yaml.dump(obj, f)
+        yaml.dump(obj, f, encoding='utf-8')
         f.close
     elif filetype in ('pickle', 'pkl'):
         f = open(filename, 'wb')
         logger.info("filename " + filename)
-        # import cPickle as pickle
+        # if sys.version_info[0] < 3: import cPickle as pickle
+        # else: import _pickle as pickle
         import pickle
         pickle.dump(obj, f, -1)
         f.close
@@ -144,7 +146,8 @@ def obj_to_file(obj, filename, filetype='auto'):
         f.close
     elif filetype in ('picklezip', 'pklz'):
         import gzip
-        import cPickle as pickle
+        if sys.version_info[0] < 3: import cPickle as pickle
+        else: import _pickle as pickle
         f = gzip.open(filename, 'wb', compresslevel=1)
         # f = open(filename, 'wb')
         pickle.dump(obj, f)

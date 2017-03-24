@@ -20,7 +20,7 @@ import argparse
 
 __author__ = 'mjirik'
 
-import  paramiko
+import paramiko
 
 host = "147.228.47.162"                    #hard-coded
 port = 22
@@ -42,7 +42,7 @@ sftp.put(localpath, path)
 
 sftp.close()
 transport.close()
-print 'Upload done.'
+print('Upload done.')
 
 
 

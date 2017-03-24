@@ -125,7 +125,8 @@ class DicomReaderTest(unittest.TestCase):
         # Decoding data. Each bit is stored as array element
         for i in range(1, len(overlay_raw)):
             for k in range(0, n_bits):
-                byte_as_int = ord(overlay_raw[i])
+                # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
+                byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
                 decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
 
         # overlay = np.array(pol)
@@ -320,8 +321,8 @@ class DicomReaderTest(unittest.TestCase):
 #        sum_of_wrong_voxels = np.sum(errim)
 #        sum_of_voxels = np.prod(segm.shape)
 #
-# print "wrong ", sum_of_wrong_voxels
-# print "voxels", sum_of_voxels
+# print("wrong ", sum_of_wrong_voxels)
+# print("voxels", sum_of_voxels)
 #
 #        errorrate = sum_of_wrong_voxels/sum_of_voxels
 #
@@ -346,7 +347,7 @@ class DicomReaderTest(unittest.TestCase):
             fi [key]
 
         datap = dreader.read(filename)
-        print datap
+        print(datap)
 
     def test_idx_data(self):
         io3d.read("/home/mjirik/data/medical/orig/cvd-matrm3/microscopy_data/MM358-001-uint8.idx")

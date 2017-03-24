@@ -5,7 +5,6 @@ import os.path as op
 
 import glob
 import numpy as np
-import os.path as op
 import logging
 logger = logging.getLogger(__name__)
 import sed3
@@ -30,7 +29,7 @@ class IDXReader:
         fn_template = fn_template.replace("%04x", "????")
         filelist = glob.glob(fn_template.strip())
         filelist = sorted(filelist)
-        print "sdfa"
+        print("sdfa")
         for fl in filelist:
             self.read_bin_file(fl, bitsperblock=int(self.header['bitsperblock']))
             pass
@@ -48,7 +47,7 @@ class IDXReader:
 
         ed = sed3.sed3(d3[:200, :200, :])
         ed.show()
-        print "all ok"
+        print("all ok")
 
 
         # with open(filename, 'rb') as f:	# Use file to refer to the file object
@@ -73,7 +72,7 @@ class IDXReader:
         with open(datapath, 'rt') as f:	# Use file to refer to the file object
             data = f.readlines()
             # data = file.read()
-            # print data
+            # print(data)
 
         out = {}
         for n, line in enumerate(data):
