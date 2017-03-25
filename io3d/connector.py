@@ -1,4 +1,4 @@
-#  /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """ Module for readin 3D dicom data
 """
