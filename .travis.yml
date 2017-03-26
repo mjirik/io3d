@@ -6,7 +6,7 @@ python:
   # - "3.3"
   - "3.4"
 virtualenv:
-  system_site_packages: false
+    system_site_packages: false
 before_install:
     - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
     - chmod +x miniconda.sh
@@ -18,7 +18,7 @@ before_install:
 # command to install dependencies
 install:
     - conda update --yes conda
-    - conda install --yes -n travis nose coverage
+    - conda install --yes -n travis pip nose coverage
     - conda install --yes -n travis -c simpleitk --file requirements_conda.txt
     - source activate travis
     - pip install .
