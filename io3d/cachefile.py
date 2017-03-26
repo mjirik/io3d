@@ -14,7 +14,7 @@ import logging
 logger = logging.getLogger(__name__)
 import argparse
 import os.path as op
-import io3d
+from . import misc
 
 
 class CacheFile():
@@ -23,7 +23,7 @@ class CacheFile():
 
     def __update(self):
         if op.exists(self.filename):
-            self.data = io3d.misc.obj_from_file(self.filename)
+            self.data = misc.obj_from_file(self.filename)
         else:
             self.data = {}
 
@@ -40,7 +40,7 @@ class CacheFile():
 
     def update(self, key, value):
         self.data[key] = value
-        io3d.misc.obj_to_file(self.data, self.filename)
+        misc.obj_to_file(self.data, self.filename)
 
 
 def main():
