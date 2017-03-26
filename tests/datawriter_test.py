@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import logging
@@ -98,14 +98,14 @@ class DicomWriterTest(unittest.TestCase):
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData(filename)
 
-        # print  "meta ", metadata
-        # print  "new meta ", newmetadata
+        # print("meta ", metadata)
+        # print("new meta ", newmetadata)
 
         # hack with -1024, because of wrong data reading
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
         self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
-        # print metadata["voxelsize_mm"]
-        # print newmetadata["voxelsize_mm"]
+        # print(metadata["voxelsize_mm"])
+        # print(newmetadata["voxelsize_mm"])
         self.assertEqual(metadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
         self. assertEqual(metadata['voxelsize_mm'][1],
@@ -125,8 +125,8 @@ class DicomWriterTest(unittest.TestCase):
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData(filename)
 
-        # print  "meta ", metadata
-        # print  "new meta ", newmetadata
+        # print("meta ", metadata)
+        # print("new meta ", newmetadata)
 
         # hack with -1024, because of wrong data reading
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
@@ -192,7 +192,7 @@ class DicomWriterTest(unittest.TestCase):
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData('tests_outputs')
         newoverlay = dr.GetOverlay()
-        # print overlay
+        # print(newoverlay)
 
         # ed = pyed.py3DSeedEditor(newoverlay[6])
         # ed.show()
@@ -254,7 +254,7 @@ class DicomWriterTest(unittest.TestCase):
             x = int(np.sin(i*2*np.pi/(szz - 40.0))*((szx-2)/2) + szx/2)
             y = int(np.cos(i*2*np.pi/(0.3*(szz - 4.0)))*((szy-2)/2) + szy/2)
             # x = int(np.sin(i*2*np.pi/40.0)*((szx-2)/2) + szx/2)
-            # print x, '   ', y
+            # print(x, '   ', y)
             data3d[i, 0:x, y:-1] = value
         return data3d
 
