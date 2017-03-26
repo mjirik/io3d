@@ -1,4 +1,0 @@
-numpy
-scipy
-h5py
-libpng=1.5.13 # kvuli simpleik 0.9.

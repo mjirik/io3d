@@ -8,22 +8,19 @@ python:
 virtualenv:
   system_site_packages: false
 before_install:
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh; fi
-    - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh; fi
+    - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
     - chmod +x miniconda.sh
-    - ./miniconda.sh -b
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then export PATH=/home/travis/miniconda2/bin:$PATH; fi
-    - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then export PATH=/home/travis/miniconda3/bin:$PATH; fi
+    - ./miniconda.sh -b -p $HOME/miniconda
+    - export PATH=/home/travis/miniconda/bin:$PATH
+    - conda create --yes -n travis python=$TRAVIS_PYTHON_VERSION
     - sudo apt-get install -qq $(< apt_requirements.txt)
     - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip && unzip io3d_sample_data.zip
 # command to install dependencies
 install:
     - conda update --yes conda
-    - conda install --yes nose coverage
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then conda install --yes -c simpleitk --file requirements_conda.txt; fi
-    - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then conda install --yes python=3.4.3 && conda install --yes --file requirements_conda_py3.txt; fi
-    - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then wget "https://downloads.sourceforge.net/project/simpleitk/SimpleITK/0.9.1/Python/SimpleITK-0.9.1-py3.4-linux-x86_64.egg?r=https%3A%2F%2Fitk.org%2FSimpleITKDoxygen%2Fhtml%2FPyDownloadPage.html&ts=1490465641&use_mirror=netcologne" -O SimpleITK-0.9.1-py3.4-linux-x86_64.egg; fi
-    - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then easy_install --user --no-deps SimpleITK-0.9.1-py3.4-linux-x86_64.egg; fi
+    - conda install --yes -n travis nose coverage
+    - conda install --yes -n travis -c simpleitk --file requirements_conda.txt
+    - source activate travis
     - pip install .
 #    - pip install -r requirements.txt
 # command to run tests
