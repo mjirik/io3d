@@ -10,7 +10,7 @@ virtualenv:
 before_install:
     - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
     - chmod +x miniconda.sh
-    - ./miniconda.sh -b -p $HOME/miniconda
+    - ./miniconda.sh -b -p /home/travis/miniconda
     - export PATH=/home/travis/miniconda/bin:$PATH
     - conda create --yes -n travis python=$TRAVIS_PYTHON_VERSION
     - sudo apt-get install -qq $(< apt_requirements.txt)
@@ -19,7 +19,7 @@ before_install:
 install:
     - conda update --yes conda
     - conda install --yes -n travis pip nose coverage
-    - conda install --yes -n travis -c simpleitk --file requirements_conda.txt
+    - conda install --yes -n travis -c SimpleITK --file requirements_conda.txt
     - source activate travis
     - pip install .
 #    - pip install -r requirements.txt
