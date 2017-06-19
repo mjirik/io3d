@@ -149,7 +149,7 @@ class DicomReader():
                                                  'Select serie:',
                                                  sbins,
                                                  editable=False)
-                        sn = sbinsd[snstring]
+                        sn = sbinsd[str(snstring)]
                     else:
                         print('series')
                         series_info = self.dcmdirstats()
