@@ -258,6 +258,20 @@ class DicomReader():
         slope = None
         inter = None
 
+        # get shape 2d
+
+        # sometimes there is render in series
+        if len(self.dcmlist) > 1:
+            data = dicom.read_file(dcmlist[0])
+            data2d1 = data.pixel_array
+            data = dicom.read_file(dcmlist[1])
+            data2d2 = data.pixel_array
+            if (data2d1.shape[0] == data2d2.shape[0]) and (data2d1.shape[1] == data2d2.shape[1]):
+                pass
+            else:
+                dcmlist.pop(0)
+
+
         printRescaleWarning = False
         for i in xrange(start, stop, step):
             onefile = dcmlist[i]
