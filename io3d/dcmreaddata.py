@@ -299,7 +299,7 @@ class DicomReader():
 
             # first readed slide is at the end
 
-            if (data3d.shape[1] == new_data2d[0]) and (data3d.shape[2] == new_data2d[1]) :
+            if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]) :
                 data3d[-i - 1, :, :] = new_data2d
             else:
                 logger.warning("Problem with shape " +
