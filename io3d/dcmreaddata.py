@@ -250,9 +250,6 @@ class DicomReader():
         dcmlist = self.dcmlist
         # print('stsp ', start, stop, step)
 
-        if stop is None:
-            stop = len(dcmlist)
-
         raw_max = None
         raw_min = None
         slope = None
@@ -270,6 +267,9 @@ class DicomReader():
                 pass
             else:
                 dcmlist.pop(0)
+
+        if stop is None:
+            stop = len(dcmlist)
 
 
         printRescaleWarning = False
