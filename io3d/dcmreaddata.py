@@ -140,7 +140,7 @@ class DicomReader():
                         sbinsd = {}
                         for serie_number in series_info.keys():
                             strl = self.get_one_serie_info(series_info, serie_number)
-                            sbinsd[strl] = ii
+                            sbinsd[strl] = serie_number
                             # sbins.append(str(ii) + "  " + serie_number)
                         print sbinsd
                         sbins = sbinsd.keys()
