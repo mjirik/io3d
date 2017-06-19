@@ -134,20 +134,29 @@ class DicomReader():
 
                         from PyQt4.QtGui import QInputDialog
                         # bins = ', '.join([str(ii) for ii in bins])
+                        series_info = self.dcmdirstats()
+                        print(self.print_series_info(series_info))
                         sbins = [str(ii) for ii in bins]
+                        sbinsd = {}
+                        for serie_number in series_info.keys():
+                            strl = self.get_one_serie_info(series_info, serie_number)
+                            sbinsd[strl] = ii
+                            # sbins.append(str(ii) + "  " + serie_number)
+                        sbins = sbinsd.keys()
                         snstring, ok = \
                             QInputDialog.getItem(qt_app,
                                                  'Serie Selection',
                                                  'Select serie:',
                                                  sbins,
                                                  editable=False)
+                        sn = sbinsd[snstring]
                     else:
                         print('series')
                         series_info = self.dcmdirstats()
                         print(self.print_series_info(series_info))
                         snstring = raw_input('Select Serie: ')
 
-                    sn = int(snstring)
+                        sn = int(snstring)
                 else:
                     sn = self.series_number
 
@@ -418,6 +427,25 @@ class DicomReader():
 
         return series_info
 
+    def get_one_serie_info(self, series_info, serie_number):
+        strl = str(serie_number) + " (" \
+               + str(series_info[serie_number]['Count'])
+        try:
+            strl = strl + ", " \
+                   + str(series_info[serie_number]['Modality'])
+            strl = strl + ", " \
+                   + str(series_info[serie_number]['SeriesDescription'])
+            strl = strl + ", " \
+                   + str(series_info[serie_number]['ImageComments'])
+        except:
+            logger.debug(
+                'Tag Modlity or ImageComment not found in dcminfo'
+            )
+            pass
+            strl = strl + ')'
+        return strl
+
+
     def print_series_info(self, series_info, minimal_series_number=1):
         """
         Print series_info from dcmdirstats
@@ -425,22 +453,7 @@ class DicomReader():
         strinfo = ''
         if len(series_info) > minimal_series_number:
             for serie_number in series_info.keys():
-                strl = str(serie_number) + " ("\
-                    + str(series_info[serie_number]['Count'])
-                try:
-                    strl = strl + ", "\
-                        + str(series_info[serie_number]['Modality'])
-                    strl = strl + ", "\
-                        + str(series_info[serie_number]['SeriesDescription'])
-                    strl = strl + ", "\
-                        + str(series_info[serie_number]['ImageComments'])
-                except:
-                    logger.debug(
-                        'Tag Modlity or ImageComment not found in dcminfo'
-                    )
-                    pass
-
-                strl = strl + ')'
+                strl = self.get_one_serie_info(series_info, serie_number)
                 strinfo = strinfo + strl + '\n'
                 # rint strl
 
