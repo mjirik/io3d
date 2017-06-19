@@ -142,7 +142,6 @@ class DicomReader():
                             strl = self.get_one_serie_info(series_info, serie_number)
                             sbinsd[strl] = serie_number
                             # sbins.append(str(ii) + "  " + serie_number)
-                        print sbinsd
                         sbins = sbinsd.keys()
                         snstring, ok = \
                             QInputDialog.getItem(qt_app,
@@ -150,7 +149,6 @@ class DicomReader():
                                                  'Select serie:',
                                                  sbins,
                                                  editable=False)
-                        print "snstring ", snstring
                         sn = sbinsd[str(snstring)]
                     else:
                         print('series')
@@ -304,11 +302,12 @@ class DicomReader():
             if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]) :
                 data3d[-i - 1, :, :] = new_data2d
             else:
-                logger.warning("Problem with shape " +
-                               "Data size: " + str(data3d.nbytes)
-
-                               + ', shape: ' + str(shp2) + 'x' + str(len(dcmlist))
-                               + ' file ' + onefile)
+                msg = "Problem with shape " +\
+                      "Data size: " + str(data3d.nbytes) +\
+                      ', shape: ' + str(shp2) + 'x' + str(len(dcmlist)) +\
+                      ' file ' + onefile
+                logger.warning(msg)
+                print(msg)
 
             logger.debug("Data size: " + str(data3d.nbytes)
                          + ', shape: ' + str(shp2) + 'x' + str(len(dcmlist))
