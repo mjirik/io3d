@@ -142,6 +142,7 @@ class DicomReader():
                             strl = self.get_one_serie_info(series_info, serie_number)
                             sbinsd[strl] = ii
                             # sbins.append(str(ii) + "  " + serie_number)
+                        print sbinsd
                         sbins = sbinsd.keys()
                         snstring, ok = \
                             QInputDialog.getItem(qt_app,
@@ -149,6 +150,7 @@ class DicomReader():
                                                  'Select serie:',
                                                  sbins,
                                                  editable=False)
+                        print "snstring ", snstring
                         sn = sbinsd[str(snstring)]
                     else:
                         print('series')
