@@ -13,8 +13,8 @@ import os.path
 
 import re
 import dicom
-import rawN
-import misc
+from .rawN import write as rawN_write
+from .misc import obj_to_file
 # from sys import argv
 
 
@@ -76,17 +76,16 @@ class DataWriter:
             self._write_with_sitk(path, data3d, mtd)
             self._fix_sitk_bug(path, metadata)
         elif filetype in ['rawiv']:
-            rawN.write(path, data3d, metadata)
+            rawN_write(path, data3d, metadata)
         elif filetype in ['image_stack']:
             self.save_image_stack(data3d, path, metadata)
         elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
             self.save_hdf5(data3d, path, metadata)
         elif filetype in ['pkl', 'pklz']:
-            import misc
             metadata['data3d'] = data3d
             datap = metadata
 
-            misc.obj_to_file(datap, path)
+            obj_to_file(datap, path)
 
         else:
             logger.error('Unknown filetype: "' + filetype + '"')
@@ -325,6 +324,14 @@ def get_first_filename(filepattern, series_number=None):
     return filename_format(filepattern, series_number=series_number)
 
 def get_unoccupied_series_number(filepattern, series_number=1):
+    """
+
+    :param filepattern: advanced format options can be used in filepattern.
+    Fallowing keys can be used: slice_number, slicen, series_number, seriesn, series_position, seriesp.
+    For example '{:06d}.jpg', '{series_number:03d}/{series_position:07.3f}.png'
+    :param series_number:
+    :return:
+    """
     filename = filename_format(filepattern, series_number=series_number)
 
     while os.path.exists(filename):
@@ -338,6 +345,12 @@ def get_unoccupied_series_number(filepattern, series_number=1):
     return series_number
 
 def filepattern_fill_series_number(filepattern, series_number):
+    """
+    :param filepattern: advanced format options can be used in filepattern.
+    Fallowing keys can be used: slice_number, slicen, series_number, seriesn, series_position, seriesp.
+    For example '{:06d}.jpg', '{series_number:03d}/{series_position:07.3f}.png'
+    """
+
     rexp1 = r"({\s*seriesn\s*:?.*?})"
     rexp2 = r"({\s*series_number\s*:?.*?})"
 
@@ -366,6 +379,7 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
     :param change_series_number_if_file_exists:
     :return:
     """
+    from .import misc
     filepattern = misc.old_str_format_to_new(filepattern)
 
 
@@ -383,15 +397,15 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
 def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
                            crinfo, orig_shape):
     """ Save overlay to dicom. """
-    import datawriter as dwriter
-    import qmisc
+    from . import datawriter as dwriter
+    from imtools.qmisc import uncrop
 
     if not os.path.exists(output_dicom_dir):
         os.mkdir(output_dicom_dir)
 
     # uncrop all overlays
     for key in overlays:
-        overlays[key] = qmisc.uncrop(overlays[key], crinfo, orig_shape)
+        overlays[key] = uncrop(overlays[key], crinfo, orig_shape)
 
     dw = dwriter.DataWriter()
     dw.DataCopyWithOverlay(input_dcmfilelist, output_dicom_dir, overlays)
