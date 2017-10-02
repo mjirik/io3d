@@ -380,6 +380,17 @@ class DicomWriterTest(unittest.TestCase):
         dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
         sitk.WriteImage(dim, path)
 
+    @attr('interactive')
+    def test_read_data_without_slice_thickness(self):
+        """
+        data without SliceThickness
+        :return:
+        """
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+            "~/data/medical/orig/DICOM_test"
+        )
+
 
     def test_fill_series_number(self):
         import io3d.datawriter

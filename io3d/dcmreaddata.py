@@ -562,7 +562,7 @@ class DicomReader():
     def __get_slice_location(self, dcmdata, teil):
         if hasattr(dcmdata, 'SliceLocation'):
             return float(dcmdata.SliceLocation)
-        else:
+        elif hasattr(dcmdata, "SliceThickness"):
             logger.warning(
                 "Estimating SliceLocation wiht image number and SliceThickness"
             )
@@ -571,6 +571,17 @@ class DicomReader():
             i = map(int, re.findall('\d+', teil))
             i = i[-1]
             return float(i * float(dcmdata.SliceThickness))
+        elif hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata, "ImageOrientationPatient"):
+            if dcmdata.ImageOrientationPatient == [1, 0, 0, 0, 1, 0]:
+                return dcmdata.ImagePositionPatient[2]
+            else:
+                logger.warning(
+                    "Unknown ImageOrientationPatient"
+                )
+        else:
+            logger.warning(
+                "Problem with slice location"
+            )
 
     def __get_series_number(self, dcmdata):
 
