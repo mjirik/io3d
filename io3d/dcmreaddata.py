@@ -1,4 +1,4 @@
-#  /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -21,8 +21,12 @@ import traceback
 
 import logging
 logger = logging.getLogger(__name__)
-import misc
+from . import misc
 
+# compatibility between python 2 and 3
+if sys.version_info[0] >= 3:
+    xrange = range
+    raw_input = input
 
 __version__ = [1, 3]
 
@@ -126,24 +130,33 @@ class DicomReader():
                             # rom PyQt4.QtGui import QApplication
                             # t_app = QApplication(sys.argv)
                             # t_app = PyQt4.QtGui.QWidget(sys.argv)
-                            print qt_app
+                            print(qt_app)
 
                         from PyQt4.QtGui import QInputDialog
                         # bins = ', '.join([str(ii) for ii in bins])
+                        series_info = self.dcmdirstats()
+                        print(self.print_series_info(series_info))
                         sbins = [str(ii) for ii in bins]
+                        sbinsd = {}
+                        for serie_number in series_info.keys():
+                            strl = self.get_one_serie_info(series_info, serie_number)
+                            sbinsd[strl] = serie_number
+                            # sbins.append(str(ii) + "  " + serie_number)
+                        sbins = sbinsd.keys()
                         snstring, ok = \
                             QInputDialog.getItem(qt_app,
                                                  'Serie Selection',
                                                  'Select serie:',
                                                  sbins,
                                                  editable=False)
+                        sn = sbinsd[str(snstring)]
                     else:
-                        print 'series'
+                        print('series')
                         series_info = self.dcmdirstats()
-                        print self.print_series_info(series_info)
+                        print(self.print_series_info(series_info))
                         snstring = raw_input('Select Serie: ')
 
-                    sn = int(snstring)
+                        sn = int(snstring)
                 else:
                     sn = self.series_number
 
@@ -167,7 +180,7 @@ class DicomReader():
 
         for i in range(len(dcmlist)):
             onefile = dcmlist[i]
-            logger.info(onefile)
+            logger.info("reading '%s'" % onefile)
             data = dicom.read_file(onefile)
 
             if len(overlay) == 0:
@@ -185,7 +198,7 @@ class DicomReader():
 
                     except:
                         # exception is exceptetd. We are trying numbers 0-50
-                        # ogger.warning('Problem with overlay image number ' +
+                        # logger.exception('Problem with overlay image number ' +
                         #               str(i_overlay))
                         pass
 
@@ -221,7 +234,8 @@ class DicomReader():
 # TODO neni tady ta jednička blbě?
             for i in range(1, len(overlay_raw)):
                 for k in range(0, n_bits):
-                    byte_as_int = ord(overlay_raw[i])
+                    # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
+                    byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
                     decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
 
             # verlay = np.array(pol)
@@ -234,15 +248,29 @@ class DicomReader():
         """
         data3d = []
         dcmlist = self.dcmlist
-        # print 'stsp ', start, stop, step
-
-        if stop is None:
-            stop = len(dcmlist)
+        # print('stsp ', start, stop, step)
 
         raw_max = None
         raw_min = None
         slope = None
         inter = None
+
+        # get shape 2d
+
+        # sometimes there is render in series
+        if len(self.dcmlist) > 1:
+            data = dicom.read_file(dcmlist[0])
+            data2d1 = data.pixel_array
+            data = dicom.read_file(dcmlist[1])
+            data2d2 = data.pixel_array
+            if (data2d1.shape[0] == data2d2.shape[0]) and (data2d1.shape[1] == data2d2.shape[1]):
+                pass
+            else:
+                dcmlist.pop(0)
+
+        if stop is None:
+            stop = len(dcmlist)
+
 
         printRescaleWarning = False
         for i in xrange(start, stop, step):
@@ -276,22 +304,30 @@ class DicomReader():
                 logger.warning(
                     'problem with RescaleSlope and RescaleIntercept'
                 )
-                print 'problem with RescaleSlope and RescaleIntercept'
+                print('problem with RescaleSlope and RescaleIntercept')
                 traceback.print_exc()
-                print '----------'
-                
+                print('----------')
+
                 new_data2d = (np.float(1) * data2d)\
                     + np.float(0)
 
             # first readed slide is at the end
 
-            data3d[-i - 1, :, :] = new_data2d
+            if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]) :
+                data3d[-i - 1, :, :] = new_data2d
+            else:
+                msg = "Problem with shape " +\
+                      "Data size: " + str(data3d.nbytes) +\
+                      ', shape: ' + str(shp2) + 'x' + str(len(dcmlist)) +\
+                      ' file ' + onefile
+                logger.warning(msg)
+                print(msg)
 
             logger.debug("Data size: " + str(data3d.nbytes)
                          + ', shape: ' + str(shp2) + 'x' + str(len(dcmlist))
                          + ' file ' + onefile)
         if printRescaleWarning:
-            print "Automatic Rescale with slope 0.5"
+            print("Automatic Rescale with slope 0.5")
             logger.warning("Automatic Rescale with slope 0.5")
 
         return data3d
@@ -407,11 +443,30 @@ class DicomReader():
             metadata = self.get_metaData(dcmlist=lst)
 # adding dictionary metadata to series_info dictionary
             series_info[bins[i]] = dict(
-                series_info[bins[i]].items() +
-                metadata.items()
+                list(series_info[bins[i]].items()) +
+                list(metadata.items())
             )
 
         return series_info
+
+    def get_one_serie_info(self, series_info, serie_number):
+        strl = str(serie_number) + " (" \
+               + str(series_info[serie_number]['Count'])
+        try:
+            strl = strl + ", " \
+                   + str(series_info[serie_number]['Modality'])
+            strl = strl + ", " \
+                   + str(series_info[serie_number]['SeriesDescription'])
+            strl = strl + ", " \
+                   + str(series_info[serie_number]['ImageComments'])
+        except:
+            logger.debug(
+                'Tag Modlity or ImageComment not found in dcminfo'
+            )
+            pass
+            strl = strl + ')'
+        return strl
+
 
     def print_series_info(self, series_info, minimal_series_number=1):
         """
@@ -420,22 +475,7 @@ class DicomReader():
         strinfo = ''
         if len(series_info) > minimal_series_number:
             for serie_number in series_info.keys():
-                strl = str(serie_number) + " ("\
-                    + str(series_info[serie_number]['Count'])
-                try:
-                    strl = strl + ", "\
-                        + str(series_info[serie_number]['Modality'])
-                    strl = strl + ", "\
-                        + str(series_info[serie_number]['SeriesDescription'])
-                    strl = strl + ", "\
-                        + str(series_info[serie_number]['ImageComments'])
-                except:
-                    logger.debug(
-                        'Tag Modlity or ImageComment not found in dcminfo'
-                    )
-                    pass
-
-                strl = strl + ')'
+                strl = self.get_one_serie_info(series_info, serie_number)
                 strinfo = strinfo + strl + '\n'
                 # rint strl
 
@@ -526,7 +566,7 @@ class DicomReader():
             logger.warning(
                 "Estimating SliceLocation wiht image number and SliceThickness"
             )
-            print teil
+            print(teil)
 
             i = map(int, re.findall('\d+', teil))
             i = i[-1]
@@ -563,14 +603,14 @@ class DicomReader():
                 #    metadataline ['ImageComment'] = dcmdata.ImageComments
                 #    metadataline ['Modality'] = dcmdata.Modality
                 # xcept:
-                #    print 'Problem with ImageComments and Modality tags'
+                #    print('Problem with ImageComments and Modality tags')
 
                 files.append(metadataline)
 
             # xcept Exception as e:
             except:
                 if head != self.dicomdir_filename:
-                    print 'Dicom read problem with file ' + filepath
+                    print('Dicom read problem with file ' + filepath)
                 import traceback
                 logger.debug(traceback.format_exc())
 
@@ -717,4 +757,4 @@ if __name__ == "__main__":  # pragma: no cover
     savemat(options.out_filename,
             {'data': data3d_out, 'voxelsize_mm': vs_out}
             )
-    print "Data size: %d, shape: %s" % (data3d_out.nbytes, data3d_out.shape)
+    print("Data size: %d, shape: %s" % (data3d_out.nbytes, data3d_out.shape))

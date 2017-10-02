@@ -1,4 +1,4 @@
-#  /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """ Module for readin 3D dicom data
 """
@@ -20,7 +20,7 @@ import argparse
 
 # -------------------- my scripts ------------
 
-import dcmreaddata as dcmr
+from . import dcmreaddata as dcmr
 
 
 # import numpy as np
@@ -56,6 +56,8 @@ class DataReader:
         :dataplus_format is new data format. Metadata and data are returned in
         one structure.
         """
+        self.orig_datapath = datapath
+        datapath = os.path.expanduser(datapath)
 
         if not os.path.exists(datapath):
             logger.error("Path '" + datapath + "' does not exist")
@@ -71,7 +73,7 @@ class DataReader:
 
         elif os.path.exists(datapath):
             logger.debug('directory read recognized')
-            # print "read from directory"
+            # print("read from directory")
             data3d, metadata = self.__ReadFromDirectory(
                 datapath, start, stop, step)
         else:
@@ -138,7 +140,7 @@ class DataReader:
         ext = ext[1:]
         if ext in ('pklz', 'pkl'):
             logger.debug('pklz format detected')
-            import misc
+            from . import misc
             data = misc.obj_from_file(datapath, filetype='pkl')
             data3d = data.pop('data3d')
             # etadata must have series_number
@@ -163,7 +165,7 @@ class DataReader:
             metadata.update(data)
 
         elif ext in ['idx']:
-            import idxformat
+            from . import idxformat
             idxreader = idxformat.IDXReader()
             data3d, metadata = idxreader.read(datapath)
         elif ext in ['dcm', 'DCM', 'dicom']:

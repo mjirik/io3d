@@ -40,10 +40,10 @@ def __iv_read_header(f):
     spanYorig = __read_float(f)
     spanZorig = __read_float(f)
 
-    # print dimX * dimY * dimZ, '   ', numVerts
+    # print(dimX * dimY * dimZ, '   ', numVerts)
     if dimX * dimY * dimZ != numVerts:
         logger.error('numVerts is not consistent with dimX, dimY, dimZ')
-        print "error"
+        print("error")
 
     spanX  = (maxX - minX)/(dimX -1)
     spanY  = (maxY - minY)/(dimY -1)
@@ -53,7 +53,7 @@ def __iv_read_header(f):
             spanY != spanYorig or\
             spanZ != spanZorig:
         logger.warning('span in rawiv header is not consistent')
-        print 'error span'
+        print('error span')
 
     return minX , minY , minZ , maxX , maxY , maxZ , numVerts , numCells , dimX\
      , dimY , dimZ , originX , originY , originZ , spanX, spanY, \
@@ -74,9 +74,9 @@ def read_iv(filename):
         data = f.read()
         i = 0
 
-        print len(data)
-        print numVerts
-        bytes_per_vertex = len(data)/numVerts
+        print(len(data))
+        print(numVerts)
+        bytes_per_vertex = len(data)//numVerts
 
         if bytes_per_vertex == 1:
             nptype = 'uint8'
@@ -94,7 +94,7 @@ def read_iv(filename):
         for z in range(0, dimZ):
             for y in range(0, dimY):
                 for x in range(0, dimX):
-                    dataraw = data[i:i + bytes_per_vertex]
+                    dataraw = data[i:(i+bytes_per_vertex)]
                     data3d[x,y,z] = struct.unpack(pctype, dataraw)[0]
                     i = i + 1
 

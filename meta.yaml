@@ -1,15 +1,15 @@
 package:
   name: io3d
-  version: "1.1.8"
+  version: "1.1.29"
 
 source:
 # this is used for build from git hub
-  git_rev: 1.1.8
+  git_rev: 1.1.29
   git_url: https://github.com/mjirik/io3d.git
 
 # this is used for pypi 
-  # fn: io3d-1.1.8.tar.gz
-  # url: https://pypi.python.org/packages/source/i/io3d/io3d-1.1.8.tar.gz
+  # fn: io3d-1.1.29.tar.gz
+  # url: https://pypi.python.org/packages/source/i/io3d/io3d-1.1.29.tar.gz
   # md5: a3ce512c4c97ac2410e6dcc96a801bd8
 #  patches:
    # List any patch files here

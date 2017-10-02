@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 
@@ -125,7 +125,8 @@ class DicomReaderTest(unittest.TestCase):
         # Decoding data. Each bit is stored as array element
         for i in range(1, len(overlay_raw)):
             for k in range(0, n_bits):
-                byte_as_int = ord(overlay_raw[i])
+                # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
+                byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
                 decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
 
         # overlay = np.array(pol)
@@ -320,8 +321,8 @@ class DicomReaderTest(unittest.TestCase):
 #        sum_of_wrong_voxels = np.sum(errim)
 #        sum_of_voxels = np.prod(segm.shape)
 #
-# print "wrong ", sum_of_wrong_voxels
-# print "voxels", sum_of_voxels
+# print("wrong ", sum_of_wrong_voxels)
+# print("voxels", sum_of_voxels)
 #
 #        errorrate = sum_of_wrong_voxels/sum_of_voxels
 #
@@ -331,6 +332,22 @@ class DicomReaderTest(unittest.TestCase):
 #
 #
 #
+    def test_write_read_hdf5(self):
+        import io3d.datawriter as dwriter
+        import io3d.datareader as dreader
+        import h5py
+        filename = 'test_file.hdf5'
+        data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
+        data[0:5, 20:60, 60:70] += 30
+        metadata = {'voxelsize_mm': [1, 2, 3]}
+        dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
+
+        fi = h5py.File(filename, "r")
+        for key in fi.keys():
+            fi [key]
+
+        datap = dreader.read(filename)
+        print(datap)
 
     def test_idx_data(self):
         io3d.read("/home/mjirik/data/medical/orig/cvd-matrm3/microscopy_data/MM358-001-uint8.idx")
