@@ -387,6 +387,16 @@ class DicomWriterTest(unittest.TestCase):
         out = io3d.datawriter.filepattern_fill_series_number("{seriesn:03d}/{slicen:06d}", series_number=15)
         self.assertEqual(out, '015/{slicen:06d}')
 
+    @attr('interactive')
+    def test_read_data_without_slice_thickness(self):
+        """ data without SliceThickness
+        :return:
+        """
+
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+                "~/data/medical/orig/dicom_test_claudio"
+        )
 
 if __name__ == "__main__":
     unittest.main()
