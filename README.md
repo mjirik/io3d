@@ -10,6 +10,11 @@ io3d
 Install
 ===
 
+Use anaconda 
+
+    conda install -c mjirik io3d
+
+or
 
     pip install io3d
 
