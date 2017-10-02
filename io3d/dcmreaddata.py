@@ -345,25 +345,28 @@ class DicomReader():
         if len(dcmlist) <= 0:
             return {}
 
-        data = dicom.read_file(dcmlist[ifile])
+        data1 = dicom.read_file(dcmlist[ifile])
         try:
+            head1, teil1 = os.path.split(dcmlist[ifile])
+            head2, teil2 = os.path.split(dcmlist[ifile])
+
             data2 = dicom.read_file(dcmlist[ifile + 1])
-            voxeldepth = float(
-                np.abs(data.SliceLocation - data2.SliceLocation)
-            )
+            loc1 = self.__get_slice_location(data1, teil1)
+            loc2 = self.__get_slice_location(data2, teil2)
+            voxeldepth = float(np.abs(loc1 - loc2))
         except:
             logger.warning('Problem with voxel depth. Using SliceThickness,'
-                           + ' SeriesNumber: ' + str(data.SeriesNumber))
+                           + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
             try:
-                voxeldepth = float(data.SliceThickness)
+                voxeldepth = float(data1.SliceThickness)
             except:
                 logger.warning('Probem with SliceThicknes, setting zero. '
                                + traceback.format_exc())
                 voxeldepth = 0
 
         try:
-            pixelsize_mm = data.PixelSpacing
+            pixelsize_mm = data1.PixelSpacing
         except:
             logger.warning('Problem with PixelSpacing. Using [1,1]')
             pixelsize_mm = [1, 1]
@@ -373,29 +376,29 @@ class DicomReader():
             float(pixelsize_mm[1]),
         ]
         metadata = {'voxelsize_mm': voxelsize_mm,
-                    'Modality': data.Modality,
+                    'Modality': data1.Modality,
                     'SeriesNumber': self.series_number
                     }
 
         try:
-            metadata['SeriesDescription'] = data.SeriesDescription
+            metadata['SeriesDescription'] = data1.SeriesDescription
 
         except:
             logger.warning(
                 'Problem with tag SeriesDescription, SeriesNumber: ' +
-                str(data.SeriesNumber))
+                str(data1.SeriesNumber))
         try:
-            metadata['ImageComments'] = data.ImageComments
+            metadata['ImageComments'] = data1.ImageComments
         except:
             logger.warning(
                 'Problem with tag ImageComments, SeriesNumber: ' +
-                str(data.SeriesNumber))
+                str(data1.SeriesNumber))
         try:
-            metadata['Modality'] = data.Modality
+            metadata['Modality'] = data1.Modality
         except:
             logger.warning(
                 'Problem with tag Modality, SeriesNumber: ' +
-                str(data.SeriesNumber))
+                str(data1.SeriesNumber))
 
         metadata['dcmfilelist'] = self.dcmlist
 
@@ -559,10 +562,16 @@ class DicomReader():
         dcmdir = dcmdirplus['filesinfo']
         return dcmdir
 
-    def __get_slice_location(self, dcmdata, teil):
+    def __get_slice_location(self, dcmdata, teil=None):
+        """ get location of the slice
+
+        :param dcmdata: dicom data structure
+        :param teil: filename. Used when slice location doesnt exist
+        :return:
+        """
         if hasattr(dcmdata, 'SliceLocation'):
             return float(dcmdata.SliceLocation)
-        elif hasattr(dcmdata, "SliceThickness"):
+        elif hasattr(dcmdata, "SliceThickness") and teil is not None:
             logger.warning(
                 "Estimating SliceLocation wiht image number and SliceThickness"
             )
