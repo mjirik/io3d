@@ -397,6 +397,7 @@ class DicomWriterTest(unittest.TestCase):
         data3dnew, metadata = dr.Get3DData(
                 "~/data/medical/orig/dicom_test_claudio"
         )
+        metadata
 
 if __name__ == "__main__":
     unittest.main()
