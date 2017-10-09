@@ -234,6 +234,7 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
     :mode: default is 'nearest'
     """
     import scipy
+    import scipy.ndimage
 
     if new_voxelsize_mm == 'orig':
         new_voxelsize_mm = np.array(voxelsize_mm)
