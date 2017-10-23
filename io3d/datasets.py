@@ -303,17 +303,14 @@ def main():
     #        args.get_sample_data = True
     #        args.install = True
     #        args.build_gco = False
-    verbose = 0
     if args.verbatim:
         # logger.setLevel(logging.DEBUG)
         logger.setLevel(logging.INFO)
-        verbose = 1
     if args.debug is not None:
         logger.setLevel(int(args.debug))
-        verbose = 1
 
     if args.checksum is not None:
-        print(checksum(args.checksum, verbose))
+        print(checksum(args.checksum))
         if args.labels is None:
             return
 

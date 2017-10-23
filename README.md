@@ -60,3 +60,8 @@ Test data
 [ct_head.rawiv](http://mgltools.scripps.edu/downloads/tars/releases/DocTars/DOCPACKS/Vision/doc/Tutorial/headandslice/ct_head.rawiv)
 
 Put this data into sample_data dir
+
+
+### File or directory checksum
+
+        python -m io3d.datasets -c directory_path
