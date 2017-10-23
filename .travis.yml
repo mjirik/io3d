@@ -19,9 +19,9 @@ before_install:
 install:
     - conda update --yes conda
     - conda install --yes -n travis pip nose coverage
-    - pip install checksumdir
     - conda install --yes -n travis -c SimpleITK --file requirements_conda.txt
     - source activate travis
+    - pip install checksumdir
     - pip install .
 #    - pip install -r requirements.txt
 # command to run tests
