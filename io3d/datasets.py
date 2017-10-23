@@ -313,7 +313,7 @@ def main():
         verbose = 1
 
     if args.checksum is not None:
-        print(GetHashofDirs(args.checksum, verbose))
+        print(checksum(args.checksum, verbose))
         if args.labels is None:
             return
 
