@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # from imtools import misc
 
 
-import io3d.sample_data as sd
+import io3d.datasets as sd
 #
 
 class SampleDataTest(unittest.TestCase):
