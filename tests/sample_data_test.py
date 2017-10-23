@@ -27,7 +27,7 @@ class SampleDataTest(unittest.TestCase):
     interactivetTest = False
     # interactivetTest = True
     def sample_data_test(self):
-        sd.get("head", "delete_head")
+        sd.download("head", "delete_head")
         self.assertTrue(os.path.exists("./delete_head/matlab/examples/sample_data/DICOM/digest_article/brain_001.dcm"))
         shutil.rmtree("delete_head")
 
@@ -40,7 +40,7 @@ class SampleDataTest(unittest.TestCase):
     @attr("slow")
     def sample_data_get_all_test(self):
         keys = sd.data_urls.keys()
-        sd.get(keys, "delete_all")
+        sd.download(keys, "delete_all")
         self.assertTrue(os.path.exists("./delete_all/matlab/examples/sample_data/DICOM/digest_article/brain_001.dcm"))
         shutil.rmtree("delete_all")
 
@@ -49,10 +49,13 @@ class SampleDataTest(unittest.TestCase):
         if os.path.exists(tmp_sample_data_path):
             shutil.rmtree(tmp_sample_data_path)
 
-        sd.get(["head", "exp_small"], tmp_sample_data_path)
+        sd.download(["head", "exp_small"], tmp_sample_data_path)
         self.assertTrue(os.path.exists("./delete_sample_data/exp_small/seeds/org-liver-orig003-seeds.pklz"))
         self.assertTrue(os.path.exists("./delete_sample_data/matlab/examples/sample_data/DICOM/digest_article/brain_001.dcm"))
         shutil.rmtree(tmp_sample_data_path)
+
+    def generate_liver_test(self):
+        liver = sd.generate_abdominal()
 
 if __name__ == "__main__":
     # logging.basicConfig()

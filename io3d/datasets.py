@@ -71,16 +71,7 @@ data_urls= {
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
 
-def get_sample_data(data_label=None, destination_dir="."):
-    """
-    Same as get() due to back compatibility
-    :param data_label:
-    :param destination_dir:
-    :return:
-    """
-    get(data_label=data_label, destination_dir=destination_dir)
-
-def get(data_label=None, destination_dir="."):
+def download(data_label=None, destination_dir="."):
     """
     Download sample data by data label. Labels can be listed by sample_data.data_urls.keys()
     :param data_label: label of data. If it is set to None, all data are downloaded
@@ -160,7 +151,7 @@ def checksum(path, hashfunc='md5'):
     hash = checksumdir._reduce_hash(hashvalues, hashfunc=hash_func)
     return hash
 
-def donut():
+def generate_donut():
     """
     Generate donut like shape with stick inside
 
@@ -189,7 +180,7 @@ def donut():
     return datap
 
 
-def generate(size = 100, liver_intensity=100, noise_intensity=20, portal_vein_intensity=130, spleen_intensity=90):
+def generate_abdominal(size = 100, liver_intensity=100, noise_intensity=20, portal_vein_intensity=130, spleen_intensity=90):
     boundary = int(size/4)
     voxelsize_mm = [1.0, 1.5, 1.5]
     slab = {
@@ -278,15 +269,19 @@ def main():
     # input parser
     parser = argparse.ArgumentParser(
         description=
-        "Download sample data")
+        "Work on dataset")
     parser.add_argument(
-        "labels", metavar="N", nargs="+",
+        "-l", "--labels", metavar="N", nargs="+",
         default=None,
         help='Get sample data')
     parser.add_argument(
-        '-l', '--print_labels', action="store_true",
+        '-L', '--print_labels', action="store_true",
         default=False,
         help='print all available labels')
+    parser.add_argument(
+        '-c', '--checksum', # action="store_true",
+        default=None,
+        help='Get hash for requested path')
     parser.add_argument(
         '-v', '--verbatim', action="store_true",
         default=False,
@@ -308,13 +303,21 @@ def main():
     #        args.get_sample_data = True
     #        args.install = True
     #        args.build_gco = False
+    verbose = 0
     if args.verbatim:
         # logger.setLevel(logging.DEBUG)
         logger.setLevel(logging.INFO)
+        verbose = 1
     if args.debug is not None:
         logger.setLevel(int(args.debug))
+        verbose = 1
 
-    get(args.labels, destination_dir=args.destination_dir)
+    if args.checksum is not None:
+        print(GetHashofDirs(args.checksum, verbose))
+        if args.labels is None:
+            return
+
+    download(args.labels, destination_dir=args.destination_dir)
 
     #submodule_update()
 
