@@ -45,10 +45,10 @@ data_urls= {
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
 
-def download(data_label=None, destination_dir="."):
+def download(dataset_label=None, destination_dir="."):
     """
     Download sample data by data label. Labels can be listed by sample_data.data_urls.keys()
-    :param data_label: label of data. If it is set to None, all data are downloaded
+    :param dataset_label: label of data. If it is set to None, all data are downloaded
     :param destination_dir: output dir for data
     :return:
     """
@@ -56,13 +56,13 @@ def download(data_label=None, destination_dir="."):
         os.mkdir(destination_dir)
     except:
         pass
-    if data_label is None:
-        data_label=data_urls.keys()
+    if dataset_label is None:
+        dataset_label=data_urls.keys()
 
-    if type(data_label) == str:
-        data_label = [data_label]
+    if type(dataset_label) == str:
+        dataset_label = [dataset_label]
 
-    for label in data_label:
+    for label in dataset_label:
         # make all data:url have length 3
         data_url = data_urls[label]
         if type(data_url) == str:
@@ -97,6 +97,21 @@ def download(data_label=None, destination_dir="."):
                 logger.warning("downloaded hash is different from expected hash\n" + \
                                "expected hash: '" + str(expected_hash) + "'\n" + \
                                "downloaded hash: '" + str(downloaded_hash) + "'\n")
+
+def get(dataset_label, id, destination_dir="."):
+    """
+    Get the 3D data from specified dataset with specified id.
+
+    Download data if necessary.
+
+    :param dataset_label:
+    :param id: integer or wildcards file pattern
+    :param destination_dir:
+    :return:
+    """
+    datap = []
+    return datap
+
 
 def checksum(path, hashfunc='md5'):
     """
