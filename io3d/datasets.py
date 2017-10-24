@@ -22,32 +22,6 @@ import glob
 import os.path as op
 import io3d
 
-# path_to_script = op.dirname(os.path.abspath(__file__))
-
-def remove(local_file_name):
-    try:
-        os.remove(local_file_name)
-    except Exception as e:
-        print ("Cannot remove file '" + local_file_name + "'. Please remove\
-        it manually.")
-        print (e)
-
-
-def downzip(url, destination='./sample_data/'):
-    """
-    Download, unzip and delete.
-    """
-
-    # url = "http://147.228.240.61/queetech/sample-data/jatra_06mm_jenjatra.zip"
-    logmsg = "downloading from '" + url + "'"
-    print(logmsg)
-    logger.debug(logmsg)
-    local_file_name = os.path.join(destination, 'tmp.zip')
-    urllibr.urlretrieve(url, local_file_name)
-    datafile = zipfile.ZipFile(local_file_name)
-    datafile.extractall(destination)
-    remove(local_file_name)
-
 
 # you can get hash from command line with:
 #  python imtools/sample_data.py -v sliver_training_001
@@ -317,6 +291,30 @@ def main():
     download(args.labels, destination_dir=args.destination_dir)
 
     #submodule_update()
+
+def remove(local_file_name):
+    try:
+        os.remove(local_file_name)
+    except Exception as e:
+        print ("Cannot remove file '" + local_file_name + "'. Please remove\
+        it manually.")
+        print (e)
+
+
+def downzip(url, destination='./sample_data/'):
+    """
+    Download, unzip and delete.
+    """
+
+    # url = "http://147.228.240.61/queetech/sample-data/jatra_06mm_jenjatra.zip"
+    logmsg = "downloading from '" + url + "'"
+    print(logmsg)
+    logger.debug(logmsg)
+    local_file_name = os.path.join(destination, 'tmp.zip')
+    urllibr.urlretrieve(url, local_file_name)
+    datafile = zipfile.ZipFile(local_file_name)
+    datafile.extractall(destination)
+    remove(local_file_name)
 
 
 if __name__ == "__main__":
