@@ -47,6 +47,7 @@ requirements:
     - pydicom
     - pyyaml
     - h5py
+    - checksumdir
 
 test:
   # Python imports
