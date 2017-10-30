@@ -1,6 +1,7 @@
 numpy
 scipy
 h5py
-SimpleITK=0.9.* # problem with dicom write
-libpng # kvuli simpleik 0.9.
+# SimpleITK=0.9.* # problem with dicom write
+# libpng # kvuli simpleik 0.9.
+simpleitk
 checksumdir
