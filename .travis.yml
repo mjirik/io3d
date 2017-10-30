@@ -17,10 +17,10 @@ before_install:
     - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip && unzip io3d_sample_data.zip
 # command to install dependencies
 install:
-    - conda update --yes conda
-    - conda install --yes -n travis pip nose coverage
-    - conda install --yes -n travis -c SimpleITK -c mjirik --file requirements_conda.txt
     - source activate travis
+    - conda update --yes conda
+    - conda install --yes pip nose coverage
+    - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt
 #    - pip install checksumdir
     - pip install .
 #    - pip install -r requirements.txt
