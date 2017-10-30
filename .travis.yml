@@ -12,13 +12,13 @@ before_install:
     - chmod +x miniconda.sh
     - ./miniconda.sh -b -p /home/travis/miniconda
     - export PATH=/home/travis/miniconda/bin:$PATH
-    - conda create --yes -n travis python=$TRAVIS_PYTHON_VERSION
     - sudo apt-get install -qq $(< apt_requirements.txt)
     - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip && unzip io3d_sample_data.zip
 # command to install dependencies
 install:
-    - source activate travis
     - conda update --yes conda
+    - conda create --yes -n travis python=$TRAVIS_PYTHON_VERSION
+    - source activate travis
     - conda install --yes pip nose coverage
     - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt
 #    - pip install checksumdir
