@@ -17,6 +17,7 @@ import shutil
 
 import io3d
 
+from nose.plugins.attrib import attr
 
 class DatasetsTest(unittest.TestCase):
 
