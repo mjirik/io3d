@@ -41,7 +41,7 @@ data_urls= {
     "vincentka": ["http://147.228.240.61/queetech/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
     "vincentka_sample": ["http://147.228.240.61/queetech/sample-data/vincentka_sample.zip"],
     "donut": "http://147.228.240.61/queetech/sample-data/donut.zip",
-    "3Dircadb1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip",
+    "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
     "3Dircadb1.1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
     "3Dircadb1.3": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip",
@@ -67,6 +67,29 @@ data_urls= {
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
 
+def get_dataset_meta(label):
+    data_url = data_urls[label]
+    if type(data_url) == str:
+        # back compatibility
+        data_url = [data_url]
+    if type(data_url) == list:
+        data_url.extend([None, None, None])
+        data_url = data_url[:4]
+        url, expected_hash, hash_path, fnpattern = data_url
+
+        if hash_path is None:
+            hash_path = label
+
+        if fnpattern is None and hash_path is not None:
+            fnpattern = hash_path
+
+
+    # elif type(data_url) == dict:
+
+
+
+    return data_url, url, expected_hash, hash_path, fnpattern
+
 def download(dataset_label=None, destination_dir=None):
     """
     Download sample data by data label. Labels can be listed by sample_data.data_urls.keys()
@@ -90,13 +113,7 @@ def download(dataset_label=None, destination_dir=None):
 
     for label in dataset_label:
         # make all data:url have length 3
-        data_url = data_urls[label]
-        if type(data_url) == str:
-            # back compatibility
-            data_url = [data_url]
-        data_url.extend([None, None])
-        data_url = data_url[:3]
-        url, expected_hash, hash_path = data_url
+        data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(label)
 
         if hash_path is None:
             hash_path = label
@@ -124,7 +141,7 @@ def download(dataset_label=None, destination_dir=None):
                                "expected hash: '" + str(expected_hash) + "'\n" + \
                                "downloaded hash: '" + str(downloaded_hash) + "'\n")
 
-def get(dataset_label, id, destination_dir="."):
+def get(dataset_label, id, destination_dir=None):
     """
     Get the 3D data from specified dataset with specified id.
 
@@ -136,7 +153,20 @@ def get(dataset_label, id, destination_dir="."):
     :return:
     """
     # @TODO implement
-    datap = []
+    if destination_dir is None:
+        destination_dir = local_dir
+
+    destination_dir = op.expanduser(destination_dir)
+    data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(dataset_label)
+    paths = glob.glob(os.path.join(destination_dir, fnpattern))
+    paths.sort()
+    import fnmatch
+    print(paths)
+    print(id)
+    pathsf = fnmatch.filter(paths, id)
+    print(pathsf
+          )
+    datap = io3d.read(pathsf[0], dataplus_format=True)
     return datap
 
 

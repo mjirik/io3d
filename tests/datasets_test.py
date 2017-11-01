@@ -44,5 +44,8 @@ class DatasetsTest(unittest.TestCase):
         pth = op.join("./tmp/", "biodur_sample")
         self.assertTrue(op.exists(pth))
 
+    def test_get(self):
+        io3d.datasets.get("3Dircadb1", "*1/P*")
+
 if __name__ == "__main__":
     unittest.main()
