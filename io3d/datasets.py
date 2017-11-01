@@ -25,7 +25,7 @@ import io3d
 
 # you can get hash from command line with:
 #  python imtools/sample_data.py -v sliver_training_001
-
+local_dir="~/data/medical/orig/"
 # vessels.pkl nejprve vytvoří prázný adresář s názvem vessels.pkl, pak jej při rozbalování zase smaže
 data_urls= {
     "head": ["http://147.228.240.61/queetech/sample-data/head.zip", "89e9b60fd23257f01c4a1632ff7bb800", "matlab"] ,
@@ -67,17 +67,21 @@ data_urls= {
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
 
-def download(dataset_label=None, destination_dir="."):
+def download(dataset_label=None, destination_dir=None):
     """
     Download sample data by data label. Labels can be listed by sample_data.data_urls.keys()
     :param dataset_label: label of data. If it is set to None, all data are downloaded
     :param destination_dir: output dir for data
     :return:
     """
-    try:
-        os.mkdir(destination_dir)
-    except:
-        pass
+    if destination_dir is None:
+        destination_dir = local_dir
+
+    destination_dir = op.expanduser(destination_dir)
+
+    if not op.exists(destination_dir):
+        os.makedirs(destination_dir)
+
     if dataset_label is None:
         dataset_label=data_urls.keys()
 
