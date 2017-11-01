@@ -12,9 +12,6 @@ Module for testing format rawiv
 import logging
 logger = logging.getLogger(__name__)
 import unittest
-from nose.plugins.attrib import attr
-import numpy as np
-import os
 import os.path as op
 import shutil
 
@@ -28,7 +25,8 @@ class DatasetsTest(unittest.TestCase):
     def test_download(self):
 
         io3d.datasets.download("gensei_slices")
-        pth = op.join(io3d.datasets.local_dir, "gensei_slices")
+        pth = op.expanduser(op.join(io3d.datasets.local_dir, "gensei_slices"))
+        logger.debug(pth)
         self.assertTrue(op.exists(pth))
         # import sed3
         # ed = sed3.sed3(data3d)

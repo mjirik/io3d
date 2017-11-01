@@ -4,10 +4,10 @@
 Module is used for visualization of segmentation stored in pkl file.
 """
 
-import sys
-import os.path
-
 import logging
+import os.path
+import sys
+
 logger = logging.getLogger(__name__)
 import argparse
 
@@ -15,7 +15,6 @@ if sys.version_info < (3, 0):
     import urllib as urllibr
 else:
     import urllib.request as urllibr
-import scipy
 import numpy as np
 import zipfile
 import glob
@@ -27,6 +26,7 @@ import io3d
 #  python imtools/sample_data.py -v sliver_training_001
 local_dir="~/data/medical/orig/"
 # vessels.pkl nejprve vytvoří prázný adresář s názvem vessels.pkl, pak jej při rozbalování zase smaže
+__url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 data_urls= {
     "head": ["http://147.228.240.61/queetech/sample-data/head.zip", "89e9b60fd23257f01c4a1632ff7bb800", "matlab"] ,
     "jatra_06mm_jenjatra": ["http://147.228.240.61/queetech/sample-data/jatra_06mm_jenjatra.zip", "jatra_06mm_jenjatra/*.dcm"],
@@ -186,7 +186,6 @@ def generate_donut():
     data3d = segmentation * 100 + np.random.random(segmentation.shape) * 30
     voxelsize_mm=[3,2,1]
 
-    import io3d
     datap = {
         'data3d': data3d,
         'segmentation': segmentation,
