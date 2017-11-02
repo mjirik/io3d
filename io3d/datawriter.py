@@ -108,7 +108,7 @@ class DataWriter:
             self._write_with_sitk(path, data3d, mtd)
             self._fix_sitk_bug(path, metadata)
             if sfin and segmentation is not None:
-                self._write_with_sitk(segmentation_path, data3d, mtd)
+                self._write_with_sitk(segmentation_path, segmentation, mtd)
                 self._fix_sitk_bug(segmentation_path, metadata)
         elif filetype in ['rawiv']:
             rawN.write(path, data3d, metadata)
