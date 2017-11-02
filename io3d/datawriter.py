@@ -78,8 +78,10 @@ class DataWriter:
             startpath, ext = os.path.splitext(path)
             filetype = ext[1:]
 
-        segmentation_path = self.__get_segmentation_path(path)
-        segmentation = metadata["segmentation"]
+        segmentation = None
+        if "segmentation" in metadata.keys():
+            segmentation_path = self.__get_segmentation_path(path)
+            segmentation = metadata["segmentation"]
 
 
 
@@ -100,12 +102,12 @@ class DataWriter:
 
         if filetype in ['vtk', 'tiff', 'tif']:
             self._write_with_sitk(path, data3d, mtd)
-            if sfin:
+            if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, mtd)
         elif filetype in ['dcm', 'DCM', 'dicom']:
             self._write_with_sitk(path, data3d, mtd)
             self._fix_sitk_bug(path, metadata)
-            if sfin:
+            if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, data3d, mtd)
                 self._fix_sitk_bug(segmentation_path, metadata)
         elif filetype in ['rawiv']:
@@ -509,14 +511,15 @@ def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
                            crinfo, orig_shape):
     """ Save overlay to dicom. """
     import datawriter as dwriter
-    import qmisc
 
+    # import qmisc
     if not os.path.exists(output_dicom_dir):
         os.mkdir(output_dicom_dir)
 
+    import imtools.image_manipulation
     # uncrop all overlays
     for key in overlays:
-        overlays[key] = qmisc.uncrop(overlays[key], crinfo, orig_shape)
+        overlays[key] = imtools.image_manipulation.uncrop(overlays[key], crinfo, orig_shape)
 
     dw = dwriter.DataWriter()
     dw.DataCopyWithOverlay(input_dcmfilelist, output_dicom_dir, overlays)
