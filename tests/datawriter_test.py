@@ -134,7 +134,7 @@ class DicomWriterTest(unittest.TestCase):
         self.assertEqual(metadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
 
-    attr("slow")
+    @attr("slow")
     def test_read_mhd_and_write_pklz(self):
         """
         test data on sliver dataset
