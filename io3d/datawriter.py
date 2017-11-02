@@ -79,7 +79,7 @@ class DataWriter:
             filetype = ext[1:]
 
         segmentation = None
-        if "segmentation" in metadata.keys():
+        if metadata is not None and "segmentation" in metadata.keys():
             segmentation_path = self.__get_segmentation_path(path)
             segmentation = metadata["segmentation"]
 
