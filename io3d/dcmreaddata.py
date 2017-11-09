@@ -9,17 +9,17 @@ Example:
 $ dcmreaddata -d sample_data -o head.mat
 """
 
-import sys
+import logging
 import os
-import dicom
 import re
-import numpy as np
+import sys
+import traceback
 from optparse import OptionParser
+
+import dicom
+import numpy as np
 from scipy.io import savemat
 
-import traceback
-
-import logging
 logger = logging.getLogger(__name__)
 from . import misc
 
@@ -132,10 +132,10 @@ class DicomReader():
                             # t_app = PyQt4.QtGui.QWidget(sys.argv)
                             print(qt_app)
 
-                        from PyQt4.QtGui import QInputDialog
-                        # bins = ', '.join([str(ii) for ii in bins])
                         series_info = self.dcmdirstats()
                         print(self.print_series_info(series_info))
+                        from PyQt4.QtGui import QInputDialog
+                        # bins = ', '.join([str(ii) for ii in bins])
                         sbins = [str(ii) for ii in bins]
                         sbinsd = {}
                         for serie_number in series_info.keys():
