@@ -174,6 +174,19 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(data3d.shape[2], 512)
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
+    # @unittest.skipIf(not interactivetTest, 'interactiveTest')
+    def test_dcmread_select_series_reasmusplus(self):
+
+        # dirpath = dcmr.get_dcmdir_qt()
+        dirpath = '~/data/medical/data_orig/erazmusplus/44204675/'
+        # dirpath = dcmr.get_dcmdir_qt()
+        # app = QMainWindow()
+        reader = dcmr.DicomReader(
+            dirpath, series_number=55555)  # , #qt_app =app)
+        # app.exit()
+        self.data3d = reader.get_3Ddata()
+        self.metadata = reader.get_metaData()
+
     @unittest.skipIf(not interactivetTest, 'interactiveTest')
     def test_dcmread_select_series(self):
 

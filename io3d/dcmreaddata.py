@@ -464,7 +464,7 @@ class DicomReader():
                    + str(series_info[serie_number]['ImageComments'])
         except:
             logger.debug(
-                'Tag Modlity or ImageComment not found in dcminfo'
+                'Tag Modality, SeriesDescription or ImageComment not found in dcminfo'
             )
             pass
             strl = strl + ')'

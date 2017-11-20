@@ -20,7 +20,7 @@ from . import dcmreaddata as dcmr
 
 def read(datapath, qt_app=None,
          dataplus_format=False, gui=False,
-         start=0, stop=None, step=1, convert_to_gray=True, **kwargs):
+         start=0, stop=None, step=1, convert_to_gray=True, series_number=None, **kwargs):
     """
     Simple read function. Internally call DataReader.Get3DData()
     """
@@ -28,7 +28,7 @@ def read(datapath, qt_app=None,
     return dr.Get3DData(
         datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format,
         gui=gui, start=start, stop=stop, step=step,
-        convert_to_gray=convert_to_gray, **kwargs)
+        convert_to_gray=convert_to_gray, series_number=None, **kwargs)
 
 
 class DataReader:
@@ -39,7 +39,7 @@ class DataReader:
 
     def Get3DData(self, datapath, qt_app=None,
                   dataplus_format=False, gui=False,
-                  start=0, stop=None, step=1, convert_to_gray=True, **kwargs):
+                  start=0, stop=None, step=1, convert_to_gray=True, series_number=None, **kwargs):
         """
         :datapath directory with input data
         :qt_app if it is set to None (as default) all dialogs for series
@@ -51,6 +51,9 @@ class DataReader:
         """
         self.orig_datapath = datapath
         datapath = os.path.expanduser(datapath)
+
+        if series_number is not None and type(series_number) != int:
+            series_number = int(series_number)
 
         if not os.path.exists(datapath):
             logger.error("Path '" + datapath + "' does not exist")
@@ -277,6 +280,11 @@ def main():
         help='input file'
     )
     parser.add_argument(
+        '-sn', '--seriesnumber',
+        default=None,
+        help='seriesnumber'
+    )
+    parser.add_argument(
         '-d', '--debug', action='store_true',
         help='Debug mode')
     args = parser.parse_args()
@@ -284,7 +292,7 @@ def main():
     if args.debug:
         ch.setLevel(logging.DEBUG)
 
-    data3d, metadata = read(args.inputfile)
+    data3d, metadata = read(args.inputfile, series_number = args.seriesnumber)
 
     import sed3
     ed = sed3.sed3(data3d)
