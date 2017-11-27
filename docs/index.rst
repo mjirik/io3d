@@ -10,6 +10,8 @@ Welcome to io3d's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   io3d
+
 
 
 Indices and tables
