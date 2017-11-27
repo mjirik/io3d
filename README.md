@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/mjirik/io3d.svg?branch=master)](https://travis-ci.org/mjirik/io3d)
 [![Coverage Status](https://coveralls.io/repos/mjirik/io3d/badge.svg?branch=master)](https://coveralls.io/r/mjirik/io3d?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/io3d/badge/?version=latest)](http://io3d.readthedocs.io/en/latest/?badge=latest)
 
 io3d
 ====
