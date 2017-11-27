@@ -18,6 +18,8 @@ from optparse import OptionParser
 
 import dicom
 import numpy as np
+import scipy
+import scipy.io
 from scipy.io import savemat
 
 logger = logging.getLogger(__name__)

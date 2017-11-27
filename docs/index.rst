@@ -13,7 +13,6 @@ Welcome to io3d's documentation!
    io3d
 
 
-
 Indices and tables
 ==================
 
