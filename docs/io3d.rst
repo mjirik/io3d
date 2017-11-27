@@ -1,17 +1,11 @@
-imtools package
-===============
+io3d package
+============
 
-Test text
 
 Subpackages
 -----------
 
 .. toctree::
-
-
-
-Submodules
-----------
 
 
 Module datareader
