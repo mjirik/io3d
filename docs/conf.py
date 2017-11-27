@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath('../'))
 import mock
 
 MOCK_MODULES = [
-    # 'numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'matplotlib.widgets',
+    'numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'matplotlib.widgets',
     # 'scipy.interpolate', 'scipy.ndimage', 'pycut', 'io3d', 'sed3', 'pysegbase',
     # 'pysegbase.pycut', 'sklearn', 'skimage', 'dicom', 'vtk', 'vtk.util',
     # 'larcc', 'larcc.VIEW', 'larcc.MKPOL', 'larcc.AA', 'larcc.INTERVALS',
@@ -54,7 +54,7 @@ for mod_name in MOCK_MODULES:
 # sklearn.__version__ = '0.0'
 # import scipy
 # scipy.__version__ = '0.0'
-import pysegbase.pycut
+# import pysegbase.pycut
 # pysegbase.pycut.methods = ['graphcut']
 
 
