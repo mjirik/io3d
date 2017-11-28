@@ -112,7 +112,7 @@ class DicomReader():
     def __init__(self, dirpath=None, initdir='.',
                  qt_app=None, gui=True, series_number=None):
         self.valid = False
-        self.dirpath = dirpath
+        self.dirpath = os.path.expanduser(dirpath)
         self.dcmdir = self.get_dir()
         self.series_number = series_number
         self.overlay = {}
@@ -183,7 +183,7 @@ class DicomReader():
         for i in range(len(dcmlist)):
             onefile = dcmlist[i]
             logger.info("reading '%s'" % onefile)
-            data = dicom.read_file(onefile)
+            data = self._read_file(onefile)
 
             if len(overlay) == 0:
                 # first there is created dictionary with
@@ -244,6 +244,10 @@ class DicomReader():
             overlay_slice = np.reshape(decoded_linear, [rows, cols])
             return overlay_slice
 
+    def _read_file(self, dcmfile):
+        data = dicom.read_file(dcmfile, force=True)
+        return data
+
     def get_3Ddata(self, start=0, stop=None, step=1):
         """
         Function make 3D data from dicom file slices
@@ -261,9 +265,9 @@ class DicomReader():
 
         # sometimes there is render in series
         if len(self.dcmlist) > 1:
-            data = dicom.read_file(dcmlist[0])
+            data = self._read_file(dcmlist[0])
             data2d1 = data.pixel_array
-            data = dicom.read_file(dcmlist[1])
+            data = self._read_file(dcmlist[1])
             data2d2 = data.pixel_array
             if (data2d1.shape[0] == data2d2.shape[0]) and (data2d1.shape[1] == data2d2.shape[1]):
                 pass
@@ -277,7 +281,7 @@ class DicomReader():
         printRescaleWarning = False
         for i in xrange(start, stop, step):
             onefile = dcmlist[i]
-            data = dicom.read_file(onefile)
+            data = self._read_file(onefile)
             data2d = data.pixel_array
             # mport pdb; pdb.set_trace()
 
@@ -347,12 +351,12 @@ class DicomReader():
         if len(dcmlist) <= 0:
             return {}
 
-        data1 = dicom.read_file(dcmlist[ifile])
+        data1 = self._read_file(dcmlist[ifile])
         try:
             head1, teil1 = os.path.split(dcmlist[ifile])
             head2, teil2 = os.path.split(dcmlist[ifile])
 
-            data2 = dicom.read_file(dcmlist[ifile + 1])
+            data2 = self._read_file(dcmlist[ifile + 1])
             loc1 = self.__get_slice_location(data1, teil1)
             loc2 = self.__get_slice_location(data2, teil2)
             voxeldepth = float(np.abs(loc1 - loc2))
@@ -598,6 +602,16 @@ class DicomReader():
         else:
             return dcmdata.SeriesNumber
 
+    def _prepare_metadata_line(self, dcmdata, teil):
+
+        metadataline = {'filename': teil,
+                        'SeriesNumber': self.__get_series_number(
+                            dcmdata),
+                        'SliceLocation': self.__get_slice_location(
+                            dcmdata, teil)
+                        }
+        return metadataline
+
     def create_dir(self):
         """
         Function crates list of all files in dicom dir with all IDs
@@ -608,30 +622,25 @@ class DicomReader():
 
         for filepath in filelist:
             head, teil = os.path.split(filepath)
+            dcmdata = None
             try:
                 dcmdata = dicom.read_file(filepath)
-                # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
-                metadataline = {'filename': teil,
-                                'SeriesNumber': self.__get_series_number(
-                                    dcmdata),
-                                'SliceLocation': self.__get_slice_location(
-                                    dcmdata, teil)
-                                }
 
-                # ry:
-                #    metadataline ['ImageComment'] = dcmdata.ImageComments
-                #    metadataline ['Modality'] = dcmdata.Modality
-                # xcept:
-                #    print('Problem with ImageComments and Modality tags')
+            except dicom.errors.InvalidDicomError as e:
+                # some files doesnt have DICM marker
+                try:
+                    dcmdata = dicom.read_file(filepath, force=True)
 
+                        # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
+                except Exception as e:
+                    if head != self.dicomdir_filename:
+                        print('Dicom read problem with file ' + filepath)
+                    import traceback
+                    logger.debug(traceback.format_exc())
+            if dcmdata is not None:
+                metadataline = self._prepare_metadata_line(dcmdata, teil)
                 files.append(metadataline)
 
-            # xcept Exception as e:
-            except:
-                if head != self.dicomdir_filename:
-                    print('Dicom read problem with file ' + filepath)
-                import traceback
-                logger.debug(traceback.format_exc())
 
         files.sort(key=lambda x: x['SliceLocation'])
 
