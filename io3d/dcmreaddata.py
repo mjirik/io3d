@@ -464,7 +464,7 @@ class DicomReader():
                 'Tag Modlity or ImageComment not found in dcminfo'
             )
             pass
-            strl = strl + ')'
+        strl = strl + ')'
         return strl
 
 
