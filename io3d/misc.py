@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 import sys
 import os.path
+import numpy as np
 
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
@@ -158,3 +159,97 @@ def obj_to_file(obj, filename, filetype='auto'):
         sio.savemat(filename, obj)
     else:
         logger.error('Unknown filetype ' + filetype)
+
+def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
+    """
+    Function resize input data to specific shape.
+
+    :param data: input 3d array-like data
+    :param shape: shape of output data
+    :param zoom: zoom is used for back compatibility
+    :mode: default is 'nearest'
+    """
+    # @TODO remove old code in except part
+
+    try:
+        # rint 'pred vyjimkou'
+        # aise Exception ('test without skimage')
+        # rint 'za vyjimkou'
+        import skimage
+        import skimage.transform
+# Now we need reshape  seeds and segmentation to original size
+
+        segm_orig_scale = skimage.transform.resize(
+            data, shape, order=0,
+            preserve_range=True
+        )
+
+        segmentation = segm_orig_scale
+        logger.debug('resize to orig with skimage')
+    except:
+        import scipy
+        import scipy.ndimage
+        dtype = data.dtype
+        if zoom is None:
+            zoom = shape / np.asarray(data.shape).astype(np.double)
+
+        segm_orig_scale = scipy.ndimage.zoom(
+            data,
+            1.0 / zoom,
+            mode=mode,
+            order=order
+        ).astype(dtype)
+        logger.debug('resize to orig with scipy.ndimage')
+
+# @TODO odstranit hack pro oříznutí na stejnou velikost
+# v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
+# tam je bohužel patrně bug
+        # rint 'd3d ', self.data3d.shape
+        # rint 's orig scale shape ', segm_orig_scale.shape
+        shp = [
+            np.min([segm_orig_scale.shape[0], shape[0]]),
+            np.min([segm_orig_scale.shape[1], shape[1]]),
+            np.min([segm_orig_scale.shape[2], shape[2]]),
+        ]
+        # elf.data3d = self.data3d[0:shp[0], 0:shp[1], 0:shp[2]]
+        # mport ipdb; ipdb.set_trace() # BREAKPOINT
+
+        segmentation = np.zeros(shape, dtype=dtype)
+        segmentation[
+            0:shp[0],
+            0:shp[1],
+            0:shp[2]] = segm_orig_scale[0:shp[0], 0:shp[1], 0:shp[2]]
+
+        del segm_orig_scale
+    return segmentation
+
+
+def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
+    """
+    Function can resize data3d or segmentation to specifed voxelsize_mm
+    :new_voxelsize_mm: requested voxelsize. List of 3 numbers, also
+        can be a string 'orig', 'orgi*2' and 'orgi*4'.
+
+    :voxelsize_mm: size of voxel
+    :mode: default is 'nearest'
+    """
+    import scipy
+    import scipy.ndimage
+
+    if new_voxelsize_mm == 'orig':
+        new_voxelsize_mm = np.array(voxelsize_mm)
+
+    elif new_voxelsize_mm == 'orig*2':
+        new_voxelsize_mm = np.array(voxelsize_mm) * 2
+    elif new_voxelsize_mm == 'orig*4':
+        new_voxelsize_mm = np.array(voxelsize_mm) * 4
+        # vx_size = np.array(metadata['voxelsize_mm']) * 4
+
+    zoom = voxelsize_mm / (1.0 * np.array(new_voxelsize_mm))
+    data3d_res = scipy.ndimage.zoom(
+        data3d,
+        zoom,
+        mode=mode,
+        order=1
+    ).astype(data3d.dtype)
+    return data3d_res

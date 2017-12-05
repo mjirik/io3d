@@ -37,7 +37,18 @@ class DataWriter:
         self.stop_writing = False
         self.progress_callback = None
 
-    def Write3DData(self, data3d, path, filetype='auto', metadata=None, progress_callback=None):
+    def __get_segmentation_path(self, path):
+        """ Create path with "_segmentation" suffix and keep extension.
+
+        :param path:
+        :return:
+        """
+        startpath, ext = os.path.splitext(path)
+        segmentation_path = startpath + "_segmentation" + ext
+        return segmentation_path
+
+
+    def Write3DData(self, data3d, path, filetype='auto', metadata=None, progress_callback=None, sfin=True):
         """
         data3d: input ndarray data
         path: output path, to specify slice number advanced formatting options (like {:06d}) can be used
@@ -45,6 +56,7 @@ class DataWriter:
         metadata: {'voxelsize_mm': [1, 1, 1]}
         filetype: dcm, vtk, rawiv, image_stack
         progress_callback: fuction for progressbar f.e. callback(value, minimum, maximum)
+        sfin: Use separate file for segmentation if necessary
 
 
         """
@@ -66,6 +78,13 @@ class DataWriter:
             startpath, ext = os.path.splitext(path)
             filetype = ext[1:]
 
+        segmentation = None
+        if metadata is not None and "segmentation" in metadata.keys():
+            segmentation_path = self.__get_segmentation_path(path)
+            segmentation = metadata["segmentation"]
+
+
+
         mtd = {'voxelsize_mm': [1, 1, 1]}
         if metadata is not None:
             mtd.update(metadata)
@@ -83,9 +102,14 @@ class DataWriter:
 
         if filetype in ['vtk', 'tiff', 'tif']:
             self._write_with_sitk(path, data3d, mtd)
+            if sfin and segmentation is not None:
+                self._write_with_sitk(segmentation_path, segmentation, mtd)
         elif filetype in ['dcm', 'DCM', 'dicom']:
             self._write_with_sitk(path, data3d, mtd)
             self._fix_sitk_bug(path, metadata)
+            if sfin and segmentation is not None:
+                self._write_with_sitk(segmentation_path, segmentation, mtd)
+                self._fix_sitk_bug(segmentation_path, metadata)
         elif filetype in ['rawiv']:
             rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
@@ -487,14 +511,15 @@ def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
                            crinfo, orig_shape):
     """ Save overlay to dicom. """
     import datawriter as dwriter
-    import qmisc
 
+    # import qmisc
     if not os.path.exists(output_dicom_dir):
         os.mkdir(output_dicom_dir)
 
+    import imtools.image_manipulation
     # uncrop all overlays
     for key in overlays:
-        overlays[key] = qmisc.uncrop(overlays[key], crinfo, orig_shape)
+        overlays[key] = imtools.image_manipulation.uncrop(overlays[key], crinfo, orig_shape)
 
     dw = dwriter.DataWriter()
     dw.DataCopyWithOverlay(input_dcmfilelist, output_dicom_dir, overlays)

@@ -4,17 +4,10 @@
 """
 
 # import funkcí z jiného adresáře
-import sys
-import os.path
-
-# path_to_script = os.path.dirname(os.path.abspath(__file__))
-# sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src"))
-# sys.path.append(os.path.join(path_to_script,
-#                              "../extern/py3DSeedEditor/"))
-# ys.path.append(os.path.join(path_to_script, "../extern/"))
-# mport featurevector
-
 import logging
+import os.path
+import sys
+
 logger = logging.getLogger(__name__)
 import argparse
 
@@ -27,7 +20,7 @@ from . import dcmreaddata as dcmr
 
 def read(datapath, qt_app=None,
          dataplus_format=False, gui=False,
-         start=0, stop=None, step=1, convert_to_gray=True):
+         start=0, stop=None, step=1, convert_to_gray=True, series_number=None, **kwargs):
     """
     Simple read function. Internally call DataReader.Get3DData()
     """
@@ -35,7 +28,7 @@ def read(datapath, qt_app=None,
     return dr.Get3DData(
         datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format,
         gui=gui, start=start, stop=stop, step=step,
-        convert_to_gray=convert_to_gray)
+        convert_to_gray=convert_to_gray, series_number=None, **kwargs)
 
 
 class DataReader:
@@ -46,7 +39,7 @@ class DataReader:
 
     def Get3DData(self, datapath, qt_app=None,
                   dataplus_format=False, gui=False,
-                  start=0, stop=None, step=1, convert_to_gray=True):
+                  start=0, stop=None, step=1, convert_to_gray=True, series_number=None, **kwargs):
         """
         :datapath directory with input data
         :qt_app if it is set to None (as default) all dialogs for series
@@ -58,6 +51,9 @@ class DataReader:
         """
         self.orig_datapath = datapath
         datapath = os.path.expanduser(datapath)
+
+        if series_number is not None and type(series_number) != int:
+            series_number = int(series_number)
 
         if not os.path.exists(datapath):
             logger.error("Path '" + datapath + "' does not exist")
@@ -75,7 +71,7 @@ class DataReader:
             logger.debug('directory read recognized')
             # print("read from directory")
             data3d, metadata = self.__ReadFromDirectory(
-                datapath, start, stop, step)
+                datapath, start, stop, step, **kwargs)
         else:
             logger.error('Data path "%s" not found' % (datapath))
 
@@ -94,10 +90,10 @@ class DataReader:
         else:
             return data3d, metadata
 
-    def __ReadFromDirectory(self, datapath, start, stop, step):
+    def __ReadFromDirectory(self, datapath, start, stop, step, **kwargs):
         if dcmr.is_dicom_dir(datapath):  # reading dicom
             logger.debug('Dir - DICOM')
-            reader = dcmr.DicomReader(datapath, qt_app=None, gui=True)
+            reader = dcmr.DicomReader(datapath, **kwargs) # qt_app=None, gui=True)
             data3d = reader.get_3Ddata(start, stop, step)
             metadata = reader.get_metaData()
             metadata['series_number'] = reader.series_number
@@ -284,6 +280,11 @@ def main():
         help='input file'
     )
     parser.add_argument(
+        '-sn', '--seriesnumber',
+        default=None,
+        help='seriesnumber'
+    )
+    parser.add_argument(
         '-d', '--debug', action='store_true',
         help='Debug mode')
     args = parser.parse_args()
@@ -291,7 +292,7 @@ def main():
     if args.debug:
         ch.setLevel(logging.DEBUG)
 
-    data3d, metadata = read(args.inputfile)
+    data3d, metadata = read(args.inputfile, series_number = args.seriesnumber)
 
     import sed3
     ed = sed3.sed3(data3d)

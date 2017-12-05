@@ -134,6 +134,18 @@ class DicomWriterTest(unittest.TestCase):
         self.assertEqual(metadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
 
+    @attr("slow")
+    def test_read_mhd_and_write_pklz(self):
+        """
+        test data on sliver dataset
+        :return:
+        """
+        infn = op.join(op.expanduser(io3d.datasets.local_dir), "sliver07/training/liver-orig001.mhd")
+        datap = io3d.read(infn, dataplus_format=True)
+        datap["segmentation"] = np.zeros_like(datap["data3d"], dtype=np.uint8)
+
+        io3d.write(datap, path="test_mhd.pklz")
+
     def test_write_hdf5(self):
         filename = 'test_file.hdf5'
         data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
@@ -387,6 +399,17 @@ class DicomWriterTest(unittest.TestCase):
         out = io3d.datawriter.filepattern_fill_series_number("{seriesn:03d}/{slicen:06d}", series_number=15)
         self.assertEqual(out, '015/{slicen:06d}')
 
+    @attr('interactive')
+    def test_read_data_without_slice_thickness(self):
+        """ data without SliceThickness
+        :return:
+        """
+
+        dr = dreader.DataReader()
+        data3dnew, metadata = dr.Get3DData(
+                "~/data/medical/orig/dicom_test_claudio"
+        )
+        metadata
 
 if __name__ == "__main__":
     unittest.main()
