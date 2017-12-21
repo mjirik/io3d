@@ -381,11 +381,58 @@ def downzip(url, destination='./sample_data/'):
     logmsg = "downloading from '" + url + "'"
     print(logmsg)
     logger.debug(logmsg)
-    local_file_name = os.path.join(destination, 'tmp.zip')
-    urllibr.urlretrieve(url, local_file_name)
+    zip_file_name = os.path.join(destination, 'tmp.zip')
+    urllibr.urlretrieve(url, zip_file_name)
+    unzip_recursive(zip_file_name)
+    # unzip_one(local_file_name)
+
+# def unzip_all(path):
+#     """ Unzip all .zip files packed in other .zip in path recusively.
+#
+#     :param path:
+#     :return:
+#     """
+#
+#     ziplist = glob.glob(op.join(path, '*.zip'))
+#     while len(ziplist) > 0:
+#     # for local_file_name in ziplist:
+#         local_file_name = ziplist[0]
+#         unzip_one(local_file_name)
+#         ziplist = glob.glob(op.join(path, '*.zip'))
+
+def unzip_one(local_file_name):
+    """
+    Unzip one file and delete it.
+    :param local_file_name: file name of zip file
+    :return:
+    """
+    local_file_name = op.expanduser(local_file_name)
+    destination = op.dirname(local_file_name)
     datafile = zipfile.ZipFile(local_file_name)
+    namelist = datafile.namelist()
     datafile.extractall(destination)
+    datafile.close()
     remove(local_file_name)
+
+    fullnamelist = []
+    for fn in namelist:
+        fullnamelist.append(op.join(destination, fn))
+    return fullnamelist
+
+def unzip_recursive(zip_file_name):
+    """
+    Unzip file with all recursive zip files inside and delete zip files after that.
+
+    :param zip_file_name:
+    :return:
+    """
+    fnlist = unzip_one(zip_file_name)
+    for fn in fnlist:
+        if zipfile.is_zipfile(fn):
+            local_fnlist = unzip_recursive(fn)
+            fnlist.extend(local_fnlist)
+
+    return fnlist
 
 
 if __name__ == "__main__":
