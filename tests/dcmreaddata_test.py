@@ -222,7 +222,9 @@ class DicomReaderTest(unittest.TestCase):
         # dirpath = dcmr.get_dcmdir_qt()
         # app = QMainWindow()
         reader = dcmr.DicomReader(
-            dirpath)  # , #qt_app =app)
+            dirpath,
+            series_number=202
+        )  # , #qt_app =app)
         # app.exit()
         self.data3d = reader.get_3Ddata()
         self.metadata = reader.get_metaData()

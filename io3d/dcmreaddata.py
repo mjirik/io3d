@@ -110,13 +110,22 @@ class DicomReader():
     dicomdir_filename = 'dicomdir.pkl'
 
     def __init__(self, dirpath=None, initdir='.',
-                 qt_app=None, gui=True, series_number=None):
+                 qt_app=None, gui=True, series_number=None,
+                 get_series_number_callback=None
+                 ):
         self.valid = False
         self.dirpath = os.path.expanduser(dirpath)
         self.dcmdir = self.get_dir()
         self.series_number = series_number
         self.overlay = {}
         self.dcmlist = []
+        if get_series_number_callback is None:
+            if (qt_app is not None) or gui:
+                get_series_number_callback = get_series_number_qt
+            else:
+                get_series_number_callback = get_series_number_console
+
+        self.get_series_number_callback = get_series_number_callback
 
         if len(self.dcmdir) > 0:
             self.valid = True
@@ -124,41 +133,13 @@ class DicomReader():
 
             if len(bins) > 1:
                 if self.series_number is None:  # pragma: no cover
-                    if (qt_app is not None) or gui:
-                        if qt_app is None:
+                    self.get_series_number_callback(
+                        self,
+                        counts,
+                        bins,
+                        qt_app=qt_app
+                    )
 
-                            # @TODO  there is problem with type of qappliaction
-                            # mport PyQt4
-                            # rom PyQt4.QtGui import QApplication
-                            # t_app = QApplication(sys.argv)
-                            # t_app = PyQt4.QtGui.QWidget(sys.argv)
-                            print(qt_app)
-
-                        series_info = self.dcmdirstats()
-                        print(self.print_series_info(series_info))
-                        from PyQt4.QtGui import QInputDialog
-                        # bins = ', '.join([str(ii) for ii in bins])
-                        sbins = [str(ii) for ii in bins]
-                        sbinsd = {}
-                        for serie_number in series_info.keys():
-                            strl = self.get_one_serie_info(series_info, serie_number)
-                            sbinsd[strl] = serie_number
-                            # sbins.append(str(ii) + "  " + serie_number)
-                        sbins = sbinsd.keys()
-                        snstring, ok = \
-                            QInputDialog.getItem(qt_app,
-                                                 'Serie Selection',
-                                                 'Select serie:',
-                                                 sbins,
-                                                 editable=False)
-                        sn = sbinsd[str(snstring)]
-                    else:
-                        print('series')
-                        series_info = self.dcmdirstats()
-                        print(self.print_series_info(series_info))
-                        snstring = raw_input('Select Serie: ')
-
-                        sn = int(snstring)
                 else:
                     sn = self.series_number
 
@@ -701,6 +682,46 @@ class DicomReader():
 
         return filelist
 
+def get_series_number_console(dcmreader, counts, bins, qt_app=None):
+
+    print('series')
+    series_info = dcmreader.dcmdirstats()
+    print(dcmreader.print_series_info(series_info))
+    snstring = raw_input('Select Serie: ')
+
+    sn = int(snstring)
+    return sn
+
+def get_series_number_qt(dcmreader, counts, bins, qt_app=None):
+
+    if qt_app is None:
+
+        # @TODO  there is problem with type of qappliaction
+        # mport PyQt4
+        # rom PyQt4.QtGui import QApplication
+        # t_app = QApplication(sys.argv)
+        # t_app = PyQt4.QtGui.QWidget(sys.argv)
+        print(qt_app)
+
+    series_info = dcmreader.dcmdirstats()
+    print(dcmreader.print_series_info(series_info))
+    from PyQt4.QtGui import QInputDialog
+    # bins = ', '.join([str(ii) for ii in bins])
+    sbins = [str(ii) for ii in bins]
+    sbinsd = {}
+    for serie_number in series_info.keys():
+        strl = dcmreader.get_one_serie_info(series_info, serie_number)
+        sbinsd[strl] = serie_number
+        # sbins.append(str(ii) + "  " + serie_number)
+    sbins = sbinsd.keys()
+    snstring, ok = \
+        QInputDialog.getItem(qt_app,
+                             'Serie Selection',
+                             'Select serie:',
+                             sbins,
+                             editable=False)
+    sn = sbinsd[str(snstring)]
+    return sn
 
 def get_dcmdir_qt(app=False, directory=''):
     from PyQt4.QtGui import QFileDialog, QApplication
