@@ -575,25 +575,34 @@ class DicomReader():
         :param teil: filename. Used when slice location doesnt exist
         :return:
         """
+        slice_location=None
         if hasattr(dcmdata, 'SliceLocation'):
-            return float(dcmdata.SliceLocation)
-        elif hasattr(dcmdata, "SliceThickness") and teil is not None:
+            print(dcmdata.SliceLocation)
+            print(type(dcmdata.SliceLocation))
+            try:
+                slice_location = float(dcmdata.SliceLocation)
+            except Exception as exc:
+                logger.warning("It is not possible to use SliceLocation")
+                logger.info(traceback.format_exc())
+        if slice_location is None and hasattr(dcmdata, "SliceThickness") and teil is not None:
             logger.warning(
                 "Estimating SliceLocation wiht image number and SliceThickness"
             )
-            print(teil)
+            # print(teil)
 
             i = map(int, re.findall('\d+', teil))
             i = i[-1]
-            return float(i * float(dcmdata.SliceThickness))
+            slice_location = float(i * float(dcmdata.SliceThickness))
 
-        elif hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata, "ImageOrientationPatient"):
+        if slice_location is None and hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata, "ImageOrientationPatient"):
             if dcmdata.ImageOrientationPatient == [1, 0, 0, 0, 1, 0]:
-                return dcmdata.ImagePositionPatient[2]
+                slice_location = dcmdata.ImagePositionPatient[2]
             else:
                 logger.warning("Unknown ImageOrientationPatient")
-        else:
+        if slice_location is None:
             logger.warning("Problem with slice location")
+
+        return slice_location
 
     def __get_series_number(self, dcmdata):
 

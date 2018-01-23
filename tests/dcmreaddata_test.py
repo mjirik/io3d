@@ -214,6 +214,21 @@ class DicomReaderTest(unittest.TestCase):
         self.data3d = reader.get_3Ddata()
         self.metadata = reader.get_metaData()
 
+    @attr('dataset')
+    def test_dcmread_not_defined_slice_width(self):
+
+        # dirpath = dcmr.get_dcmdir_qt()
+        dirpath = 'e:/data/medical/orig/chk/83674597/'
+        # dirpath = dcmr.get_dcmdir_qt()
+        # app = QMainWindow()
+        reader = dcmr.DicomReader(
+            dirpath)  # , #qt_app =app)
+        # app.exit()
+        self.data3d = reader.get_3Ddata()
+        self.metadata = reader.get_metaData()
+        sz = self.data3d.shape
+        print(sz)
+
     @unittest.skipIf(not interactivetTest, 'interactiveTest')
     def test_dcmread_select_series(self):
 
