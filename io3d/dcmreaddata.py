@@ -587,10 +587,10 @@ class DicomReader():
 
     def __get_series_number(self, dcmdata):
 
-        if hasattr(dcmdata, 'SeriesNumber') and dcmdata.SeriesNumber == '':
-            return 0
-        else:
-            return dcmdata.SeriesNumber
+        series_number = 0
+        if hasattr(dcmdata, 'SeriesNumber') and dcmdata.SeriesNumber != '':
+                series_number = dcmdata.SeriesNumber
+        return series_number
 
     def _prepare_metadata_line(self, dcmdata, teil):
 
