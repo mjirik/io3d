@@ -41,6 +41,7 @@ data_urls= {
     "vincentka": ["http://147.228.240.61/queetech/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
     "vincentka_sample": ["http://147.228.240.61/queetech/sample-data/vincentka_sample.zip"],
     "donut": "http://147.228.240.61/queetech/sample-data/donut.zip",
+    "io3d_sample_data": ["http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip"],
     "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
     "3Dircadb1.1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
@@ -426,6 +427,7 @@ def unzip_recursive(zip_file_name):
     :param zip_file_name:
     :return:
     """
+    logger.debug("unzipping " + zip_file_name)
     fnlist = unzip_one(zip_file_name)
     for fn in fnlist:
         if zipfile.is_zipfile(fn):

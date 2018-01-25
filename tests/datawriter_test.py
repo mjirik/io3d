@@ -28,7 +28,7 @@ import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
 # import sed3 as pyed
-SAMPLE_DATA_DIR = "./sample_data"
+SAMPLE_DATA_DIR = "~/data/medical/orig/sample_data"
 
 
 class DicomWriterTest(unittest.TestCase):

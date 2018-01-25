@@ -11,7 +11,8 @@ import os.path
 
 import unittest
 from nose.plugins.attrib import attr
-path_to_script = os.path.dirname(os.path.abspath(__file__))
+# sample_data_path = os.path.dirname(os.path.abspath(__file__))
+# sample_data_path
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
 # sys.path.append(os.path.join(path_to_script, "../extern/py3DSeedEditor/"))
 # sys.path.append(os.path.join(path_to_script, "../src/"))
@@ -26,7 +27,8 @@ dicom.debug(False)
 #
 import io3d
 import io3d.dcmreaddata as dcmr
-SAMPLE_DATA_DIR = "sample_data"
+sample_data_path = "~/data/medical/orig/sample_data/"
+
 
 
 class DicomReaderTest(unittest.TestCase):
@@ -44,21 +46,21 @@ class DicomReaderTest(unittest.TestCase):
 #        self.metadata = reader.get_metaData()
 
     def test_dicomread_read(self):
-        dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
-        #dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
-        #self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         data3d, metadata = io3d.datareader.read(dcmdir)
 #slice size is 512x512
-        self.assertEqual(data3d.shape[2],512)
+        self.assertEqual(data3d.shape[2], 512)
 # voxelsize depth = 5 mm
-        self.assertEqual(metadata['voxelsize_mm'][0],5)
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
     def test_dicomread_read_corrupted_dcmdir_file(self):
-        dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         pth_dicomdir = os.path.join(
-                path_to_script, '../sample_data/jatra_5mm/dicomdir.pkl')
+                sample_data_path, '../sample_data/jatra_5mm/dicomdir.pkl')
         pth_dicomdir_bck = os.path.join(
-                path_to_script, '../sample_data/jatra_5mm/dicomdir.pkl.bck')
+                sample_data_path, '../sample_data/jatra_5mm/dicomdir.pkl.bck')
         import shutil
 # Backup file
         shutil.copy2(pth_dicomdir, pth_dicomdir_bck)
@@ -80,7 +82,7 @@ class DicomReaderTest(unittest.TestCase):
     def test_DicomReader_overlay(self):
         # import matplotlib.pyplot as plt
 
-        dcmdir = os.path.join(path_to_script, '../sample_data/volumetrie/')
+        dcmdir = os.path.join(sample_data_path, '../sample_data/volumetrie/')
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         reader = dcmr.DicomReader(dcmdir)
@@ -102,7 +104,7 @@ class DicomReaderTest(unittest.TestCase):
         # import py3DSeedEditor
         # import matplotlib.pyplot as plt
         dcmfile = os.path.join(
-            path_to_script, '../sample_data/volumetrie/volumetry_slice.DCM')
+            sample_data_path, '../sample_data/volumetrie/volumetry_slice.DCM')
         data = dicom.read_file(dcmfile)
 
         # overlay index
@@ -144,7 +146,7 @@ class DicomReaderTest(unittest.TestCase):
 
     def test_dcmread(self):
 
-        dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         reader = dcmr.DicomReader(dcmdir)
@@ -164,7 +166,7 @@ class DicomReaderTest(unittest.TestCase):
 
     def test_dcmread_series_number(self):
 
-        dcmdir = os.path.join(path_to_script, '../sample_data/jatra_5mm')
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
 # spravne cislo serie je 7

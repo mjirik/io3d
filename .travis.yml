@@ -14,7 +14,9 @@ before_install:
     - ./miniconda.sh -b -p /home/travis/miniconda
     - export PATH=/home/travis/miniconda/bin:$PATH
     - sudo apt-get install -qq $(< apt_requirements.txt)
-    - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip && unzip io3d_sample_data.zip
+    - mkdir -p ~/data/medical/orig
+    - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip
+    - unzip -d ~/data/medical/orig/ io3d_sample_data.zip
 # command to install dependencies
 install:
     - conda update --yes conda

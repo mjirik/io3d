@@ -24,7 +24,7 @@ class RawIOTest(unittest.TestCase):
     # @attr('interactive')
     def test_rawiv_read(self):
         # import sed3
-        data3d, metadata = io3d.rawN.read('sample_data/ct_head.rawiv')
+        data3d, metadata = io3d.rawN.read('~/data/medical/orig/sample_data/ct_head.rawiv')
         # ed = sed3.sed3(data3d)
         # ed.show()
         # on this index sould be number 119
