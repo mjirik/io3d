@@ -129,7 +129,8 @@ class DataWriter:
 
             # data = dicom.read_file(onefile)
 
-    def _write_with_sitk(self,path, data3d, metadata):
+    def _write_with_sitk(self, path, data3d, metadata):
+        self._makedirs(path)
         import SimpleITK as sitk
         mtd=metadata
         dim = sitk.GetImageFromArray(data3d)
@@ -515,8 +516,9 @@ def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
     import datawriter as dwriter
 
     # import qmisc
+    _
     if not os.path.exists(output_dicom_dir):
-        os.mkdir(output_dicom_dir)
+        os.makedirs(output_dicom_dir)
 
     import imtools.image_manipulation
     # uncrop all overlays
