@@ -13,6 +13,7 @@ import os.path
 
 import re
 import dicom
+import os.path as op
 from . import rawN
 from . import misc
 # from sys import argv
@@ -231,6 +232,7 @@ class DataWriter:
         """
         if filename_out is None:
             filename_out = filename
+        filename = op.expanduser(filename)
         data = dicom.read_file(filename)
         data = self.encode_overlay_slice(data, overlay, i_overlay)
         data.save_as(filename_out)

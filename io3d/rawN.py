@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 import argparse
 import struct
 import numpy as np
+import os.path as op
 
 
 def read(filename):
@@ -61,6 +62,7 @@ def __iv_read_header(f):
 
 
 def read_iv(filename):
+    filename = op.expanduser(filename)
     with open(filename, "rb") as f:
         head = __iv_read_header(f)
 

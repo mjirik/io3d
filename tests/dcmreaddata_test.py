@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 # import funkcí z jiného adresáře
 # import sys
 import os.path
+import os.path as op
 # import copy
 
 import unittest
@@ -28,6 +29,7 @@ dicom.debug(False)
 import io3d
 import io3d.dcmreaddata as dcmr
 sample_data_path = "~/data/medical/orig/sample_data/"
+sample_data_path = op.expanduser(sample_data_path)
 
 
 
@@ -105,6 +107,8 @@ class DicomReaderTest(unittest.TestCase):
         # import matplotlib.pyplot as plt
         dcmfile = os.path.join(
             sample_data_path, '../sample_data/volumetrie/volumetry_slice.DCM')
+
+        dcmfile = op.expanduser(dcmfile)
         data = dicom.read_file(dcmfile)
 
         # overlay index
@@ -264,14 +268,14 @@ class DicomReaderTest(unittest.TestCase):
         """
         files in vincentka_sample have no extension
         """
-        dcmdir = 'sample_data/vincentka_sample/'
+        dcmdir = op.join(sample_data_path, 'vincentka_sample/')
         self.assertTrue(dcmr.is_dicom_dir(dcmdir))
 
     @attr('actual')
     def test_compare_dcmread_and_dataread(self):
 
         # dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
-        dcmdir = 'sample_data/vincentka_sample/'
+        dcmdir = op.join(sample_data_path, 'vincentka_sample/')
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         reader = dcmr.DicomReader(dcmdir)

@@ -21,6 +21,7 @@ import numpy as np
 import scipy
 import scipy.io
 from scipy.io import savemat
+import os.path as op
 
 logger = logging.getLogger(__name__)
 from . import misc
@@ -30,7 +31,7 @@ if sys.version_info[0] >= 3:
     xrange = range
     raw_input = input
 
-__version__ = [1, 3]
+__version__ = [1, 4]
 
 
 # def obj_from_file(filename='annotation.yaml', filetype='yaml'):
@@ -80,6 +81,7 @@ def is_dicom_dir(datapath):
     # with dicom module.
 
     retval = False
+    datapath = op.expanduser(datapath)
     for f in os.listdir(datapath):
         if f.endswith((".dcm", ".DCM")):
             retval = True
@@ -111,10 +113,14 @@ class DicomReader():
 
     def __init__(self, dirpath=None, initdir='.',
                  qt_app=None, gui=True, series_number=None,
-                 get_series_number_callback=None
+                 get_series_number_callback=None,
+                 force_create_dicomdir=False,
+                 force_read=False
                  ):
         self.valid = False
         self.dirpath = os.path.expanduser(dirpath)
+        self.force_create_dicomdir = force_create_dicomdir
+        self.force_read = force_read
         self.dcmdir = self.get_dir()
         self.series_number = series_number
         self.overlay = {}
@@ -226,7 +232,7 @@ class DicomReader():
             return overlay_slice
 
     def _read_file(self, dcmfile):
-        data = dicom.read_file(dcmfile, force=True)
+        data = dicom.read_file(dcmfile, force=self.force_read)
         return data
 
     def get_3Ddata(self, start=0, stop=None, step=1):
@@ -332,6 +338,7 @@ class DicomReader():
         if len(dcmlist) <= 0:
             return {}
 
+        logger.debug("Filename: " + dcmlist[ifile])
         data1 = self._read_file(dcmlist[ifile])
         try:
             head1, teil1 = os.path.split(dcmlist[ifile])
@@ -342,8 +349,8 @@ class DicomReader():
             loc2 = self.__get_slice_location(data2, teil2)
             voxeldepth = float(np.abs(loc1 - loc2))
         except:
-            logger.warning('Problem with voxel depth. Using SliceThickness,'
-                           + ' SeriesNumber: ' + str(data1.SeriesNumber))
+            logger.warning('Problem with voxel depth. Using SliceThickness')
+                           # + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
             try:
                 voxeldepth = float(data1.SliceThickness)
@@ -378,14 +385,16 @@ class DicomReader():
             metadata['ImageComments'] = data1.ImageComments
         except:
             logger.warning(
-                'Problem with tag ImageComments, SeriesNumber: ' +
-                str(data1.SeriesNumber))
+                'Problem with tag ImageComments')
+                # , SeriesNumber: ' +
+                # str(data1.SeriesNumber))
         try:
             metadata['Modality'] = data1.Modality
         except:
             logger.warning(
-                'Problem with tag Modality, SeriesNumber: ' +
-                str(data1.SeriesNumber))
+                'Problem with tag Modality')
+            # SeriesNumber: ' +
+            #     str(data1.SeriesNumber))
 
         metadata['dcmfilelist'] = self.dcmlist
 
@@ -533,8 +542,8 @@ class DicomReader():
                 logger.debug('Found dicomdir.pkl with wrong version')
                 pass
 
-        if createdcmdir:
-            dcmdirplus = self.create_dir()
+        if createdcmdir or self.force_create_dicomdir:
+            dcmdirplus = self.create_dir_file_list()
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
                 # obj_to_file(dcmdirplus, dicomdirfile, ftype)
@@ -602,7 +611,7 @@ class DicomReader():
                         }
         return metadataline
 
-    def create_dir(self):
+    def create_dir_file_list(self):
         """
         Function crates list of all files in dicom dir with all IDs
         """
@@ -619,7 +628,7 @@ class DicomReader():
             except dicom.errors.InvalidDicomError as e:
                 # some files doesnt have DICM marker
                 try:
-                    dcmdata = dicom.read_file(filepath, force=True)
+                    dcmdata = dicom.read_file(filepath, force=self.force_read)
 
                         # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
                 except Exception as e:

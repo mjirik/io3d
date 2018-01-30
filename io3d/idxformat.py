@@ -14,6 +14,7 @@ class IDXReader:
         pass
 
     def read(self, datapath):
+        datapath = op.expanduser(datapath)
         data3d = np.zeros([10, 10, 10])
         metadata = {}
         header = self.header_file_parser(datapath)
@@ -22,6 +23,9 @@ class IDXReader:
         return data3d, metadata
 
     def read_files(self, datapath):
+
+
+        datapath = op.expanduser(datapath)
 
         dirp, filename = op.split(datapath)
         fn_template = op.join(dirp, self.header['filename_template'])
