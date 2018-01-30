@@ -311,7 +311,7 @@ class DataWriter:
         filename = get_first_filename(filepattern, series_number=series_number)
         datadir, dataname = os.path.split(filename)
 
-        if not os.path.exists(datadir):
+        if datadir != "" and not os.path.exists(datadir):
             os.makedirs(datadir)
 
     def save_image_stack(self, data3d, filepattern, metadata=None):
@@ -333,7 +333,7 @@ class DataWriter:
                 databasename + "{:05d}" + dataext)
         # print(filepattern)
         if (metadata is not None) and "voxelsize_mm" in metadata.keys():
-            z_position = metadata["voxelsize_mm"][0]
+            z_position = 0.0 # metadata["voxelsize_mm"][0]
             z_vs = metadata["voxelsize_mm"][0]
         else:
             z_position = 0.0
