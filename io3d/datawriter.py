@@ -51,13 +51,13 @@ class DataWriter:
 
     def Write3DData(self, data3d, path, filetype='auto', metadata=None, progress_callback=None, sfin=True):
         """
-        data3d: input ndarray data
-        path: output path, to specify slice number advanced formatting options (like {:06d}) can be used
+        :param data3d: input ndarray data
+        :param path: output path, to specify slice number advanced formatting options (like {:06d}) can be used
         Check function filename_format() for more details.
-        metadata: {'voxelsize_mm': [1, 1, 1]}
-        filetype: dcm, vtk, rawiv, image_stack
-        progress_callback: fuction for progressbar f.e. callback(value, minimum, maximum)
-        sfin: Use separate file for segmentation if necessary
+        :param metadata: {'voxelsize_mm': [1, 1, 1]}
+        :param filetype: dcm, vtk, rawiv, image_stack
+        :param progress_callback: fuction for progressbar f.e. callback(value, minimum, maximum)
+        :param sfin: Use separate file for segmentation if necessary
 
 
         """
@@ -107,20 +107,20 @@ class DataWriter:
                 self._write_with_sitk(segmentation_path, segmentation, mtd)
         elif filetype in ['dcm', 'DCM', 'dicom']:
             self._write_with_sitk(path, data3d, mtd)
-            self._fix_sitk_bug(path, metadata)
+            self._fix_sitk_bug(path, mtd)
             if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, mtd)
-                self._fix_sitk_bug(segmentation_path, metadata)
+                self._fix_sitk_bug(segmentation_path, mtd)
         elif filetype in ['rawiv']:
-            rawN.write(path, data3d, metadata)
+            rawN.write(path, data3d, mtd)
         elif filetype in ['image_stack']:
-            self.save_image_stack(data3d, path, metadata)
+            self.save_image_stack(data3d, path, mtd)
         elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
-            self.save_hdf5(data3d, path, metadata)
+            self.save_hdf5(data3d, path, mtd)
         elif filetype in ['pkl', 'pklz']:
             from . import misc
             metadata['data3d'] = data3d
-            datap = metadata
+            datap = mtd
 
             misc.obj_to_file(datap, path)
 

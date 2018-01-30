@@ -177,6 +177,15 @@ class DicomWriterTest(unittest.TestCase):
                          newmetadata['voxelsize_mm'][2])
         os.remove(filename)
 
+    def test_write_single_dicom(self):
+        filename = 'tests_outputs/single_test_file.dcm'
+        filedir = os.path.dirname(filename)
+        data3d = np.zeros([10,10,10], dtype=np.uint8)
+        data3d [1:, 5, 3:9] = 124
+        data3d [3:, 2:7, 4] = 60
+
+        io3d.write(data3d, filename)
+
     def test_add_overlay_and_read_one_file_with_overlay(self):
         filename = 'tests_outputs/test_file.dcm'
         filedir = os.path.dirname(filename)
