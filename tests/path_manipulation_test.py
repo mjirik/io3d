@@ -78,7 +78,7 @@ class PathManipulationTest(unittest.TestCase):
     #     )
     #     shutil.rmtree(testdatadir)
     #
-    def test_save_image_stack_with_unique_series_number_based_on_filename(self):
+    def test_save_image_stack_with_unique_series_number_based_on_filename1(self):
         testdatadir = 'test_svimstack2'
         if os.path.exists(testdatadir):
             shutil.rmtree(testdatadir)
