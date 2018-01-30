@@ -46,9 +46,9 @@ class DataReaderWidget(QtGui.QWidget):
         :param loadfiledir: init dir fo file dialog
         :param loaddir: init dir for dir dialog
         :param show_message_function:
-        :param after_function:
+        :param after_function: function with no input object DataReaderWidget. In self.datap are stored data.
         :param before_function:
-        :param cachefile:
+        :param cachefile: is used to store information about last used file or directory
         """
         super(DataReaderWidget, self).__init__()
 

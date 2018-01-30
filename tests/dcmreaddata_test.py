@@ -81,6 +81,25 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
         shutil.copy2(pth_dicomdir_bck, pth_dicomdir)
 
+    def test_dicomread_read_corrupted_dcmdir_file(self):
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        pth_useless_file = os.path.join(
+            sample_data_path, '../sample_data/jatra_5mm/useless_file.dcm')
+        # create corrupted file
+        f = open(pth_useless_file, 'w')
+        f.write('this file content is useless')
+        f.close()
+
+        #dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        #self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir)
+        #slice size is 512x512
+        self.assertEqual(data3d.shape[2],512)
+        # voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+        os.remove(pth_useless_file)
+        # shutil.rmcopy2(pth_dicomdir_bck, pth_dicomdir)
+
     def test_DicomReader_overlay(self):
         # import matplotlib.pyplot as plt
 
@@ -148,6 +167,28 @@ class DicomReaderTest(unittest.TestCase):
         # pyed.show()
         # import pdb; pdb.set_trace()
 
+    @attr('dataset')
+    def test_dcmread_micro_ct(self):
+        # there was problem with DICOMDIR file
+
+        dcmdir = "e:\\data\\medical\\orig\\jatra_mikro_data\\Nejlepsi_rozliseni_nevycistene\\"
+        # os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        reader = dcmr.DicomReader(dcmdir, force_create_dicomdir=True)
+        data3d = reader.get_3Ddata()
+        metadata = reader.get_metaData()
+        stats = reader.dcmdirstats()
+        info_str = reader.print_series_info(stats, minimal_series_number=0)
+
+        # slice size is 512x512
+        self.assertEqual(data3d.shape[2], 512)
+        # voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+        # test stats
+        self.assertEqual(stats[7]['Modality'], 'CT')
+        self.assertTrue(info_str,
+                        '7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n')
     def test_dcmread(self):
 
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')

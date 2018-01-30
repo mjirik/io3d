@@ -109,7 +109,6 @@ class DicomReader():
     metadata = dcr.get_metaData()
 
     """
-    dicomdir_filename = 'dicomdir.pkl'
 
     def __init__(self, dirpath=None, initdir='.',
                  qt_app=None, gui=True, series_number=None,
@@ -117,11 +116,12 @@ class DicomReader():
                  force_create_dicomdir=False,
                  force_read=False
                  ):
+        self.dicomdir_filename = 'dicomdir.pkl'
         self.valid = False
         self.dirpath = os.path.expanduser(dirpath)
         self.force_create_dicomdir = force_create_dicomdir
         self.force_read = force_read
-        self.dcmdir = self.get_dir()
+        self.dicomdir_info = self.get_dicomdir_info()
         self.series_number = series_number
         self.overlay = {}
         self.dcmlist = []
@@ -133,7 +133,7 @@ class DicomReader():
 
         self.get_series_number_callback = get_series_number_callback
 
-        if len(self.dcmdir) > 0:
+        if len(self.dicomdir_info) > 0:
             self.valid = True
             counts, bins = self.status_dir()
 
@@ -406,7 +406,7 @@ class DicomReader():
         Information is generated from dicomdir.pkl and first files of series
         """
         import numpy as np
-        dcmdir = self.dcmdir
+        dcmdir = self.dicomdir_info
         # get series number
 # vytvoření slovníku, kde je klíčem číslo série a hodnotou jsou všechny
 # informace z dicomdir
@@ -519,7 +519,7 @@ class DicomReader():
 
         return filelist
 
-    def get_dir(self, writedicomdirfile=True):
+    def get_dicomdir_info(self, writedicomdirfile=True):
         """
         Check if exists dicomdir file and load it or cerate it
 
@@ -543,7 +543,7 @@ class DicomReader():
                 pass
 
         if createdcmdir or self.force_create_dicomdir:
-            dcmdirplus = self.create_dir_file_list()
+            dcmdirplus = self.create_dicomdir_info()
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
                 # obj_to_file(dcmdirplus, dicomdirfile, ftype)
@@ -567,8 +567,8 @@ class DicomReader():
         """
         slice_location=None
         if hasattr(dcmdata, 'SliceLocation'):
-            print(dcmdata.SliceLocation)
-            print(type(dcmdata.SliceLocation))
+            # print(dcmdata.SliceLocation)
+            # print(type(dcmdata.SliceLocation))
             try:
                 slice_location = float(dcmdata.SliceLocation)
             except Exception as exc:
@@ -611,7 +611,7 @@ class DicomReader():
                         }
         return metadataline
 
-    def create_dir_file_list(self):
+    def create_dicomdir_info(self):
         """
         Function crates list of all files in dicom dir with all IDs
         """
@@ -632,10 +632,15 @@ class DicomReader():
 
                         # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
                 except Exception as e:
-                    if head != self.dicomdir_filename:
+                    if teil != self.dicomdir_filename:
                         print('Dicom read problem with file ' + filepath)
                     import traceback
                     logger.debug(traceback.format_exc())
+            if hasattr(dcmdata, "DirectoryRecordSequence"):
+                # file is DICOMDIR - metainfo about files in directory
+                # we are not using this info
+                dcmdata = None
+
             if dcmdata is not None:
                 metadataline = self._prepare_metadata_line(dcmdata, teil)
                 files.append(metadataline)
@@ -650,7 +655,7 @@ class DicomReader():
         """input is dcmdir, not dirpath """
 
         try:
-            dcmdirseries = [line['SeriesNumber'] for line in self.dcmdir]
+            dcmdirseries = [line['SeriesNumber'] for line in self.dicomdir_info]
         except:
             return [0], [0]
 
@@ -672,7 +677,7 @@ class DicomReader():
         get_sortedlist()
         get_sortedlist('~/data/')
         """
-        dcmdir = self.dcmdir[:]
+        dcmdir = self.dicomdir_info[:]
         dcmdir.sort(key=lambda x: x['SliceLocation'])
 
         # select sublist with SeriesNumber

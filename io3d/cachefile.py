@@ -19,6 +19,10 @@ from . import misc
 
 class CacheFile():
     def __init__(self, filename):
+        """
+
+        :param filename: File can be .yaml, .pkl or some other formats supported by misc.obj_from_file
+        """
         self.filename = op.expanduser(filename)
 
     def __update(self):
