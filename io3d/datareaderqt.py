@@ -37,7 +37,8 @@ class DataReaderWidget(QtGui.QWidget):
             show_message_function=None,
             after_function=None,
             before_function=None,
-            cachefile=None
+            cachefile=None,
+            qt_app=None,
 
     ) :
         """
@@ -67,6 +68,7 @@ class DataReaderWidget(QtGui.QWidget):
             self.cache = None
 
         self.datap = None
+        self.qt_app = qt_app
 
         self.init_ui()
 
@@ -219,7 +221,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         reader = datareader.DataReader()
 
-        self.datap = reader.Get3DData(self.datapath, dataplus_format=True, gui=True)
+        self.datap = reader.Get3DData(self.datapath, dataplus_format=True, gui=True, qt_app=self.qt_app)
 
         _set_label_text(self.text_dcm_dir, _make_text_short(self.datapath), self.datapath)
         _set_label_text(self.text_dcm_data, self.get_data_info())
@@ -317,9 +319,12 @@ def main():
 
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})
-    w = DataReaderWidget(loaddir=args.loaddir, loadfiledir=args.loadfiledir,
-                         cachefile=args.cachefile,
-                             after_function=my_after_fcn, before_function=my_before_fcn)
+    w = DataReaderWidget(
+        loaddir=args.loaddir, loadfiledir=args.loadfiledir,
+        cachefile=args.cachefile,
+        after_function=my_after_fcn, before_function=my_before_fcn,
+        qt_app=app
+    )
     w.resize(250, 150)
     w.move(300, 300)
     w.setWindowTitle('io3dQtWidget')
