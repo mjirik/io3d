@@ -490,7 +490,7 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
 
     :param filepattern: advanced format options can be used in filepattern.
     Fallowing keys can be used: slice_number, slicen, series_number, seriesn, series_position, seriesp.
-    For example '{:06d}.jpg', '{series_number:03d}/{series_position:07.3f}.png'
+    For example '{:06d}.jpg', '{series_number:03d}/{slice_position:07.3f}.png'
     :param series_number:
     :param slice_number:
     :param slice_position:

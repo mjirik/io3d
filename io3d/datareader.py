@@ -71,7 +71,7 @@ class DataReader:
             logger.debug('directory read recognized')
             # print("read from directory")
             data3d, metadata = self.__ReadFromDirectory(
-                datapath, start, stop, step, **kwargs)
+                datapath, start, stop, step, gui=gui, **kwargs)
         else:
             logger.error('Data path "%s" not found' % (datapath))
 

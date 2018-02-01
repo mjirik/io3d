@@ -139,6 +139,7 @@ class DicomReader():
 
             if len(bins) > 1:
                 if self.series_number is None:  # pragma: no cover
+                    print("DicomReader 7")
                     self.get_series_number_callback(
                         self,
                         counts,
@@ -155,6 +156,7 @@ class DicomReader():
             self.series_number = sn
 
             self.dcmlist = self.get_sortedlist(SeriesNumber=sn)
+        print("DicomReader 5")
 
     def validData(self):
         return self.valid
@@ -166,6 +168,7 @@ class DicomReader():
         """
         overlay = {}
         dcmlist = self.dcmlist
+        print("get overlay begkj")
 
         for i in range(len(dcmlist)):
             onefile = dcmlist[i]
@@ -335,7 +338,7 @@ class DicomReader():
         if dcmlist is None:
             dcmlist = self.dcmlist
 
-        if len(dcmlist) <= 0:
+        if len(dcmlist) == 0:
             return {}
 
         logger.debug("Filename: " + dcmlist[ifile])
@@ -350,6 +353,7 @@ class DicomReader():
             voxeldepth = float(np.abs(loc1 - loc2))
         except:
             logger.warning('Problem with voxel depth. Using SliceThickness')
+            logger.debug(traceback.format_exc())
                            # + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
             try:
@@ -397,8 +401,6 @@ class DicomReader():
             #     str(data1.SeriesNumber))
 
         metadata['dcmfilelist'] = self.dcmlist
-
-        # mport pdb; pdb.set_trace()
         return metadata
 
     def dcmdirstats(self):
