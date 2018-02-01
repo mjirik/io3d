@@ -23,7 +23,8 @@ install:
     - conda create --yes -n travis python=$TRAVIS_PYTHON_VERSION
     - source activate travis
 #    - conda install --yes pip nose coverage
-    - conda install --yes pip nose python-coveralls
+    - conda install --yes pip nose
+    - pip install python-coveralls
     - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt
 #    - pip install checksumdir
     - pip install .
