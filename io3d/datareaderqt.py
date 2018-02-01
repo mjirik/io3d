@@ -219,7 +219,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         reader = datareader.DataReader()
 
-        self.datap = reader.Get3DData(self.datapath, dataplus_format=True)
+        self.datap = reader.Get3DData(self.datapath, dataplus_format=True, gui=True)
 
         _set_label_text(self.text_dcm_dir, _make_text_short(self.datapath), self.datapath)
         _set_label_text(self.text_dcm_data, self.get_data_info())
