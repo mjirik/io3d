@@ -134,6 +134,26 @@ class DicomWriterTest(unittest.TestCase):
         self.assertEqual(metadata['voxelsize_mm'][0],
                          newmetadata['voxelsize_mm'][0])
 
+    def test_write_dcm_slices_datap(self):
+        filename = 'test_dcm/test_file{:slice_number04d}.pklz'
+        data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
+        data[0:5, 20:60, 60:70] += 30
+        datap = {'voxelsize_mm': [1, 2, 3], "data3d": data}
+        dw = dwriter.DataWriter()
+        dw.Write3DData(datap, filename, filetype='auto')
+
+        dr = dreader.DataReader()
+        newdata, newmetadata = dr.Get3DData(filename)
+
+        # print("meta ", metadata)
+        # print("new meta ", newmetadata)
+
+        # hack with -1024, because of wrong data reading
+        self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
+        self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
+        self.assertEqual(datap['voxelsize_mm'][0],
+                         newmetadata['voxelsize_mm'][0])
+
     @attr("slow")
     def test_read_mhd_and_write_pklz(self):
         """

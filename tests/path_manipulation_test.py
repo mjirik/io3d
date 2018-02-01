@@ -135,7 +135,7 @@ class PathManipulationTest(unittest.TestCase):
     def test_fill_slice_number(self):
         import io3d.datawriter
 
-        out = io3d.datawriter.filepattern_fill_slice_number_or_position("{seriesn:03d}/ra{slicen:06d}.jpg", 10)
+        out = io3d.datawriter.filepattern_fill_slice_number_or_position("{seriesn:03d}/ra{slice_number:06d}.jpg", 10)
         self.assertEqual(out, '{seriesn:03d}/ra000010.jpg')
 
 if __name__ == "__main__":
