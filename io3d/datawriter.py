@@ -89,7 +89,7 @@ class DataWriter:
         mtd = {'voxelsize_mm': [1, 1, 1]}
         if metadata is not None:
             mtd.update(metadata)
-            metadata=mtd
+        metadata=mtd
 
         if path.find('{') >= 0:
             filetype = 'image_stack'
