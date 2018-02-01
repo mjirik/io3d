@@ -89,6 +89,7 @@ class DataWriter:
         mtd = {'voxelsize_mm': [1, 1, 1]}
         if metadata is not None:
             mtd.update(metadata)
+            metadata=mtd
 
         if path.find('{') >= 0:
             filetype = 'image_stack'
@@ -102,25 +103,25 @@ class DataWriter:
     # def _all_in_one_file(self, data3d, path, filetype, metadata):
 
         if filetype in ['vtk', 'tiff', 'tif']:
-            self._write_with_sitk(path, data3d, mtd)
+            self._write_with_sitk(path, data3d, metadata)
             if sfin and segmentation is not None:
-                self._write_with_sitk(segmentation_path, segmentation, mtd)
+                self._write_with_sitk(segmentation_path, segmentation, metadata)
         elif filetype in ['dcm', 'DCM', 'dicom']:
-            self._write_with_sitk(path, data3d, mtd)
-            self._fix_sitk_bug(path, mtd)
+            self._write_with_sitk(path, data3d, metadata)
+            self._fix_sitk_bug(path, metadata)
             if sfin and segmentation is not None:
-                self._write_with_sitk(segmentation_path, segmentation, mtd)
-                self._fix_sitk_bug(segmentation_path, mtd)
+                self._write_with_sitk(segmentation_path, segmentation, metadata)
+                self._fix_sitk_bug(segmentation_path, metadata)
         elif filetype in ['rawiv']:
-            rawN.write(path, data3d, mtd)
+            rawN.write(path, data3d, metadata)
         elif filetype in ['image_stack']:
-            self.save_image_stack(data3d, path, mtd)
+            self.save_image_stack(data3d, path, metadata)
         elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
-            self.save_hdf5(data3d, path, mtd)
+            self.save_hdf5(data3d, path, metadata)
         elif filetype in ['pkl', 'pklz']:
             from . import misc
             metadata['data3d'] = data3d
-            datap = mtd
+            datap = metadata
 
             misc.obj_to_file(datap, path)
 
