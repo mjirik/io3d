@@ -139,7 +139,6 @@ class DicomReader():
 
             if len(bins) > 1:
                 if self.series_number is None:  # pragma: no cover
-                    print("DicomReader 7")
                     self.get_series_number_callback(
                         self,
                         counts,
@@ -156,7 +155,6 @@ class DicomReader():
             self.series_number = sn
 
             self.dcmlist = self.get_sortedlist(SeriesNumber=sn)
-        print("DicomReader 5")
 
     def validData(self):
         return self.valid
