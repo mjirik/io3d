@@ -139,7 +139,7 @@ class DicomReader():
 
             if len(bins) > 1:
                 if self.series_number is None:  # pragma: no cover
-                    self.get_series_number_callback(
+                    sn = self.get_series_number_callback(
                         self,
                         counts,
                         bins,
