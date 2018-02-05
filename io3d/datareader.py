@@ -14,6 +14,7 @@ import argparse
 # -------------------- my scripts ------------
 
 from . import dcmreaddata as dcmr
+from . import tgz
 
 
 # import numpy as np
@@ -52,6 +53,8 @@ class DataReader:
         self.orig_datapath = datapath
         datapath = os.path.expanduser(datapath)
 
+
+
         if series_number is not None and type(series_number) != int:
             series_number = int(series_number)
 
@@ -63,14 +66,25 @@ class DataReader:
             qt_app = QApplication(sys.argv)
 
         datapath = os.path.normpath(datapath)
+
+        self.start = start
+        self.stop = stop
+        self.step = step
+        self.convert_to_gray = convert_to_gray
+        self.series_number = series_number
+        self.kwargs = kwargs
+        self.qt_app = qt_app
+        self.gui = gui
+
+
         if os.path.isfile(datapath):
             logger.debug('file read recognized')
             data3d, metadata = self.__ReadFromFile(datapath)
 
         elif os.path.exists(datapath):
             logger.debug('directory read recognized')
-            data3d, metadata = self.__ReadFromDirectory(
-                datapath, start, stop, step, gui=gui, **kwargs)
+            data3d, metadata = self.__ReadFromDirectory(datapath=datapath)
+                # datapath, start, stop, step, gui=gui, **kwargs)
         else:
             logger.error('Data path "%s" not found' % (datapath))
 
@@ -89,10 +103,16 @@ class DataReader:
         else:
             return data3d, metadata
 
-    def __ReadFromDirectory(self, datapath, start, stop, step, **kwargs):
+    def __ReadFromDirectory(self, datapath): #, start, stop, step, **kwargs):
+        start  = self.start
+        stop = self.stop
+        step = self.step
+        kwargs = self.kwargs
+        gui = self.gui
+
         if dcmr.is_dicom_dir(datapath):  # reading dicom
             logger.debug('Dir - DICOM')
-            reader = dcmr.DicomReader(datapath, **kwargs) # qt_app=None, gui=True)
+            reader = dcmr.DicomReader(datapath, gui=gui, **kwargs) # qt_app=None, gui=True)
             data3d = reader.get_3Ddata(start, stop, step)
             metadata = reader.get_metaData()
             metadata['series_number'] = reader.series_number
@@ -166,6 +186,9 @@ class DataReader:
         elif ext in ['dcm', 'DCM', 'dicom']:
             data3d, metadata = self._read_with_sitk(datapath)
             metadata = self._fix_sitk_bug(datapath, metadata)
+        elif ext in ["bz2"]:
+            new_datapath = tgz.untar(datapath)
+            data3d, metadata = self.__ReadFromDirectory(new_datapath)
         else:
             logger.debug('file format "' + ext + '"')
             # reading raw file
