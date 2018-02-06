@@ -11,16 +11,16 @@ import sys
 logger = logging.getLogger(__name__)
 import argparse
 
-if sys.version_info < (3, 0):
-    import urllib as urllibr
-else:
-    import urllib.request as urllibr
 import numpy as np
 import zipfile
 import glob
 import os.path as op
 import io3d
 from . import cachefile as cachef
+if sys.version_info < (3, 0):
+    import urllib as urllibr
+else:
+    import urllib.request as urllibr
 
 
 # you can get hash from command line with:
@@ -88,7 +88,6 @@ def set_dataset_path(path, cache=None, cachefile="~/io3d.cache"):
     cache.update("local_dataset_dir", path)
 
 def dataset_path(cache=None, cachefile="~/io3d.cache"):
-    # @TODO fix cashe
     local_data_dir = local_dir
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
