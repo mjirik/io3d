@@ -20,6 +20,7 @@ import zipfile
 import glob
 import os.path as op
 import io3d
+from . import cachefile as cachef
 
 
 # you can get hash from command line with:
@@ -68,6 +69,39 @@ data_urls= {
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
 
+def join_path(path_to_join):
+    """
+    join input path to sample data path (usually in ~/lisa_data)
+    :param path_to_join:
+    :return:
+    """
+    sdp = dataset_path()
+    pth = os.path.join(sdp, path_to_join)
+    logger.debug('sample_data_path' + sdp)
+    logger.debug('path ' + pth)
+    return pth
+
+def set_dataset_path(path, cache=None, cachefile="~/io3d.cache"):
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+
+    cache.update("local_dataset_dir", path)
+
+def dataset_path(cache=None, cachefile="~/io3d.cache"):
+    # @TODO fix cashe
+    local_data_dir = local_dir
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+        # cache.update('local_dataset_dir', head)
+    if cache is not None:
+        local_data_dir = cache.get_or_save_default('local_dataset_dir', local_dir)
+    return op.expanduser(local_data_dir)
+
+# def get_sample_data():
+#     keys = imtools.sample_data.data_urls.keys()
+#     imtools.sample_data.get_sample_data(keys, sample_data_path())
+
+
 def get_dataset_meta(label):
     data_url = data_urls[label]
     if type(data_url) == str:
@@ -99,7 +133,7 @@ def download(dataset_label=None, destination_dir=None):
     :return:
     """
     if destination_dir is None:
-        destination_dir = local_dir
+        destination_dir = dataset_path()
 
     destination_dir = op.expanduser(destination_dir)
 
@@ -155,7 +189,7 @@ def get(dataset_label, id, destination_dir=None):
     """
     # @TODO implement
     if destination_dir is None:
-        destination_dir = local_dir
+        destination_dir = dataset_path()
 
     destination_dir = op.expanduser(destination_dir)
     data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(dataset_label)

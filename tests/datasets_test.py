@@ -23,10 +23,13 @@ class DatasetsTest(unittest.TestCase):
 
     # @attr('actual')
     # @attr('interactive')
+    def test_get_path(self):
+        path = io3d.datasets.dataset_path()
+
     def test_download(self):
 
         io3d.datasets.download("gensei_slices")
-        pth = op.expanduser(op.join(io3d.datasets.local_dir, "gensei_slices"))
+        pth = io3d.datasets.join_path("gensei_slices")
         logger.debug(pth)
         self.assertTrue(op.exists(pth))
         # import sed3

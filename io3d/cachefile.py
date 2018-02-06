@@ -42,6 +42,19 @@ class CacheFile():
         else:
             return None
 
+    def get_or_save_default(self, key, default_value):
+        """
+        Get value stored in cache file or store there default value.
+        :param key:
+        :param default_value:
+        :return:
+        """
+        val = self.get_or_none(key)
+        if val is None:
+            self.update(key, default_value)
+            val = default_value
+        return val
+
     def update(self, key, value):
         self.data[key] = value
         misc.obj_to_file(self.data, self.filename)
