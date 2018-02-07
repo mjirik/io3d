@@ -25,6 +25,15 @@ class DatasetsTest(unittest.TestCase):
     # @attr('interactive')
     def test_get_path(self):
         path = io3d.datasets.dataset_path()
+        self.assertEqual(type(path), str)
+
+    def test_download_package_dry_run(self):
+        dataset_labels = ["lisa"]
+        new_dataset_labels = io3d.datasets._expand_dataset_packages(dataset_labels)
+        self.assertGreater(len(new_dataset_labels), 1)
+
+    def test_download_package_dry_run(self):
+        io3d.datasets.download("lisa", dry_run=True)
 
     def test_download(self):
 

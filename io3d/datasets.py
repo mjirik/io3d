@@ -43,6 +43,9 @@ data_urls= {
     "vincentka_sample": ["http://147.228.240.61/queetech/sample-data/vincentka_sample.zip"],
     "donut": "http://147.228.240.61/queetech/sample-data/donut.zip",
     "io3d_sample_data": ["http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip"],
+    "lisa": {"package": ["donut", "io3d_sample_data", "vincentka", "vincentka_sample", "exp_small", "gensei_slices",
+                         "biodur_sample", "vessels.pkl", "sliver_training_001", "jatra_5mm", "jatra_06mm_jenjatra",
+                         "head"]},
     "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
     "3Dircadb1.1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
@@ -124,7 +127,24 @@ def get_dataset_meta(label):
 
     return data_url, url, expected_hash, hash_path, fnpattern
 
-def download(dataset_label=None, destination_dir=None):
+def _expand_dataset_packages(dataset_label_dict):
+    """
+    dataset package is multi dataset
+    :param dataset_label_dict:
+    :return:
+    """
+    new_dataset_label_dict = []
+    for label in dataset_label_dict:
+        dataset_metadata = data_urls[label]
+        if type(dataset_metadata) == dict and "package" in dataset_metadata:
+            new_dataset_label_dict.extend(dataset_metadata["package"])
+        else:
+            new_dataset_label_dict.append(label)
+
+    return new_dataset_label_dict
+
+
+def download(dataset_label=None, destination_dir=None, dry_run=False):
     """
     Download sample data by data label. Labels can be listed by sample_data.data_urls.keys()
     :param dataset_label: label of data. If it is set to None, all data are downloaded
@@ -144,6 +164,8 @@ def download(dataset_label=None, destination_dir=None):
 
     if type(dataset_label) == str:
         dataset_label = [dataset_label]
+
+    dataset_label = _expand_dataset_packages(dataset_label)
 
     for label in dataset_label:
         # make all data:url have length 3
@@ -166,14 +188,17 @@ def download(dataset_label=None, destination_dir=None):
             logger.info("match ok - no download needed")
         else:
             logger.info("downloading")
-            downzip(url, destination=destination_dir)
-            logger.info("finished")
-            downloaded_hash = checksum(os.path.join(destination_dir, hash_path))
-            logger.info("downloaded hash: '" + str(downloaded_hash) + "'")
-            if downloaded_hash != expected_hash:
-                logger.warning("downloaded hash is different from expected hash\n" + \
-                               "expected hash: '" + str(expected_hash) + "'\n" + \
-                               "downloaded hash: '" + str(downloaded_hash) + "'\n")
+            if not dry_run:
+                downzip(url, destination=destination_dir)
+                logger.info("finished")
+                downloaded_hash = checksum(os.path.join(destination_dir, hash_path))
+                logger.info("downloaded hash: '" + str(downloaded_hash) + "'")
+                if downloaded_hash != expected_hash:
+                    logger.warning("downloaded hash is different from expected hash\n" + \
+                                   "expected hash: '" + str(expected_hash) + "'\n" + \
+                                   "downloaded hash: '" + str(downloaded_hash) + "'\n")
+            else:
+                logger.debug("dry run")
 
 def get(dataset_label, id, destination_dir=None):
     """
@@ -371,7 +396,7 @@ def main():
         help='set debug level')
     parser.add_argument(
         '-o', '--destination_dir',
-        default=".",
+        default=dataset_path(),
         help='set output directory')
 
     args = parser.parse_args()
@@ -412,9 +437,9 @@ def downzip(url, destination='./sample_data/'):
     """
 
     # url = "http://147.228.240.61/queetech/sample-data/jatra_06mm_jenjatra.zip"
-    logmsg = "downloading from '" + url + "'"
+    logmsg = "downloading from '" + url + "' to '" + destination + "'"
     print(logmsg)
-    logger.debug(logmsg)
+    logger.info(logmsg)
     zip_file_name = os.path.join(destination, 'tmp.zip')
     urllibr.urlretrieve(url, zip_file_name)
     unzip_recursive(zip_file_name)
