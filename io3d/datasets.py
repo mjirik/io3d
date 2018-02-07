@@ -417,6 +417,9 @@ def main():
         print(checksum(args.checksum))
         if args.labels is None:
             return
+    if args.print_labels:
+        print(sorted(data_urls.keys()))
+        return
 
     download(args.labels, destination_dir=args.destination_dir)
 

@@ -167,6 +167,28 @@ class DicomReaderTest(unittest.TestCase):
         # pyed.show()
         # import pdb; pdb.set_trace()
 
+    @unittest.skip('biodur_sample dataset is tiff, not DICOM')
+    def test_dcmread_micro_ct_biodur_sample(self):
+        # TODO prepare dataset for this test
+
+        # there was problem with DICOMDIR file
+
+        dcmdir = io3d.datasets.join_path("sample_data/biodur_sample/")
+        reader = dcmr.DicomReader(dcmdir, force_create_dicomdir=True)
+        data3d = reader.get_3Ddata()
+        metadata = reader.get_metaData()
+        stats = reader.dcmdirstats()
+        info_str = reader.print_series_info(stats, minimal_series_number=0)
+
+        # slice size is 512x512
+        self.assertEqual(data3d.shape[2], 512)
+        # voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+        # test stats
+        self.assertEqual(stats[7]['Modality'], 'CT')
+        self.assertTrue(info_str,
+                        '7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n')
+
     @attr('dataset')
     def test_dcmread_micro_ct(self):
         # there was problem with DICOMDIR file

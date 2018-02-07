@@ -284,26 +284,45 @@ class DicomReader():
                 if (raw_min is None) or (raw_min < mx):
                     raw_min = mn
 
-            try:
+            # if hasattr(data, "RescaleSlope") and hasattr(data, "RescaleIntercept") and\
+            #         data3d.dtype == np.int16 and\
+            #         (data2d.max() > np.iinfo(np.int16).max or data2d.min() < np.iinfo(np.int16).min):
+            #     data3d = data3d.astype(np.int32)
+
+            if hasattr(data, "RescaleSlope") and hasattr(data, "RescaleIntercept"):
                 slope = data.RescaleSlope
                 inter = data.RescaleIntercept
-                if slope == 1 and inter == 0:
-                    printRescaleWarning = True
-                    slope = 0.5
-                    inter = 0  # -16535
-                new_data2d = (np.float(slope) * data2d)\
-                    + np.float(inter)
+            else:
+                slope = 1
+                inter = 0
 
-            except:
-                logger.warning(
-                    'problem with RescaleSlope and RescaleIntercept'
-                )
-                print('problem with RescaleSlope and RescaleIntercept')
-                traceback.print_exc()
-                print('----------')
 
-                new_data2d = (np.float(1) * data2d)\
-                    + np.float(0)
+            if data2d.dtype == np.uint16 and data3d.dtype == np.int16:
+                data3d = data3d.astype(np.int32)
+                # or just force set slope=0.5, inter = 0
+
+            new_data2d = (np.float(slope) * data2d) \
+                         + np.float(inter)
+            # try:
+            #     slope = data.RescaleSlope
+            #     inter = data.RescaleIntercept
+            #     if slope == 1 and inter == 0:
+            #         printRescaleWarning = True
+            #         slope = 0.5
+            #         inter = 0  # -16535
+            #     new_data2d = (np.float(slope) * data2d)\
+            #         + np.float(inter)
+            #
+            # except:
+            #     logger.warning(
+            #         'problem with RescaleSlope and RescaleIntercept'
+            #     )
+            #     print('problem with RescaleSlope and RescaleIntercept')
+            #     traceback.print_exc()
+            #     print('----------')
+            #
+            #     new_data2d = (np.float(1) * data2d)\
+            #         + np.float(0)
 
             # first readed slide is at the end
 
