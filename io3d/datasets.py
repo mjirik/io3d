@@ -46,7 +46,7 @@ data_urls= {
     "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "lisa": {"package": ["donut", "vincentka_sample", "exp_small", "gensei_slices",
                          "biodur_sample", "vessels.pkl", "sliver_training_001", "jatra_5mm",
-                         "head", "volumetry"]},
+                         "head", "volumetrie"]},
     "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
     "3Dircadb1.1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
