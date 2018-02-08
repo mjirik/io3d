@@ -85,13 +85,13 @@ def join_path(path_to_join):
     logger.debug('path ' + pth)
     return pth
 
-def set_dataset_path(path, cache=None, cachefile="~/io3d.cache"):
+def set_dataset_path(path, cache=None, cachefile="~/io3d_cache.yaml"):
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
 
     cache.update("local_dataset_dir", path)
 
-def dataset_path(cache=None, cachefile="~/io3d.cache"):
+def dataset_path(cache=None, cachefile="~/io3d_cache.yaml"):
     local_data_dir = local_dir
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
