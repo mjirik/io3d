@@ -181,7 +181,8 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
 
         segm_orig_scale = skimage.transform.resize(
             data, shape, order=0,
-            preserve_range=True
+            preserve_range=True,
+            mode="constant",
         )
 
         segmentation = segm_orig_scale
