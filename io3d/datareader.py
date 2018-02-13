@@ -5,19 +5,19 @@
 
 # import funkcí z jiného adresáře
 import logging
-import os.path
-import sys
 
 logger = logging.getLogger(__name__)
 import argparse
 
+import numpy as np
+import os.path
+import sys
 # -------------------- my scripts ------------
 
 from . import dcmreaddata as dcmr
 from . import tgz
 
 
-# import numpy as np
 
 def read(datapath, qt_app=None,
          dataplus_format=False, gui=False,
@@ -29,7 +29,7 @@ def read(datapath, qt_app=None,
     return dr.Get3DData(
         datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format,
         gui=gui, start=start, stop=stop, step=step,
-        convert_to_gray=convert_to_gray, series_number=None, **kwargs)
+        convert_to_gray=convert_to_gray, series_number=None, use_economic_dtype=True, **kwargs)
 
 
 class DataReader:
@@ -40,7 +40,9 @@ class DataReader:
 
     def Get3DData(self, datapath, qt_app=None,
                   dataplus_format=False, gui=False,
-                  start=0, stop=None, step=1, convert_to_gray=True, series_number=None, **kwargs):
+                  start=0, stop=None, step=1, convert_to_gray=True, series_number=None,
+                  use_economic_dtype=True,
+                  **kwargs):
         """
         :datapath directory with input data
         :qt_app if it is set to None (as default) all dialogs for series
@@ -92,6 +94,8 @@ class DataReader:
             if len(data3d.shape) > 3:
                 # @TODO implement better rgb2gray
                 data3d = data3d[:, :, :, 0]
+        if use_economic_dtype:
+            data3d = self.__use_economic_dtype(data3d)
 
         if dataplus_format:
             logger.debug('dataplus format')
@@ -149,6 +153,19 @@ class DataReader:
             ]
 
         return data3d, metadata
+
+    def __use_economic_dtype(self, data3d):
+        dtype = data3d.dtype
+        if issubclass(dtype.type, np.integer):
+
+            i16 = np.iinfo(np.int16)
+            # i8 = np.iinfo(np.int8)
+            mx = data3d.max()
+            mn = data3d.min()
+            if mx < i16.max and mn > i16.min:
+                data3d = data3d.astype(np.int16)
+
+        return data3d
 
     def __ReadFromFile(self, datapath):
         path, ext = os.path.splitext(datapath)
