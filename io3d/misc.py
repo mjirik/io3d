@@ -254,3 +254,22 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
         order=1
     ).astype(data3d.dtype)
     return data3d_res
+
+def use_economic_dtype(data3d):
+    """ Use more economic integer-like dtype if it is possible.
+
+    :param data3d:
+    :return:
+    """
+    dtype = data3d.dtype
+    if issubclass(dtype.type, np.integer):
+
+        i16 = np.iinfo(np.int16)
+        # i8 = np.iinfo(np.int8)
+        mx = data3d.max()
+        mn = data3d.min()
+        if mx < i16.max and mn > i16.min:
+            data3d = data3d.astype(np.int16)
+
+    return data3d
+

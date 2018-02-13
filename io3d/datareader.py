@@ -16,6 +16,7 @@ import sys
 
 from . import dcmreaddata as dcmr
 from . import tgz
+from . import misc
 
 
 
@@ -155,17 +156,7 @@ class DataReader:
         return data3d, metadata
 
     def __use_economic_dtype(self, data3d):
-        dtype = data3d.dtype
-        if issubclass(dtype.type, np.integer):
-
-            i16 = np.iinfo(np.int16)
-            # i8 = np.iinfo(np.int8)
-            mx = data3d.max()
-            mn = data3d.min()
-            if mx < i16.max and mn > i16.min:
-                data3d = data3d.astype(np.int16)
-
-        return data3d
+        return misc.use_economic_dtype(data3d)
 
     def __ReadFromFile(self, datapath):
         path, ext = os.path.splitext(datapath)
