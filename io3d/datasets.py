@@ -32,7 +32,7 @@ __url_server = "http://147.228.240.61/queetech/"
 data_urls= {
     "head": [__url_server + "sample-data/head.zip", "89e9b60fd23257f01c4a1632ff7bb800", "matlab"] ,
     "jatra_06mm_jenjatra": [__url_server + "sample-data/jatra_06mm_jenjatra.zip", None, "jatra_06mm_jenjatra/*.dcm"],
-    "jatra_5mm": [__url_server + "sample-data/jatra_5mm.zip", '1b9039ffe1ff9af9caa344341c8cec03', "jatra_06mm/*.dcm"],
+    "jatra_5mm": [__url_server + "sample-data/jatra_5mm.zip", '1b9039ffe1ff9af9caa344341c8cec03', "jatra_5mm/*.dcm"],
     "exp": [__url_server + "sample-data/exp.zip", '74f2c10b17b6bd31bd03662df6cf884d'],
     "sliver_training_001": [__url_server + "sample-data/sliver_training_001.zip","d64235727c0adafe13d24bfb311d1ed0","liver*001.*"],
     "volumetrie": [__url_server + "sample-data/volumetrie.zip","6b2a2da67874ba526e2fe00a78dd19c9"],

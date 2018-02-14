@@ -33,6 +33,8 @@ import io3d.dcmreaddata as dcmr
 
 from PyQt4.QtGui import QApplication
 import io3d.outputqt
+import io3d.datareaderqt
+import io3d.datasets
 
 class QtTest(unittest.TestCase):
     interactivetTest = False
@@ -74,6 +76,23 @@ class QtTest(unittest.TestCase):
         out_path = sopw.get_filename()
         # app.exec_()
         self.assertEqual(out_path, "sample{}.vtk")
+
+    def test_read_datareader(self):
+        sdp = io3d.datasets.join_path("sample_data")
+        dp = io3d.datasets.join_path("sample_data/jatra_5mm/")
+        app = QApplication(sys.argv)
+
+        drw = io3d.datareaderqt.DataReaderWidget(loaddir=sdp, qt_app=app)
+        # (widget_label="widget label", path="~/lisa_data/sample.{}.pkl")
+
+        drw.show()
+        drw.datapath = dp
+        drw.read_data_from_prepared_datapath()
+        # print(drw.datap["data3d"].shape)
+        error = np.sum(np.abs(np.asarray([93, 512, 512]) - np.asarray(drw.datap["data3d"].shape)))
+        # app.exec_()
+        self.assertEqual(error, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
