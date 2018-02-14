@@ -1,16 +1,10 @@
 import logging
 
 logger = logging.getLogger(__name__)
-import argparse
 from PyQt4.QtGui import QGridLayout, QLabel, QPushButton, QLineEdit, QCheckBox, QFileDialog
 from PyQt4 import QtGui
-from PyQt4 import QtCore
-import sys
-import numpy as np
 import os.path as op
 
-import vtk
-from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 class SelectOutputPathWidget(QtGui.QWidget):
     def __init__(self, path=None, widget_label=None, save_dialog_message="Save file",

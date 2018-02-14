@@ -5,7 +5,6 @@
 import logging
 logger = logging.getLogger(__name__)
 # import funkcí z jiného adresáře
-# import sys
 import os.path
 import os.path as op
 # import copy
