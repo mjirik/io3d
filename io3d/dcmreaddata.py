@@ -701,7 +701,7 @@ class DicomReader():
 
         return filelist
 
-def get_series_number_console(dcmreader, counts, bins, qt_app=None):
+def get_series_number_console(dcmreader, counts, bins, qt_app=None): # pragma: no cover
 
     print('series')
     series_info = dcmreader.dcmdirstats()
@@ -711,7 +711,7 @@ def get_series_number_console(dcmreader, counts, bins, qt_app=None):
     sn = int(snstring)
     return sn
 
-def get_series_number_qt(dcmreader, counts, bins, qt_app=None):
+def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cover
 
     if qt_app is None:
 
@@ -742,7 +742,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None):
     sn = sbinsd[str(snstring)]
     return sn
 
-def get_dcmdir_qt(app=False, directory=''):
+def get_dcmdir_qt(app=False, directory=''): # pragma: no cover
     from PyQt4.QtGui import QFileDialog, QApplication
     if app:
         dcmdir = QFileDialog.getExistingDirectory(
