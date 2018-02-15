@@ -81,6 +81,27 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
         shutil.copy2(pth_dicomdir_bck, pth_dicomdir)
 
+    def test_dicomread_read_with_wrong_series_number(self):
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        # info = io3d.dicomdir_info(dcmdir)
+        with self.assertRaises(ValueError):
+            data3d, metadata = io3d.datareader.read(dcmdir, series_number=3)
+            # io3d.datareader.read(dcmdir, series_number=3)
+        #slice size is 512x512
+        # self.assertEqual(data3d.shape[2],512)
+        # voxelsize depth = 5 mm
+        # self.assertEqual(metadata['voxelsize_mm'][0], 5)
+
+    def test_dicomread_read_with_series_number(self):
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        info = io3d.dicomdir_info(dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir, series_number=7)
+        #slice size is 512x512
+        self.assertTrue(7 in info)
+        self.assertEqual(data3d.shape[2],512)
+        # voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+
     def test_dicomread_read_corrupted_dcmdir_file(self):
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         pth_useless_file = os.path.join(

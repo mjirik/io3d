@@ -70,7 +70,11 @@ __version__ = [1, 4]
 #         logger.error('Unknown filetype')
 #
 #     f.close
-
+def dicomdir_info(dirpath, *args, **kwargs):
+    """ Get information about series in dir"""
+    dr = DicomReader(dirpath=dirpath, *args, **kwargs)
+    info = dr.dcmdirstats()
+    return info
 
 def is_dicom_dir(datapath):
     """
@@ -133,28 +137,32 @@ class DicomReader():
 
         self.get_series_number_callback = get_series_number_callback
 
-        if len(self.dicomdir_info) > 0:
+        if series_number is not None:
+            # self.series_number = sn
+            pass
+        elif len(self.dicomdir_info) > 0:
             self.valid = True
             counts, bins = self.status_dir()
 
             if len(bins) > 1:
                 if self.series_number is None:  # pragma: no cover
-                    sn = self.get_series_number_callback(
+                    self.series_number = self.get_series_number_callback(
                         self,
                         counts,
                         bins,
                         qt_app=qt_app
                     )
 
-                else:
-                    sn = self.series_number
-
             else:
-                sn = bins[0]
+                self.series_number = bins[0]
 
-            self.series_number = sn
+        self.dcmlist = self.get_sortedlist(SeriesNumber=series_number)
+        if len(self.dcmlist) == 0:
+            # logger.exception("No data for series number {} in directory {}".format(series_number, dirpath))
+            raise ValueError("No data for series number {} in directory {}".format(series_number, dirpath))
 
-            self.dcmlist = self.get_sortedlist(SeriesNumber=sn)
+        # if self.series_number is not None:
+        # else:
 
     def validData(self):
         return self.valid
@@ -296,34 +304,12 @@ class DicomReader():
                 slope = 1
                 inter = 0
 
-
             if data2d.dtype == np.uint16 and data3d.dtype == np.int16:
                 data3d = data3d.astype(np.int32)
                 # or just force set slope=0.5, inter = 0
 
             new_data2d = (np.float(slope) * data2d) \
                          + np.float(inter)
-            # try:
-            #     slope = data.RescaleSlope
-            #     inter = data.RescaleIntercept
-            #     if slope == 1 and inter == 0:
-            #         printRescaleWarning = True
-            #         slope = 0.5
-            #         inter = 0  # -16535
-            #     new_data2d = (np.float(slope) * data2d)\
-            #         + np.float(inter)
-            #
-            # except:
-            #     logger.warning(
-            #         'problem with RescaleSlope and RescaleIntercept'
-            #     )
-            #     print('problem with RescaleSlope and RescaleIntercept')
-            #     traceback.print_exc()
-            #     print('----------')
-            #
-            #     new_data2d = (np.float(1) * data2d)\
-            #         + np.float(0)
-
             # first readed slide is at the end
 
             if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]) :

@@ -17,8 +17,14 @@ import sys
 from . import dcmreaddata as dcmr
 from . import tgz
 from . import misc
+from . import dcmreaddata
 
 
+# def dicomdir_info(dirpath, *args, **kwargs):
+#     """ Get information about seried in dicom dir.
+#     Other parameters are described in dcmreaddata.DicomReader.
+#     """
+#     return dcmreaddata.dicomdir_info(dirpath=dirpath, *args, **kwargs)
 
 def read(datapath, qt_app=None,
          dataplus_format=False, gui=False,
@@ -30,7 +36,8 @@ def read(datapath, qt_app=None,
     return dr.Get3DData(
         datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format,
         gui=gui, start=start, stop=stop, step=step,
-        convert_to_gray=convert_to_gray, series_number=None, use_economic_dtype=True, **kwargs)
+        convert_to_gray=convert_to_gray, series_number=series_number, use_economic_dtype=True,
+        **kwargs)
 
 
 class DataReader:
@@ -117,7 +124,7 @@ class DataReader:
 
         if dcmr.is_dicom_dir(datapath):  # reading dicom
             logger.debug('Dir - DICOM')
-            reader = dcmr.DicomReader(datapath, gui=gui, **kwargs) # qt_app=None, gui=True)
+            reader = dcmr.DicomReader(datapath, series_number=self.series_number, gui=gui, **kwargs) # qt_app=None, gui=True)
             data3d = reader.get_3Ddata(start, stop, step)
             metadata = reader.get_metaData()
             metadata['series_number'] = reader.series_number
