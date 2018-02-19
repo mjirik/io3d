@@ -268,7 +268,7 @@ class DicomWriterTest(unittest.TestCase):
 # open copied data to obtain dcmfilefilelist
         dr = dreader.DataReader()
         data3d, metadata = dr.Get3DData(
-            op.join(SAMPLE_DATA_DIR, 'jatra_5mm/')
+            op.join(SAMPLE_DATA_DIR, 'jatra_5mm/'), dataplus_format=False
             # 'sample_data/volumetrie/'
         )
 # for test we are working only with small number of files (n_files)
