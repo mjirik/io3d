@@ -57,10 +57,50 @@ class DatasetsTest(unittest.TestCase):
         pth = op.join("./tmp/", "biodur_sample")
         self.assertTrue(op.exists(pth))
 
+
+    def test_change_dataset_path(self):
+        dp_new1 = "~/io3d_test1_dataset_dir/"
+        dp_new2 = "~/io3d_test2_dataset_dir/"
+        dp_old = io3d.datasets.dataset_path()
+
+        # change once
+        io3d.datasets.set_dataset_path(dp_new1)
+        dp_joined1 = io3d.datasets.join_path("jatra_5mm")
+        self.assertTrue(dp_joined1.find("io3d_test1_dataset_dir") > 0)
+
+        # second change
+        io3d.datasets.set_dataset_path(dp_new2)
+        dp_joined2 = io3d.datasets.join_path("jatra_5mm")
+        self.assertTrue(dp_joined2.find("io3d_test2_dataset_dir") > 0)
+
+        # return path back
+        io3d.datasets.set_dataset_path(dp_old)
+
     @attr('slow')
-    def test_get(self):
+    def test_getold(self):
         io3d.datasets.download("3Dircadb1.1")
-        io3d.datasets.get("3Dircadb1", "*1/P*")
+        io3d.datasets.get_old("3Dircadb1", "*1/P*")
+
+    @unittest.skip("waiting for implementation of get() function")
+    def test_get_no_series_number(self):
+
+        datap = io3d.datasets.get("jatra_5mm")
+        self.assertEqual(datap["data3d"].shape[1], 512)
+
+
+    @unittest.skip("waiting for implementation of get() function")
+    def test_get_with_series_number(self):
+        # remove data if they are stored
+        shutil.rmtree(io3d.daatsets.join("path_where_the_data_are_usualy_stored"))
+
+        # first read
+        datap = io3d.datasets.get("3Dircadb1", 3)
+        self.assertEqual(datap["data3d"].shape[1], 512)
+
+        # second read should be faster
+        datap = io3d.datasets.get("3Dircadb1", 3)
+        self.assertEqual(datap["data3d"].shape[1], 512)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -101,7 +101,8 @@ class PathManipulationTest(unittest.TestCase):
 
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
-            testdatadir + "/002/"
+            testdatadir + "/002/",
+            dataplus_format=False
             # 'sample_data/volumetrie/'
         )
         # import sed3

@@ -24,6 +24,7 @@ class CacheFile():
         :param filename: File can be .yaml, .pkl or some other formats supported by misc.obj_from_file
         """
         self.filename = op.expanduser(filename)
+        self.__update()
 
     def __update(self):
         if op.exists(self.filename):

@@ -51,7 +51,7 @@ class DicomReaderTest(unittest.TestCase):
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
-        data3d, metadata = io3d.datareader.read(dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
 #slice size is 512x512
         self.assertEqual(data3d.shape[2], 512)
 # voxelsize depth = 5 mm
@@ -74,7 +74,7 @@ class DicomReaderTest(unittest.TestCase):
 
         #dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         #self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
-        data3d, metadata = io3d.datareader.read(dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
 #slice size is 512x512
         self.assertEqual(data3d.shape[2],512)
 # voxelsize depth = 5 mm
@@ -85,7 +85,7 @@ class DicomReaderTest(unittest.TestCase):
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         # info = io3d.dicomdir_info(dcmdir)
         with self.assertRaises(ValueError):
-            data3d, metadata = io3d.datareader.read(dcmdir, series_number=3)
+            data3d, metadata = io3d.datareader.read(dcmdir, series_number=3, dataplus_format=False)
             # io3d.datareader.read(dcmdir, series_number=3)
         #slice size is 512x512
         # self.assertEqual(data3d.shape[2],512)
@@ -95,7 +95,7 @@ class DicomReaderTest(unittest.TestCase):
     def test_dicomread_read_with_series_number(self):
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
         info = io3d.dicomdir_info(dcmdir)
-        data3d, metadata = io3d.datareader.read(dcmdir, series_number=7)
+        data3d, metadata = io3d.datareader.read(dcmdir, series_number=7, dataplus_format=False)
         #slice size is 512x512
         self.assertTrue(7 in info)
         self.assertEqual(data3d.shape[2],512)
@@ -113,7 +113,7 @@ class DicomReaderTest(unittest.TestCase):
 
         #dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         #self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
-        data3d, metadata = io3d.datareader.read(dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
         #slice size is 512x512
         self.assertEqual(data3d.shape[2],512)
         # voxelsize depth = 5 mm
@@ -493,7 +493,7 @@ class DicomReaderTest(unittest.TestCase):
         for key in fi.keys():
             fi [key]
 
-        datap = dreader.read(filename)
+        datap = dreader.read(filename, dataplus_format=True)
         print(datap)
 
     def test_idx_data(self):

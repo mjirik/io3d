@@ -70,13 +70,13 @@ class DicomWriterTest(unittest.TestCase):
         logger.debug(SAMPLE_DATA_DIR)
         logger.debug(path_to_data)
         data3d, metadata = dr.Get3DData(
-            path_to_data
+            path_to_data, dataplus_format=False
             # 'sample_data/volumetrie/'
         )
         dw = dwriter.DataWriter()
         dw.Write3DData(data3d, filename, filetype='dcm', metadata=metadata)
 
-        data3d_n, metadata_n = dr.Get3DData(filename)
+        data3d_n, metadata_n = dr.Get3DData(filename, dataplus_format=False)
         self.assertEqual(data3d[10, 11, 12], data3d_n[10, 11, 12])
         os.remove(filename)
 
@@ -96,7 +96,7 @@ class DicomWriterTest(unittest.TestCase):
         dw.Write3DData(data, filename, filetype='dcm', metadata=metadata)
 
         dr = dreader.DataReader()
-        newdata, newmetadata = dr.Get3DData(filename)
+        newdata, newmetadata = dr.Get3DData(filename, dataplus_format=False)
 
         # print("meta ", metadata)
         # print("new meta ", newmetadata)
@@ -123,7 +123,7 @@ class DicomWriterTest(unittest.TestCase):
         dw.Write3DData(data, filename, filetype='auto', metadata=metadata)
 
         dr = dreader.DataReader()
-        newdata, newmetadata = dr.Get3DData(filename)
+        newdata, newmetadata = dr.Get3DData(filename, dataplus_format=False)
 
         # print("meta ", metadata)
         # print("new meta ", newmetadata)
@@ -147,7 +147,7 @@ class DicomWriterTest(unittest.TestCase):
         dw.Write3DData(datap, filename, filetype='auto')
 
         dr = dreader.DataReader()
-        newdata, newmetadata = dr.Get3DData(datadir)
+        newdata, newmetadata = dr.Get3DData(datadir, dataplus_format=False)
 
         # print("meta ", metadata)
         # print("new meta ", newmetadata)
@@ -189,7 +189,7 @@ class DicomWriterTest(unittest.TestCase):
         metadata = {'voxelsize_mm': [1, 2, 3]}
         dwriter.write(data, filename, filetype='hdf5', metadata=metadata)
 
-        newdata, newmetadata = dreader.read(filename)
+        newdata, newmetadata = dreader.read(filename, dataplus_format=False)
 
         # hack with -1024, because of wrong data reading
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
@@ -240,7 +240,7 @@ class DicomWriterTest(unittest.TestCase):
         # import ipdb; ipdb.set_trace()
         # print("asdfa")
         dr = dreader.DataReader()
-        newdata, newmetadata = dr.Get3DData('tests_outputs')
+        newdata, newmetadata = dr.Get3DData('tests_outputs', dataplus_format=False)
         newoverlay = dr.GetOverlay()
         # print(newoverlay)
 
@@ -288,7 +288,7 @@ class DicomWriterTest(unittest.TestCase):
 
 # try read written data
         dr = dreader.DataReader()
-        newdata, newmetadata = dr.Get3DData(filedir)
+        newdata, newmetadata = dr.Get3DData(filedir, dataplus_format=False)
         newoverlay = dr.GetOverlay()
 
         self.assertTrue((newoverlay[i_overlay] == overlays[i_overlay]).all())
@@ -329,7 +329,7 @@ class DicomWriterTest(unittest.TestCase):
 
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
-            testdatadir
+            testdatadir, dataplus_format=False
             # 'sample_data/volumetrie/'
         )
         # import sed3
@@ -358,7 +358,7 @@ class DicomWriterTest(unittest.TestCase):
 
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
-            testdatadir + "/002/"
+            testdatadir + "/002/", dataplus_format=False
             # 'sample_data/volumetrie/'
         )
         # import sed3
@@ -388,7 +388,7 @@ class DicomWriterTest(unittest.TestCase):
         dw.save_image_stack(data3d, testdatadir + '/soubory.png')
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
-            testdatadir
+            testdatadir, dataplus_format=False
             # 'sample_data/volumetrie/'
         )
         # import sed3
@@ -410,7 +410,7 @@ class DicomWriterTest(unittest.TestCase):
                        filetype='image_stack')
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
-            testdatadir
+            testdatadir, dataplus_format=False
         )
         # import sed3
         # ed = sed3.sed3(data3dnew)
@@ -446,7 +446,7 @@ class DicomWriterTest(unittest.TestCase):
 
         dr = dreader.DataReader()
         data3dnew, metadata = dr.Get3DData(
-                "~/data/medical/orig/dicom_test_claudio"
+                "~/data/medical/orig/dicom_test_claudio", dataplus_format=False
         )
         metadata
 

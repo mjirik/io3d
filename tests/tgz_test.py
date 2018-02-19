@@ -64,7 +64,7 @@ class DicomReaderTest(unittest.TestCase):
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
 
         # io3d.tgz.untar(dcmdir)
-        data3d, metadata = io3d.datareader.read(dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
 #slice size is 512x512
         # self.assertEqual(data3d.shape[2], 512)
 # voxelsize depth = 5 mm

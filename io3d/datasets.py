@@ -72,6 +72,7 @@ data_urls= {
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
+# cachefile = "~/io3d_cache.yaml"
 
 def join_path(path_to_join):
     """
@@ -201,7 +202,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             else:
                 logger.debug("dry run")
 
-def get(dataset_label, id, destination_dir=None):
+def get_old(dataset_label, id, destination_dir=None):
     """
     Get the 3D data from specified dataset with specified id.
 
@@ -229,6 +230,22 @@ def get(dataset_label, id, destination_dir=None):
     datap = io3d.read(pathsf[0], dataplus_format=True)
     return datap
 
+def get(dataset_label, series_number=None, *args, **kwargs):
+    """
+
+    :param dataset_label: label from data_urls
+    :param series_number: Series identification in study.
+    :param args:
+    :param kwargs:
+    :return:
+    """
+
+    # relative path in the datasets
+    relative_path_extracted_from_data_urls = ""
+    datapath = join_path(relative_path_extracted_from_data_urls)
+    # read 3D data from datapath
+    datap = io3d.read(datapath, series_number=series_number, dataplus_format=True, *args, **kwargs)
+    return datap
 
 def checksum(path, hashfunc='md5'):
     """
@@ -350,10 +367,10 @@ def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/m
         ref_data= None
         orig_data = None
         if read_orig:
-            orig_data, metadata = io3d.datareader.read(oname)
+            orig_data, metadata = io3d.datareader.read(oname, dataplus_format=False)
             vs_mm = metadata['voxelsize_mm']
         if read_seg:
-            ref_data, metadata = io3d.datareader.read(rname)
+            ref_data, metadata = io3d.datareader.read(rname, dataplus_format=False)
             vs_mm = metadata['voxelsize_mm']
 
         import re

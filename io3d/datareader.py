@@ -27,7 +27,7 @@ from . import dcmreaddata
 #     return dcmreaddata.dicomdir_info(dirpath=dirpath, *args, **kwargs)
 
 def read(datapath, qt_app=None,
-         dataplus_format=False, gui=False,
+         dataplus_format=True, gui=False,
          start=0, stop=None, step=1, convert_to_gray=True, series_number=None, **kwargs):
     """
     Simple read function. Internally call DataReader.Get3DData()
@@ -47,7 +47,7 @@ class DataReader:
         self.overlay_fcn = None
 
     def Get3DData(self, datapath, qt_app=None,
-                  dataplus_format=False, gui=False,
+                  dataplus_format=True, gui=False,
                   start=0, stop=None, step=1, convert_to_gray=True, series_number=None,
                   use_economic_dtype=True,
                   **kwargs):
@@ -329,7 +329,7 @@ def main():
     if args.debug:
         ch.setLevel(logging.DEBUG)
 
-    data3d, metadata = read(args.inputfile, series_number = args.seriesnumber)
+    data3d, metadata = read(args.inputfile, series_number = args.seriesnumber, dataplus_format=False)
 
     import sed3
     ed = sed3.sed3(data3d)
