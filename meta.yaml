@@ -48,7 +48,7 @@ requirements:
     - pyyaml
     - h5py
     - checksumdir
-    - SimpleITK # version0.9.* is ok
+    - SimpleITK # version0.9.* is ok for python2.7
 
 test:
   # Python imports
