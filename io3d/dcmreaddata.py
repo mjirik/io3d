@@ -73,7 +73,7 @@ __version__ = [1, 4]
 def dicomdir_info(dirpath, *args, **kwargs):
     """ Get information about series in dir"""
     dr = DicomReader(dirpath=dirpath, *args, **kwargs)
-    info = dr.dcmdirstats()
+    info = dr.dicomdirectory.dcmdirstats()
     return info
 
 def is_dicom_dir(datapath):
@@ -120,15 +120,16 @@ class DicomReader():
                  force_create_dicomdir=False,
                  force_read=False
                  ):
-        self.dicomdir_filename = 'dicomdir.pkl'
         self.valid = False
         self.dirpath = os.path.expanduser(dirpath)
-        self.force_create_dicomdir = force_create_dicomdir
+        self.dicomdirectory = DicomDirectory(self.dirpath, force_create_dicomdir=force_create_dicomdir, force_read=force_read)
         self.force_read = force_read
-        self.dicomdir_info = self.get_dicomdir_info()
+        # self.dicomdir_info = self.dicomdirectory.get_dicomdir_info()
         self.series_number = series_number
         self.overlay = {}
-        self.dcmlist = []
+        self.files_in_serie = []
+        self.files_in_serie_with_info = []
+        self.qt_app = qt_app
         if get_series_number_callback is None:
             if (qt_app is not None) or gui:
                 get_series_number_callback = get_series_number_qt
@@ -136,13 +137,25 @@ class DicomReader():
                 get_series_number_callback = get_series_number_console
 
         self.get_series_number_callback = get_series_number_callback
+        self.__check_series_number()
+        self.set_series_number(self.series_number)
 
-        if series_number is not None:
+        # if self.series_number is not None:
+        # else:
+    def set_series_number(self, series_number):
+        self.files_in_serie, self.files_in_serie_with_info = self.dicomdirectory.get_sorted_series_files(
+            SeriesNumber=self.series_number, return_files_with_info=True)
+        if len(self.files_in_serie) == 0:
+            # logger.exception("No data for series number {} in directory {}".format(series_number, dirpath))
+            raise ValueError("No data for series number {} in directory {}".format(self.series_number, self.dirpath))
+
+    def __check_series_number(self):
+        if self.series_number is not None:
             # self.series_number = sn
             pass
-        elif len(self.dicomdir_info) > 0:
+        elif len(self.dicomdirectory.files_with_info) > 0:
             self.valid = True
-            counts, bins = self.status_dir()
+            counts, bins = self.dicomdirectory.series_in_dir()
 
             if len(bins) > 1:
                 if self.series_number is None:  # pragma: no cover
@@ -150,22 +163,24 @@ class DicomReader():
                         self,
                         counts,
                         bins,
-                        qt_app=qt_app
+                        qt_app=self.qt_app
                     )
 
             else:
                 self.series_number = bins[0]
 
-        self.dcmlist = self.get_sortedlist(SeriesNumber=series_number)
-        if len(self.dcmlist) == 0:
-            # logger.exception("No data for series number {} in directory {}".format(series_number, dirpath))
-            raise ValueError("No data for series number {} in directory {}".format(series_number, dirpath))
+    def dcmdirstats(self):
+        return self.dicomdirectory.dcmdirstats()
 
-        # if self.series_number is not None:
-        # else:
+    def print_series_info(self, *argw, **kwargs):
+        return self.dicomdirectory.print_series_info(*argw, **kwargs)
 
     def validData(self):
         return self.valid
+
+    def get_4d(self):
+        #TODO create reading time series
+        pass
 
     def get_overlay(self):
         """
@@ -173,8 +188,7 @@ class DicomReader():
         more overlays in the data.
         """
         overlay = {}
-        dcmlist = self.dcmlist
-        print("get overlay begkj")
+        dcmlist = self.files_in_serie
 
         for i in range(len(dcmlist)):
             onefile = dcmlist[i]
@@ -249,7 +263,7 @@ class DicomReader():
         Function make 3D data from dicom file slices
         """
         data3d = []
-        dcmlist = self.dcmlist
+        dcmlist = self.files_in_serie
         # print('stsp ', start, stop, step)
 
         raw_max = None
@@ -260,7 +274,7 @@ class DicomReader():
         # get shape 2d
 
         # sometimes there is render in series
-        if len(self.dcmlist) > 1:
+        if len(self.files_in_serie) > 1:
             data = self._read_file(dcmlist[0])
             data2d1 = data.pixel_array
             data = self._read_file(dcmlist[1])
@@ -331,15 +345,44 @@ class DicomReader():
 
         return data3d
 
-    def get_metaData(self, dcmlist=None, ifile=0):
+    def get_metaData(self, ifile=0):
+        dcmlist = self.files_in_serie
+        return self.dicomdirectory.get_metaData(dcmlist=dcmlist, series_number=self.series_number, ifile=ifile)
+        #
+        # if len(dcmlist) == 0:
+        #     return {}
+
+
+        # logger.debug("Filename: " + dcmlist[ifile])
+
+    def dcmdirstats(self):
+        return self.dicomdirectory.dcmdirstats()
+
+class DicomDirectory():
+    def __init__(self, dirpath, force_create_dicomdir=False, force_read=False):
+        self.dicomdir_filename = 'dicomdir.pkl'
+        self.files_with_info = None
+        self.dcmdirplus = None
+        self.dirpath = dirpath
+        self.force_read=force_read
+        self.force_create_dicomdir = force_create_dicomdir
+        self.__prepare_info_from_dicomdir_file()
+
+    def _read_file(self, dcmfile):
+        data = dicom.read_file(dcmfile, force=self.force_read)
+        return data
+
+    # def get_depth
+
+    def get_metaData(self, dcmlist, series_number, ifile=0):
         """
         Get metadata.
         Voxel size is obtained from PixelSpacing and difference of
         SliceLocation of two neighboorhoding slices (first have index ifile).
         Files in are used.
         """
-        if dcmlist is None:
-            dcmlist = self.dcmlist
+        # if dcmlist is None:
+        #     dcmlist = self.files_in_serie
 
         if len(dcmlist) == 0:
             return {}
@@ -351,13 +394,13 @@ class DicomReader():
             head2, teil2 = os.path.split(dcmlist[ifile])
 
             data2 = self._read_file(dcmlist[ifile + 1])
-            loc1 = self.__get_slice_location(data1, teil1)
-            loc2 = self.__get_slice_location(data2, teil2)
+            loc1 = get_slice_location(data1, teil1)
+            loc2 = get_slice_location(data2, teil2)
             voxeldepth = float(np.abs(loc1 - loc2))
         except:
             logger.warning('Problem with voxel depth. Using SliceThickness')
             logger.debug(traceback.format_exc())
-                           # + ' SeriesNumber: ' + str(data1.SeriesNumber))
+            # + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
             try:
                 voxeldepth = float(data1.SliceThickness)
@@ -378,7 +421,7 @@ class DicomReader():
         ]
         metadata = {'voxelsize_mm': voxelsize_mm,
                     'Modality': data1.Modality,
-                    'SeriesNumber': self.series_number
+                    'SeriesNumber': series_number
                     }
 
         try:
@@ -393,8 +436,8 @@ class DicomReader():
         except:
             logger.warning(
                 'Problem with tag ImageComments')
-                # , SeriesNumber: ' +
-                # str(data1.SeriesNumber))
+            # , SeriesNumber: ' +
+            # str(data1.SeriesNumber))
         try:
             metadata['Modality'] = data1.Modality
         except:
@@ -407,42 +450,21 @@ class DicomReader():
         metadata = attr_to_dict(data1, "StudyDescription", metadata)
         metadata = attr_to_dict(data1, "RequestedProcedureDescription", metadata)
 
-        metadata['dcmfilelist'] = self.dcmlist
+        metadata['dcmfilelist'] = dcmlist
         return metadata
-
-    def get_study_info(self, series_info=None):
-        if series_info is None:
-            series_info = self.dcmdirstats()
-
-        study_info={
-
-        }
-        key = series_info.keys()[0]
-        if "StudyDate" in series_info[key]:
-            study_info["StudyDate"] = series_info[key]["StudyDate"]
-        return study_info
-
-    def get_study_info_msg(self, series_info=None):
-        study_info = self.get_study_info(series_info=series_info)
-
-        study_info_msg = ""
-        if "StudyDate" in study_info:
-            study_info_msg += "StudyDate " + str(study_info["StudyDate"])
-
-        return study_info_msg
 
     def dcmdirstats(self):
         """ Dicom series staticstics, input is dcmdir, not dirpath
         Information is generated from dicomdir.pkl and first files of series
         """
         import numpy as np
-        dcmdir = self.dicomdir_info
+        dcmdir = self.files_with_info
         # get series number
-# vytvoření slovníku, kde je klíčem číslo série a hodnotou jsou všechny
-# informace z dicomdir
+        # vytvoření slovníku, kde je klíčem číslo série a hodnotou jsou všechny
+        # informace z dicomdir
         series_info = {line['SeriesNumber']: line for line in dcmdir}
 
-# počítání velikosti série
+        # počítání velikosti série
         try:
             dcmdirseries = [line['SeriesNumber'] for line in dcmdir]
 
@@ -454,7 +476,7 @@ class DicomReader():
 
         bins = np.unique(dcmdirseries)
         binslist = bins.tolist()
-#  kvůli správným intervalům mezi biny je nutno jeden přidat na konce
+        #  kvůli správným intervalům mezi biny je nutno jeden přidat na konce
         mxb = np.max(bins) + 1
         binslist.append(mxb)
         # inslist.insert(0,-1)
@@ -468,9 +490,9 @@ class DicomReader():
             series_info[bins[i]]['Count'] = counts[i]
 
             # adding information from files
-            lst = self.get_sortedlist(SeriesNumber=bins[i])
-            metadata = self.get_metaData(dcmlist=lst)
-# adding dictionary metadata to series_info dictionary
+            lst = self.get_sorted_series_files(SeriesNumber=bins[i])
+            metadata = self.get_metaData(dcmlist=lst, series_number=bins[i])
+            # adding dictionary metadata to series_info dictionary
             series_info[bins[i]] = dict(
                 list(series_info[bins[i]].items()) +
                 list(metadata.items())
@@ -509,6 +531,28 @@ class DicomReader():
                 # rint strl
 
         return strinfo
+
+    def get_study_info(self, series_info=None):
+        if series_info is None:
+            series_info = self.dcmdirstats()
+
+        study_info={
+
+        }
+        key = series_info.keys()[0]
+        if "StudyDate" in series_info[key]:
+            study_info["StudyDate"] = series_info[key]["StudyDate"]
+        return study_info
+
+    def get_study_info_msg(self, series_info=None):
+        study_info = self.get_study_info(series_info=series_info)
+
+        study_info_msg = ""
+        if "StudyDate" in study_info:
+            study_info_msg += "StudyDate " + str(study_info["StudyDate"])
+
+        return study_info_msg
+
 
     def files_in_dir(self, dirpath, wildcard="*", startpath=None):
         """
@@ -549,7 +593,7 @@ class DicomReader():
 
         return filelist
 
-    def get_dicomdir_info(self, writedicomdirfile=True):
+    def __prepare_info_from_dicomdir_file(self, writedicomdirfile=True):
         """
         Check if exists dicomdir file and load it or cerate it
 
@@ -573,7 +617,7 @@ class DicomReader():
                 pass
 
         if createdcmdir or self.force_create_dicomdir:
-            dcmdirplus = self.create_dicomdir_info()
+            dcmdirplus = self._create_dicomdir_info()
             dcmdir = dcmdirplus['filesinfo']
             if (writedicomdirfile) and len(dcmdir) > 0:
                 # obj_to_file(dcmdirplus, dicomdirfile, ftype)
@@ -586,62 +630,72 @@ class DicomReader():
                 # bj_to_file(dcmdir, dcmdiryamlpath )
 
         dcmdir = dcmdirplus['filesinfo']
+        self.dcmdirplus = dcmdirplus
+        self.files_with_info = dcmdir
         return dcmdir
 
-    def __get_slice_location(self, dcmdata, teil=None):
-        """ get location of the slice
-
-        :param dcmdata: dicom data structure
-        :param teil: filename. Used when slice location doesnt exist
-        :return:
-        """
-        slice_location=None
-        if hasattr(dcmdata, 'SliceLocation'):
-            # print(dcmdata.SliceLocation)
-            # print(type(dcmdata.SliceLocation))
-            try:
-                slice_location = float(dcmdata.SliceLocation)
-            except Exception as exc:
-                logger.warning("It is not possible to use SliceLocation")
-                logger.info(traceback.format_exc())
-        if slice_location is None and hasattr(dcmdata, "SliceThickness") and teil is not None:
-            logger.warning(
-                "Estimating SliceLocation wiht image number and SliceThickness"
-            )
-            # print(teil)
-
-            i = map(int, re.findall('\d+', teil))
-            i = i[-1]
-            slice_location = float(i * float(dcmdata.SliceThickness))
-
-        if slice_location is None and hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata, "ImageOrientationPatient"):
-            if dcmdata.ImageOrientationPatient == [1, 0, 0, 0, 1, 0]:
-                slice_location = dcmdata.ImagePositionPatient[2]
-            else:
-                logger.warning("Unknown ImageOrientationPatient")
-        if slice_location is None:
-            logger.warning("Problem with slice location")
-
-        return slice_location
-
-    def __get_series_number(self, dcmdata):
-
-        series_number = 0
-        if hasattr(dcmdata, 'SeriesNumber') and dcmdata.SeriesNumber != '':
-                series_number = dcmdata.SeriesNumber
-        return series_number
 
     def _prepare_metadata_line(self, dcmdata, teil):
 
         metadataline = {'filename': teil,
-                        'SeriesNumber': self.__get_series_number(
+                        'SeriesNumber': get_series_number(
                             dcmdata),
-                        'SliceLocation': self.__get_slice_location(
+                        'SliceLocation': get_slice_location(
                             dcmdata, teil)
                         }
         return metadataline
 
-    def create_dicomdir_info(self):
+    def series_in_dir(self):
+        """input is dcmdir, not dirpath """
+
+        try:
+            dcmdirseries = [line['SeriesNumber'] for line in self.files_with_info]
+        except:
+            # @TODO maybe [0],[None] would be better
+            return [0], [0]
+
+        bins = np.unique(dcmdirseries)
+        binslist = bins.tolist()
+        #  kvůli správným intervalům mezi biny je nutno jeden přidat na konce
+        mxb = np.max(bins) + 1
+        binslist.append(mxb)
+        counts, binsvyhodit = np.histogram(dcmdirseries, bins=binslist)
+
+        return counts, bins
+
+    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False):
+        """
+        Function returns sorted list of dicom files. File paths are organized
+        by SeriesUID, StudyUID and FrameUID
+
+        Example:
+        get_sortedlist()
+        get_sortedlist('~/data/')
+        """
+        dcmdir = self.files_with_info[:]
+        dcmdir.sort(key=lambda x: x['SliceLocation'])
+
+        # select sublist with SeriesNumber
+        if SeriesNumber is not None:
+            dcmdir = [
+                line for line in dcmdir if line['SeriesNumber'] == SeriesNumber
+            ]
+
+        logger.debug('SeriesNumber: ' + str(SeriesNumber))
+
+        filelist = []
+        for onefile in dcmdir:
+            filelist.append(os.path.join(startpath,
+                                         self.dirpath, onefile['filename']))
+            # head, tail = os.path.split(onefile['filename'])
+
+        if return_files_with_info:
+            return filelist, dcmdir
+        else:
+            return filelist
+
+
+    def _create_dicomdir_info(self):
         """
         Function crates list of all files in dicom dir with all IDs
         """
@@ -661,7 +715,7 @@ class DicomReader():
                 try:
                     dcmdata = dicom.read_file(filepath, force=self.force_read)
 
-                        # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
+                    # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
                 except Exception as e:
                     if teil != self.dicomdir_filename:
                         print('Dicom read problem with file ' + filepath)
@@ -684,50 +738,50 @@ class DicomReader():
             dcmdirplus["StudyDate"] = metadataline["StudyDate"]
         return dcmdirplus
 
-    def status_dir(self):
-        """input is dcmdir, not dirpath """
+def get_slice_location(dcmdata, teil=None):
+    """ get location of the slice
 
+    :param dcmdata: dicom data structure
+    :param teil: filename. Used when slice location doesnt exist
+    :return:
+    """
+    slice_location=None
+    if hasattr(dcmdata, 'SliceLocation'):
+        # print(dcmdata.SliceLocation)
+        # print(type(dcmdata.SliceLocation))
         try:
-            dcmdirseries = [line['SeriesNumber'] for line in self.dicomdir_info]
-        except:
-            return [0], [0]
+            slice_location = float(dcmdata.SliceLocation)
+        except Exception as exc:
+            logger.warning("It is not possible to use SliceLocation")
+            logger.info(traceback.format_exc())
+    if slice_location is None and hasattr(dcmdata, "SliceThickness") and teil is not None:
+        logger.warning(
+            "Estimating SliceLocation wiht image number and SliceThickness"
+        )
+        # print(teil)
 
-        bins = np.unique(dcmdirseries)
-        binslist = bins.tolist()
-        #  kvůli správným intervalům mezi biny je nutno jeden přidat na konce
-        mxb = np.max(bins) + 1
-        binslist.append(mxb)
-        counts, binsvyhodit = np.histogram(dcmdirseries, bins=binslist)
+        i = map(int, re.findall('\d+', teil))
+        i = i[-1]
+        slice_location = float(i * float(dcmdata.SliceThickness))
 
-        return counts, bins
+    if slice_location is None and hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata, "ImageOrientationPatient"):
+        if dcmdata.ImageOrientationPatient == [1, 0, 0, 0, 1, 0]:
+            slice_location = dcmdata.ImagePositionPatient[2]
+        else:
+            logger.warning("Unknown ImageOrientationPatient")
+    if slice_location is None:
+        logger.warning("Problem with slice location")
 
-    def get_sortedlist(self, startpath="", SeriesNumber=None):
-        """
-        Function returns sorted list of dicom files. File paths are organized
-        by SeriesUID, StudyUID and FrameUID
+    return slice_location
 
-        Example:
-        get_sortedlist()
-        get_sortedlist('~/data/')
-        """
-        dcmdir = self.dicomdir_info[:]
-        dcmdir.sort(key=lambda x: x['SliceLocation'])
+def get_series_number(dcmdata):
 
-        # select sublist with SeriesNumber
-        if SeriesNumber is not None:
-            dcmdir = [
-                line for line in dcmdir if line['SeriesNumber'] == SeriesNumber
-            ]
+    series_number = 0
+    if hasattr(dcmdata, 'SeriesNumber') and dcmdata.SeriesNumber != '':
+        series_number = dcmdata.SeriesNumber
+        return series_number
 
-        logger.debug('SeriesNumber: ' + str(SeriesNumber))
 
-        filelist = []
-        for onefile in dcmdir:
-            filelist.append(os.path.join(startpath,
-                                         self.dirpath, onefile['filename']))
-            head, tail = os.path.split(onefile['filename'])
-
-        return filelist
 
 def attr_to_dict(obj, attr, dct):
     """
@@ -762,7 +816,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
         # t_app = PyQt4.QtGui.QWidget(sys.argv)
         print(qt_app)
 
-    series_info = dcmreader.dcmdirstats()
+    series_info = dcmreader.dicomdirectory.dcmdirstats()
     study_info_msg = dcmreader.get_study_info_msg(series_info=series_info)
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
