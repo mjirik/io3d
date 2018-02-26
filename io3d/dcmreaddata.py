@@ -144,7 +144,7 @@ class DicomReader():
         # else:
     def set_series_number(self, series_number):
         self.files_in_serie, self.files_in_serie_with_info = self.dicomdirectory.get_sorted_series_files(
-            SeriesNumber=self.series_number, return_files_with_info=True)
+            SeriesNumber=series_number, return_files_with_info=True)
         if len(self.files_in_serie) == 0:
             # logger.exception("No data for series number {} in directory {}".format(series_number, dirpath))
             raise ValueError("No data for series number {} in directory {}".format(self.series_number, self.dirpath))
@@ -364,7 +364,7 @@ class DicomDirectory():
         self.files_with_info = None
         self.dcmdirplus = None
         self.dirpath = dirpath
-        self.force_read=force_read
+        self.force_read = force_read
         self.force_create_dicomdir = force_create_dicomdir
         self.__prepare_info_from_dicomdir_file()
 
@@ -817,14 +817,14 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
         print(qt_app)
 
     series_info = dcmreader.dicomdirectory.dcmdirstats()
-    study_info_msg = dcmreader.get_study_info_msg(series_info=series_info)
+    study_info_msg = dcmreader.dicomdirectory.get_study_info_msg(series_info=series_info)
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
     # bins = ', '.join([str(ii) for ii in bins])
     sbins = [str(ii) for ii in bins]
     sbinsd = {}
     for serie_number in series_info.keys():
-        strl = dcmreader.get_one_serie_info(series_info, serie_number)
+        strl = dcmreader.dicomdirectory.get_one_serie_info(series_info, serie_number)
         sbinsd[strl] = serie_number
         # sbins.append(str(ii) + "  " + serie_number)
     sbins = sbinsd.keys()

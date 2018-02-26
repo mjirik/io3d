@@ -18,7 +18,8 @@ from nose.plugins.attrib import attr
 # sys.path.append(os.path.join(path_to_script, "../extern/py3DSeedEditor/"))
 # sys.path.append(os.path.join(path_to_script, "../src/"))
 
-# from PyQt4.QtGui import QFileDialog, QApplication, QMainWindow
+from PyQt4.QtGui import QFileDialog, QApplication, QMainWindow
+import sys
 
 import numpy as np
 
@@ -232,6 +233,29 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(stats[7]['Modality'], 'CT')
         self.assertTrue(info_str,
                         '7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n')
+
+    @attr('dataset')
+    def test_dcmread_some_strange_data(self):
+        # there was problem with DICOMDIR file
+
+        dcmdir = "e:\\data\\medical\\orig\\chk\\84490561\\"
+        # os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        reader = dcmr.DicomReader(dcmdir, force_create_dicomdir=False, series_number=10)
+        data3d = reader.get_3Ddata()
+        metadata = reader.get_metaData()
+        stats = reader.dcmdirstats()
+        info_str = reader.print_series_info(stats, minimal_series_number=0)
+
+        # slice size is 512x512
+        self.assertEqual(data3d.shape[2], 512)
+        # voxelsize depth = 5 mm
+        self.assertEqual(metadata['voxelsize_mm'][0], 5)
+        # test stats
+        self.assertEqual(stats[7]['Modality'], 'CT')
+
+
     def test_dcmread(self):
 
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
@@ -307,12 +331,14 @@ class DicomReaderTest(unittest.TestCase):
     @attr('dataset')
     def test_dcmread_not_defined_slice_width(self):
 
+        # app = QApplication(sys.argv)
         # dirpath = dcmr.get_dcmdir_qt()
         dirpath = 'e:/data/medical/orig/chk/83674597/'
         # dirpath = dcmr.get_dcmdir_qt()
         # app = QMainWindow()
         reader = dcmr.DicomReader(
             dirpath,
+            # qt_app=app,
             series_number=202
         )  # , #qt_app =app)
         # app.exit()
