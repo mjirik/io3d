@@ -771,7 +771,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
     snstring, ok = \
         QInputDialog.getItem(qt_app,
                              'Serie Selection',
-                             study_info_msg,
+                             study_info_msg +
                              ' Select serie:',
                              sbins,
                              editable=False)
