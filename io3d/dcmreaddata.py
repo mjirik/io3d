@@ -410,17 +410,20 @@ class DicomReader():
         metadata['dcmfilelist'] = self.dcmlist
         return metadata
 
-    def get_study_info(self):
+    def get_study_info(self, series_info=None):
+        if series_info is None:
+            series_info = self.dcmdirstats()
 
         study_info={
 
         }
-        if "StudyDate" in self.dicomdir_info[0]:
-            study_info["StudyDate"] = self.dicomdir_info[0]["StudyDate"]
+        key = series_info.keys()[0]
+        if "StudyDate" in series_info[key]:
+            study_info["StudyDate"] = series_info[key]["StudyDate"]
         return study_info
 
-    def get_study_info_msg(self):
-        study_info = self.get_study_info()
+    def get_study_info_msg(self, series_info=None):
+        study_info = self.get_study_info(series_info=series_info)
 
         study_info_msg = ""
         if "StudyDate" in study_info:
@@ -645,6 +648,7 @@ class DicomReader():
 
         filelist = self.files_in_dir(self.dirpath)
         files = []
+        metadataline = {}
 
         for filepath in filelist:
             head, teil = os.path.split(filepath)
@@ -675,7 +679,9 @@ class DicomReader():
 
         files.sort(key=lambda x: x['SliceLocation'])
 
-        dcmdirplus = {'version': __version__, 'filesinfo': files}
+        dcmdirplus = {'version': __version__, 'filesinfo': files, }
+        if "StudyDate" in metadataline:
+            dcmdirplus["StudyDate"] = metadataline["StudyDate"]
         return dcmdirplus
 
     def status_dir(self):
@@ -757,7 +763,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
         print(qt_app)
 
     series_info = dcmreader.dcmdirstats()
-    study_info_msg = dcmreader.get_study_info_msg()
+    study_info_msg = dcmreader.get_study_info_msg(series_info=series_info)
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
     # bins = ', '.join([str(ii) for ii in bins])

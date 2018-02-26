@@ -93,6 +93,21 @@ class QtTest(unittest.TestCase):
         # app.exec_()
         self.assertEqual(error, 0)
 
+    @attr("interactive")
+    def test_read_datareader_interactive(self):
+        sdp = io3d.datasets.join_path("sample_data")
+        dp = io3d.datasets.join_path("sample_data/jatra_5mm/")
+        app = QApplication(sys.argv)
+
+        drw = io3d.datareaderqt.DataReaderWidget(loaddir=sdp, qt_app=app)
+        # (widget_label="widget label", path="~/lisa_data/sample.{}.pkl")
+
+        drw.show()
+        # drw.datapath = dp
+        # drw.read_data_from_prepared_datapath()
+        # error = np.sum(np.abs(np.asarray([93, 512, 512]) - np.asarray(drw.datap["data3d"].shape)))
+        app.exec_()
+        # self.assertEqual(error, 0)
 
 if __name__ == "__main__":
     unittest.main()
