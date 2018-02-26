@@ -48,7 +48,7 @@ requirements:
     - pyyaml
     - h5py
     - checksumdir
-    - SimpleITK = 0.9.*
+    - SimpleITK=0.9.*
 
 test:
   # Python imports
