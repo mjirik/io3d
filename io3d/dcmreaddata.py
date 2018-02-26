@@ -411,10 +411,22 @@ class DicomReader():
         return metadata
 
     def get_study_info(self):
+
         study_info={
-            "StudyDate": self.dicomdir_info[0]["StudyDate"]
+
         }
+        if "StudyDate" in self.dicomdir_info[0]:
+            study_info["StudyDate"] = self.dicomdir_info[0]["StudyDate"]
         return study_info
+
+    def get_study_info_msg(self):
+        study_info = self.get_study_info()
+
+        study_info_msg = ""
+        if "StudyDate" in study_info:
+            study_info_msg += "StudyDate " + str(study_info["StudyDate"])
+
+        return study_info_msg
 
     def dcmdirstats(self):
         """ Dicom series staticstics, input is dcmdir, not dirpath
@@ -745,10 +757,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
         print(qt_app)
 
     series_info = dcmreader.dcmdirstats()
-    study_info = dcmreader.get_study_info()
-    study_info_msg = ""
-    if "StudyDate" in study_info:
-        study_info_msg += "StudyDate " + str(study_info["StudyDate"])
+    study_info_msg = dcmreader.get_study_info_msg()
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
     # bins = ', '.join([str(ii) for ii in bins])
