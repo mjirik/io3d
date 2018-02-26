@@ -746,6 +746,9 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
 
     series_info = dcmreader.dcmdirstats()
     study_info = dcmreader.get_study_info()
+    study_info_msg = ""
+    if "StudyDate" in study_info:
+        study_info_msg += "StudyDate " + str(study_info["StudyDate"])
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
     # bins = ', '.join([str(ii) for ii in bins])
@@ -759,7 +762,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
     snstring, ok = \
         QInputDialog.getItem(qt_app,
                              'Serie Selection',
-                             "StudyDate: " + str(study_info["StudyDate"]) +
+                             study_info_msg,
                              ' Select serie:',
                              sbins,
                              editable=False)
