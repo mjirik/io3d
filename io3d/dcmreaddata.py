@@ -402,9 +402,19 @@ class DicomReader():
                 'Problem with tag Modality')
             # SeriesNumber: ' +
             #     str(data1.SeriesNumber))
+        metadata = attr_to_dict(data1, "AcquisitionDate", metadata)
+        metadata = attr_to_dict(data1, "StudyDate", metadata)
+        metadata = attr_to_dict(data1, "StudyDescription", metadata)
+        metadata = attr_to_dict(data1, "RequestedProcedureDescription", metadata)
 
         metadata['dcmfilelist'] = self.dcmlist
         return metadata
+
+    def get_study_info(self):
+        study_info={
+            "StudyDate": self.dicomdir_info[0]["StudyDate"]
+        }
+        return study_info
 
     def dcmdirstats(self):
         """ Dicom series staticstics, input is dcmdir, not dirpath
@@ -701,6 +711,18 @@ class DicomReader():
 
         return filelist
 
+def attr_to_dict(obj, attr, dct):
+    """
+    Add attribute to dict if it exists.
+    :param obj: object
+    :param attr: object attribute name
+    :param dict:  output dict
+    :return:  dict
+    """
+    if hasattr(obj, attr):
+        dct[attr] = getattr(obj, attr)
+    return dct
+
 def get_series_number_console(dcmreader, counts, bins, qt_app=None): # pragma: no cover
 
     print('series')
@@ -723,6 +745,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
         print(qt_app)
 
     series_info = dcmreader.dcmdirstats()
+    study_info = dcmreader.get_study_info()
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
     # bins = ', '.join([str(ii) for ii in bins])
@@ -736,7 +759,8 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
     snstring, ok = \
         QInputDialog.getItem(qt_app,
                              'Serie Selection',
-                             'Select serie:',
+                             "StudyDate: " + str(study_info["StudyDate"]) +
+                             ' Select serie:',
                              sbins,
                              editable=False)
     sn = sbinsd[str(snstring)]
