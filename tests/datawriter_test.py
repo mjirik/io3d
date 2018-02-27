@@ -21,9 +21,9 @@ import numpy as np
 from nose.plugins.attrib import attr
 try:
     import dicom
+    dicom.debug(False)
 except:
     import pydicom as dicom
-dicom.debug(False)
 
 #
 import io3d

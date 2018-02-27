@@ -23,9 +23,9 @@ import numpy as np
 
 try:
     import dicom
+    dicom.debug(False)
 except:
     import pydicom as dicom
-dicom.debug(False)
 
 #
 import sys
