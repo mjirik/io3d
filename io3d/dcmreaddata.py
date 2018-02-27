@@ -16,7 +16,11 @@ import sys
 import traceback
 from optparse import OptionParser
 
-import dicom
+try:
+    import dicom
+except:
+    import pydicom as dicom
+
 import numpy as np
 import scipy
 import scipy.io
