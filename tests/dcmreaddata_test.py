@@ -23,7 +23,10 @@ import sys
 
 import numpy as np
 
-import dicom
+try:
+    import dicom
+except:
+    import pydicom as dicom
 dicom.debug(False)
 
 #

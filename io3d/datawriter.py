@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 import os.path
 
 import re
-import dicom
+try:
+    import dicom
+except:
+    import pydicom as dicom
 import os.path as op
 from . import rawN
 from . import misc

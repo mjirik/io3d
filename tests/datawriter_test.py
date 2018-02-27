@@ -19,7 +19,10 @@ import shutil
 import numpy as np
 
 from nose.plugins.attrib import attr
-import dicom
+try:
+    import dicom
+except:
+    import pydicom as dicom
 dicom.debug(False)
 
 #
