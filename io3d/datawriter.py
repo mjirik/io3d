@@ -149,7 +149,6 @@ class DataWriter:
         :param metadata:
         :return:
         """
-        import dicom
         ds = dicom.read_file(path)
         ds.SpacingBetweenSlices = str(metadata["voxelsize_mm"][0])[:16]
         dicom.write_file(path, ds)

@@ -146,7 +146,6 @@ class DicomReaderTest(unittest.TestCase):
         is saved on (60xx,3000) bit after bit. Data are decoded and
         each bit is stored as array element.
         """
-        import dicom
         # import py3DSeedEditor
         # import matplotlib.pyplot as plt
         dcmfile = os.path.join(

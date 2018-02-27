@@ -12,7 +12,14 @@ import argparse
 import numpy as np
 import os.path
 import sys
+
+try:
+    import dicom
+except:
+    import pydicom as dicom
+
 # -------------------- my scripts ------------
+
 
 from . import dcmreaddata as dcmr
 from . import tgz
@@ -234,7 +241,6 @@ class DataReader:
         :param metadata:
         :return:
         """
-        import dicom
         ds = dicom.read_file(path)
         try:
             metadata["voxelsize_mm"][0] = ds.SpacingBetweenSlices

@@ -21,7 +21,10 @@ from nose.plugins.attrib import attr
 
 import numpy as np
 
-import dicom
+try:
+    import dicom
+except:
+    import pydicom as dicom
 dicom.debug(False)
 
 #
