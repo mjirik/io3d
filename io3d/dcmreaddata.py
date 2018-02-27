@@ -351,6 +351,7 @@ class DicomReader():
 
     def get_metaData(self, ifile=0):
         dcmlist = self.files_in_serie
+        # self.dicomdirectory.get_metadata_new(series_number=self.series_number)
         return self.dicomdirectory.get_metaData(dcmlist=dcmlist, series_number=self.series_number, ifile=ifile)
         #
         # if len(dcmlist) == 0:
@@ -377,6 +378,10 @@ class DicomDirectory():
         return data
 
     # def get_depth
+    def get_metadata_new(self, series_number):
+        #@ TODO implement simplier metadata function
+        files, files_with_info = self.get_sorted_series_files(SeriesNumber=series_number, return_files_with_info=True)
+        print("asdf")
 
     def get_metaData(self, dcmlist, series_number, ifile=0):
         """
@@ -395,7 +400,7 @@ class DicomDirectory():
         data1 = self._read_file(dcmlist[ifile])
         try:
             head1, teil1 = os.path.split(dcmlist[ifile])
-            head2, teil2 = os.path.split(dcmlist[ifile])
+            head2, teil2 = os.path.split(dcmlist[ifile + 1])
 
             data2 = self._read_file(dcmlist[ifile + 1])
             loc1 = get_slice_location(data1, teil1)

@@ -336,12 +336,13 @@ class DicomReaderTest(unittest.TestCase):
         # app = QApplication(sys.argv)
         # dirpath = dcmr.get_dcmdir_qt()
         dirpath = 'e:/data/medical/orig/chk/83674597/'
+        dirpath = 'e:/data/medical/orig/chk/84490561/'
         # dirpath = dcmr.get_dcmdir_qt()
         # app = QMainWindow()
         reader = dcmr.DicomReader(
             dirpath,
             # qt_app=app,
-            series_number=202
+            series_number=8,
         )  # , #qt_app =app)
         # app.exit()
         self.data3d = reader.get_3Ddata()
