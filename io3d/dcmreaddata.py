@@ -377,6 +377,14 @@ class DicomDirectory():
         data = dicom.read_file(dcmfile, force=self.force_read)
         return data
 
+    def create_standard_dicomdir(self):
+        """
+        Create standard dicom dir describing files in directory
+        :return:
+        """
+
+        pass
+
     # def get_depth
     def get_metadata_new(self, series_number):
         """
@@ -386,7 +394,7 @@ class DicomDirectory():
         :param series_number:
         :return: metadata dict with voxelsize_mm, SeriesNumber and other dicom tags
         """
-        #@ TODO implement simplier metadata function
+        # TODO implement simplier metadata function
         # automatic test is prepared
 
 

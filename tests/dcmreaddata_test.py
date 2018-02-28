@@ -386,13 +386,25 @@ class DicomReaderTest(unittest.TestCase):
 
     @unittest.skip('waiting for implementation')
     def test_get_metadata_new(self):
+        # @TODO prepare better test
 
-        # dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
         dcmdir = op.join(sample_data_path, 'vincentka_sample/')
-        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
-        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         dicomdirectory = dcmr.DicomDirectory(dcmdir)
         metadata = dicomdirectory.get_metadata()
+        self.assertEqual(metadata["voxelsize_mm"][1], 512)
+
+    @unittest.skip('waiting for implementation')
+    def test_prepare_original_dicomdir(self):
+        # @TODO prepare better test
+
+        dcmdir = io3d.datasets.join_path("vincentka_sample")
+        # TODO check the dicomdir filename
+        dicomdir_filename = io3d.datasets.join_path("vincentka_sample/DICOMDIR")
+        if os.path.exists(dicomdir_filename):
+            os.remove(dicomdir_filename)
+        # dcmdir = op.join(sample_data_path, 'vincentka_sample/')
+        dicomdirectory = dcmr.DicomDirectory(dcmdir)
+        metadata = dicomdirectory.prepare_original_dicomdir()
         self.assertEqual(metadata["voxelsize_mm"][1], 512)
 
         # metadata = reader.get_metaData()
