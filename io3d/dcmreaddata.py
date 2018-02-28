@@ -35,7 +35,7 @@ if sys.version_info[0] >= 3:
     xrange = range
     raw_input = input
 
-__version__ = [1, 4]
+__version__ = [1, 5]
 
 
 # def obj_from_file(filename='annotation.yaml', filetype='yaml'):
@@ -379,9 +379,30 @@ class DicomDirectory():
 
     # def get_depth
     def get_metadata_new(self, series_number):
+        """
+        Return series metadata.
+        Output condatin information about voxelsize_mm, series_number and modality.
+        If it is possible, the ImageComment, AcquisitionDate and few other dicom tags are also in output dict.
+        :param series_number:
+        :return: metadata dict with voxelsize_mm, SeriesNumber and other dicom tags
+        """
         #@ TODO implement simplier metadata function
+        # automatic test is prepared
+
+
         files, files_with_info = self.get_sorted_series_files(SeriesNumber=series_number, return_files_with_info=True)
-        print("asdf")
+        metadata = {
+            # 'voxelsize_mm': voxelsize_mm,
+            # 'Modality': data1.Modality,
+            # 'SeriesNumber': series_number,
+            # 'SeriesDescription' = data1.SeriesDescription,
+            # 'ImageComments' : data1.ImageComments,
+            # "AcquisitionDate": metadata,
+            # "StudyDate": metadata,
+            # "StudyDescription": metadata,
+            # "RequestedProcedureDescription", metadata
+        }
+        return metadata
 
     def get_metaData(self, dcmlist, series_number, ifile=0):
         """

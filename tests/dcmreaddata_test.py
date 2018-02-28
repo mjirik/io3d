@@ -384,6 +384,22 @@ class DicomReaderTest(unittest.TestCase):
         dcmdir = op.join(sample_data_path, 'vincentka_sample/')
         self.assertTrue(dcmr.is_dicom_dir(dcmdir))
 
+    @unittest.skip('waiting for implementation')
+    def test_get_metadata_new(self):
+
+        # dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
+        dcmdir = op.join(sample_data_path, 'vincentka_sample/')
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        dicomdirectory = dcmr.DicomDirectory(dcmdir)
+        metadata = dicomdirectory.get_metadata()
+        self.assertEqual(metadata["voxelsize_mm"][1], 512)
+
+        # metadata = reader.get_metaData()
+        # import sed3
+        # ed = sed3.sed3(data3d)
+        # ed.show()
+
     @attr('actual')
     def test_compare_dcmread_and_dataread(self):
 
