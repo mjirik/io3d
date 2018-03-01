@@ -77,7 +77,7 @@ __version__ = [1, 5]
 def dicomdir_info(dirpath, *args, **kwargs):
     """ Get information about series in dir"""
     dr = DicomReader(dirpath=dirpath, *args, **kwargs)
-    info = dr.dicomdirectory.dcmdirstats()
+    info = dr.dicomdirectory.get_stats_of_series_in_dir()
     return info
 
 def is_dicom_dir(datapath):
@@ -174,7 +174,7 @@ class DicomReader():
                 self.series_number = bins[0]
 
     def dcmdirstats(self):
-        return self.dicomdirectory.dcmdirstats()
+        return self.dicomdirectory.get_stats_of_series_in_dir()
 
     def print_series_info(self, *argw, **kwargs):
         return self.dicomdirectory.print_series_info(*argw, **kwargs)
@@ -361,7 +361,7 @@ class DicomReader():
         # logger.debug("Filename: " + dcmlist[ifile])
 
     def dcmdirstats(self):
-        return self.dicomdirectory.dcmdirstats()
+        return self.dicomdirectory.get_stats_of_series_in_dir()
 
 class DicomDirectory():
     def __init__(self, dirpath, force_create_dicomdir=False, force_read=False):
@@ -515,10 +515,22 @@ class DicomDirectory():
         metadata['dcmfilelist'] = dcmlist
         return metadata
 
-    def dcmdirstats(self):
+    def get_stats_of_studies_and_series_in_dir(self):
+        retval = {
+            1: {
+                "info": None,
+                "series": self.get_stats_of_series_in_dir()
+            }
+        }
+        return retval
+
+    def get_stats_of_series_in_dir(self, study_id=None):
         """ Dicom series staticstics, input is dcmdir, not dirpath
         Information is generated from dicomdir.pkl and first files of series
         """
+        if study_id is not None:
+            logger.error("study_id tag is not implemented yet")
+            return
         import numpy as np
         dcmdir = self.files_with_info
         # get series number
@@ -596,7 +608,7 @@ class DicomDirectory():
 
     def get_study_info(self, series_info=None):
         if series_info is None:
-            series_info = self.dcmdirstats()
+            series_info = self.get_stats_of_series_in_dir()
 
         study_info={
 
@@ -860,7 +872,7 @@ def attr_to_dict(obj, attr, dct):
 def get_series_number_console(dcmreader, counts, bins, qt_app=None): # pragma: no cover
 
     print('series')
-    series_info = dcmreader.dcmdirstats()
+    series_info = dcmreader.get_stats_of_series_in_dir()
     print(dcmreader.print_series_info(series_info))
     snstring = raw_input('Select Serie: ')
 
@@ -878,7 +890,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
         # t_app = PyQt4.QtGui.QWidget(sys.argv)
         print(qt_app)
 
-    series_info = dcmreader.dicomdirectory.dcmdirstats()
+    series_info = dcmreader.dicomdirectory.get_stats_of_series_in_dir()
     study_info_msg = dcmreader.dicomdirectory.get_study_info_msg(series_info=series_info)
     print(dcmreader.print_series_info(series_info))
     from PyQt4.QtGui import QInputDialog
