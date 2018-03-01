@@ -404,8 +404,10 @@ class DicomReaderTest(unittest.TestCase):
             os.remove(dicomdir_filename)
         # dcmdir = op.join(sample_data_path, 'vincentka_sample/')
         dicomdirectory = dcmr.DicomDirectory(dcmdir)
-        metadata = dicomdirectory.prepare_original_dicomdir()
-        self.assertEqual(metadata["voxelsize_mm"][1], 512)
+        dicomdirectory.prepare_original_dicomdir()
+
+        self.assertTrue(os.path.exists(dicomdir_filename))
+        # self.assertEqual(metadata["voxelsize_mm"][1], 512)
 
         # metadata = reader.get_metaData()
         # import sed3
