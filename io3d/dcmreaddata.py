@@ -366,6 +366,7 @@ class DicomReader():
 class DicomDirectory():
     def __init__(self, dirpath, force_create_dicomdir=False, force_read=False):
         self.dicomdir_filename = 'dicomdir.pkl'
+        self.standard_dicomdir_filename = 'DICOMDIR'
         self.files_with_info = None
         self.dcmdirplus = None
         self.dirpath = dirpath
@@ -379,11 +380,34 @@ class DicomDirectory():
 
     def create_standard_dicomdir(self):
         """
-        Create standard dicom dir describing files in directory
+        Create standard dicom dir describing files in directory.
+        See read_standard_dicomdir_info() and get_standard_dicomdir_info()
         :return:
         """
+        # Sample DICOMDIR file can be found here
+        # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
 
         pass
+
+    def read_standard_dicomdir_info(self):
+        """
+        Read standard DICOMDIR file
+        :return:
+        """
+        # self.dirpath
+        # os.path.join(self.dirpath, self.standard_dicomdir_filename)
+
+        pass
+
+    def get_standard_dicomdir_info(self):
+        """
+        Read DICOMDIR, crate if necessary.
+        :return:
+        """
+        dicomdir_filepath = os.path.join(self.dirpath, self.standard_dicomdir_filename)
+        if not os.path.exists(dicomdir_filepath):
+            self.create_standard_dicomdir()
+        return self.read_standard_dicomdir_info()
 
     # def get_depth
     def get_metadata_new(self, series_number):
