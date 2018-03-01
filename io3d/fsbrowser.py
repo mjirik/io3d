@@ -3,7 +3,7 @@ logger = logging.getLogger(__name__)
 import glob
 
 
-class DicomBrowser():
+class FileSystemBrowser():
     def __init__(self):
         pass
 
