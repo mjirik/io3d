@@ -20,14 +20,14 @@ import numpy as np
 
 from nose.plugins.attrib import attr
 try:
-    import dicom
-    dicom.debug(False)
+    import dicom as pydicom
+    pydicom.debug(False)
 except:
-    import pydicom as dicom
+    import pydicom
 
 #
 import io3d
-import io3d.datawriter as dwriter
+# import io3d.datawriter as dwriter
 import io3d.datareader as dreader
 
 # import sed3 as pyed
