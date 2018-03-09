@@ -376,6 +376,19 @@ class DicomReaderTest(unittest.TestCase):
         # sss.visualization()
         # import pdb; pdb.set_trace()
 
+    def test_is_dicomdir_information_about_files(self):
+        """
+        files in vincentka_sample have no extension
+        """
+        dcmdir = op.join(sample_data_path, 'vincentka_sample/')
+        dicomdirectory = dcmr.DicomDirectory(dcmdir)
+        files_with_info = dicomdirectory.files_with_info
+
+        sorted_files = dicomdirectory.get_sorted_series_files(sort_key="AcquisitionTime", files_with_info=files_with_info)
+        # self.assertEqual(metadata["voxelsize_mm"][1], 512)
+        print(files_with_info)
+        self.assertTrue(dcmr.is_dicom_dir(dcmdir))
+
     # @attr('actual')
     def test_is_dicomdir(self):
         """

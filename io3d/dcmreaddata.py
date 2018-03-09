@@ -35,7 +35,7 @@ if sys.version_info[0] >= 3:
     xrange = range
     raw_input = input
 
-__version__ = [1, 5]
+__version__ = [1, 6]
 
 
 # def obj_from_file(filename='annotation.yaml', filetype='yaml'):
@@ -511,6 +511,7 @@ class DicomDirectory():
         metadata = attr_to_dict(data1, "StudyDate", metadata)
         metadata = attr_to_dict(data1, "StudyDescription", metadata)
         metadata = attr_to_dict(data1, "RequestedProcedureDescription", metadata)
+        # metadata = attr_to_dict(data1, "AcquisitionTime", metadata)
 
         metadata['dcmfilelist'] = dcmlist
         return metadata
@@ -717,6 +718,7 @@ class DicomDirectory():
                         'SliceLocation': get_slice_location(
                             dcmdata, teil)
                         }
+        metadataline = attr_to_dict(dcmdata, "AcquisitionTime", metadataline)
         return metadataline
 
     def series_in_dir(self):
@@ -737,7 +739,7 @@ class DicomDirectory():
 
         return counts, bins
 
-    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False):
+    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False, sort_key="SliceLocation", files_with_info=None):
         """
         Function returns sorted list of dicom files. File paths are organized
         by SeriesUID, StudyUID and FrameUID
@@ -746,8 +748,11 @@ class DicomDirectory():
         get_sortedlist()
         get_sortedlist('~/data/')
         """
-        dcmdir = self.files_with_info[:]
-        dcmdir.sort(key=lambda x: x['SliceLocation'])
+        if files_with_info is None:
+            files_with_info = self.files_with_info
+
+        dcmdir = files_with_info[:]
+        dcmdir.sort(key=lambda x: x[sort_key])
 
         # select sublist with SeriesNumber
         if SeriesNumber is not None:
