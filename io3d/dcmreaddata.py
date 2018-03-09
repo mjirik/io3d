@@ -942,6 +942,17 @@ def get_dcmdir_qt(app=False, directory=''): # pragma: no cover
         dcmdir = None
     return dcmdir
 
+def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
+    # use this function from imtools.dili.sort_list_of_dicts()
+
+    if type(keys) != list:
+        keys = [keys]
+    # dcmdir = lst_of_dct[:]
+    dcmdir = lst_of_dct
+    dcmdir.sort(key=lambda x: [x[key] for key in keys], reverse=reverse, **sort_args)
+    return dcmdir
+
+    # dcmdir.sort(key=lambda x: x[sort_key])
 
 usage = '%prog [options]\n' + __doc__.rstrip()
 help = {
@@ -1010,3 +1021,6 @@ if __name__ == "__main__":  # pragma: no cover
             {'data': data3d_out, 'voxelsize_mm': vs_out}
             )
     print("Data size: %d, shape: %s" % (data3d_out.nbytes, data3d_out.shape))
+
+
+
