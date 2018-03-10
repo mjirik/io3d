@@ -56,6 +56,16 @@ Example 3 - Qt Widget
 Test data
 ===
 
+Get sample data with `io3d` package:
+
+        python -m io3d.datasets -l 3Dircadb1.1
+        
+Get list of available datasets:
+
+        python -m io3d.datasets -L
+
+... or download data:
+
 [io3d_sample_data](http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip)
 
 [ct_head.rawiv](http://mgltools.scripps.edu/downloads/tars/releases/DocTars/DOCPACKS/Vision/doc/Tutorial/headandslice/ct_head.rawiv)

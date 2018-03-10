@@ -40,7 +40,9 @@ sample_data_path = op.expanduser(sample_data_path)
 class DicomReaderTest(unittest.TestCase):
     interactivetTest = False
 
-    # def setUp(self):
+    def setUp(self):
+        io3d.datasets.join_path()
+        op.ex
     #     import imtools
     #     import imtools.sample_data
     #     imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
@@ -384,10 +386,10 @@ class DicomReaderTest(unittest.TestCase):
         dicomdirectory = dcmr.DicomDirectory(dcmdir)
         files_with_info = dicomdirectory.files_with_info
 
-        sorted_files = dicomdirectory.get_sorted_series_files(sort_key="AcquisitionTime", files_with_info=files_with_info)
+        sorted_files, sorted_files_with_info = dicomdirectory.get_sorted_series_files(sort_keys=["AcquisitionTime", "SeriesNumber"], return_files_with_info=True)
         # self.assertEqual(metadata["voxelsize_mm"][1], 512)
-        print(files_with_info)
-        self.assertTrue(dcmr.is_dicom_dir(dcmdir))
+        print(sorted_files_with_info)
+        self.assertTrue(op.exists(sorted_files[0]))
 
     # @attr('actual')
     def test_is_dicomdir(self):
