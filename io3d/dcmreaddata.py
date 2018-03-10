@@ -549,15 +549,7 @@ class DicomDirectory():
             return series_info
             # eturn [0],[0]
 
-        bins = np.unique(dcmdirseries)
-        binslist = bins.tolist()
-        #  kvůli správným intervalům mezi biny je nutno jeden přidat na konce
-        mxb = np.max(bins) + 1
-        binslist.append(mxb)
-        # inslist.insert(0,-1)
-        counts, binsvyhodit = np.histogram(dcmdirseries, bins=binslist)
-
-        # db.set_trace();
+        bins, counts = np.unique(dcmdirseries, return_counts=True)
 
         # sestavení informace o velikosti série a slovníku
 
