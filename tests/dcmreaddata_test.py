@@ -44,7 +44,7 @@ class DicomReaderTest(unittest.TestCase):
         # io3d.datasets.join_path()
 
     def test_dicomread_read(self):
-        dcmdir = io3d.datasets.join_path("jatra_5mm")
+        dcmdir = io3d.datasets.join_path("sample_data/jatra_5mm")
         data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
 #slice size is 512x512
         self.assertEqual(data3d.shape[2], 512)
