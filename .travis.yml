@@ -39,6 +39,8 @@ install:
     - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt
 #    - pip install checksumdir
     - pip install .
+
+    - python -m io3d.datasets -l 3Dircadb1.1
 #    - pip install -r requirements.txt
 #    -
 # command to run tests

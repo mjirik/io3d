@@ -724,22 +724,39 @@ class DicomDirectory():
     def series_in_dir(self):
         """input is dcmdir, not dirpath """
 
-        try:
-            dcmdirseries = [line['SeriesNumber'] for line in self.files_with_info]
-        except:
-            # @TODO maybe [0],[None] would be better
-            return [0], [0]
+        dcmdirseries = []
+        for line in self.files_with_info:
+            if "SeriesNumber" in line:
+                dcmdirseries.append(line['SeriesNumber'])
+            else:
+                dcmdirseries.append(None)
+        # try:
+        #     dcmdirseries = [line['SeriesNumber'] for line in self.files_with_info]
+        # except:
+        #     return [0], [0]
 
-        bins = np.unique(dcmdirseries)
-        binslist = bins.tolist()
+        bins, counts = np.unique(dcmdirseries, return_counts=True)
+        # binslist = bins.tolist()
+
+        # if None in binslist:
+        #     if len(binslist) == 1:
+        #         return [0], [0]
+        #     else:
+        #         logger.warning
+
         #  kvůli správným intervalům mezi biny je nutno jeden přidat na konce
-        mxb = np.max(bins) + 1
-        binslist.append(mxb)
-        counts, binsvyhodit = np.histogram(dcmdirseries, bins=binslist)
+        # mxb = np.max(bins)
+        # if mxb is None:
+        #     mxb = 1
+        # else:
+        #     mxb = mxb + 1
+        #
+        # binslist.append(mxb)
+        # counts, binsvyhodit = np.histogram(dcmdirseries, bins=binslist)
 
-        return counts, bins
+        return counts.tolist(), bins.tolist()
 
-    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False, sort_key="SliceLocation", files_with_info=None):
+    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False, sort_keys="SliceLocation"):
         """
         Function returns sorted list of dicom files. File paths are organized
         by SeriesUID, StudyUID and FrameUID
@@ -748,11 +765,8 @@ class DicomDirectory():
         get_sortedlist()
         get_sortedlist('~/data/')
         """
-        if files_with_info is None:
-            files_with_info = self.files_with_info
 
-        dcmdir = files_with_info[:]
-        dcmdir.sort(key=lambda x: x[sort_key])
+        dcmdir = sort_list_of_dicts(self.files_with_info[:], keys=sort_keys )
 
         # select sublist with SeriesNumber
         if SeriesNumber is not None:
