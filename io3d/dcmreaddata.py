@@ -720,10 +720,8 @@ class DicomDirectory():
         Function returns sorted list of dicom files. File paths are organized
         by SeriesUID, StudyUID and FrameUID
 
-        Example:
-        get_sorted()
-        get_sortedlist('~/data/')
-        :param startpath: path prefix
+
+        :param startpath: path prefix. E.g. "~/data"
         :param series_number: ID of series used for filtering the data
         :param return_files_with_info: return more complex information about sorted files
         :param return_files: return simple list of sorted files
