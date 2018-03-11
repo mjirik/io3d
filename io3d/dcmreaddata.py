@@ -748,7 +748,7 @@ class DicomDirectory():
 
         return counts.tolist(), bins.tolist()
 
-    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False, sort_keys="SliceLocation"):
+    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False, sort_keys="SliceLocation", return_files=True):
         """
         Function returns sorted list of dicom files. File paths are organized
         by SeriesUID, StudyUID and FrameUID
@@ -774,10 +774,14 @@ class DicomDirectory():
                                          self.dirpath, onefile['filename']))
             # head, tail = os.path.split(onefile['filename'])
 
+        retval = []
+        if return_files:
+            retval.append(filelist)
         if return_files_with_info:
-            return filelist, dcmdir
-        else:
-            return filelist
+
+            retval.append(dcmdir)
+
+        return retval
 
 
     def _create_dicomdir_info(self):
