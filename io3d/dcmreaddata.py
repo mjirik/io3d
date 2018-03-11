@@ -22,8 +22,6 @@ except:
     import pydicom as dicom
 
 import numpy as np
-import scipy
-import scipy.io
 from scipy.io import savemat
 import os.path as op
 
@@ -38,47 +36,12 @@ if sys.version_info[0] >= 3:
 __version__ = [1, 6]
 
 
-# def obj_from_file(filename='annotation.yaml', filetype='yaml'):
-#     """
-#     Read object from file
-#     """
-#     if filetype == 'yaml':
-#         import yaml
-#         f = open(filename, 'r')
-#         obj = yaml.load(f)
-#     elif filetype == 'pickle':
-#         import pickle
-#         f = open(filename, 'rb')
-#         obj = pickle.load(f)
-#     else:
-#         logger.error('Unknown filetype')
-#
-#     f.close()
-#
-#     return obj
-#
-#
-# def obj_to_file(obj, filename='annotation.yaml', filetype='yaml'):
-#     """
-#     Writes annotation in file
-#     """
-#     if filetype == 'yaml':
-#         import yaml
-#         f = open(filename, 'w')
-#         yaml.dump(obj, f)
-#     elif filetype == 'pickle':
-#         import pickle
-#         f = open(filename, 'wb')
-#         pickle.dump(obj, f, -1)
-#     else:
-#         logger.error('Unknown filetype')
-#
-#     f.close
 def dicomdir_info(dirpath, *args, **kwargs):
     """ Get information about series in dir"""
     dr = DicomReader(dirpath=dirpath, *args, **kwargs)
     info = dr.dicomdirectory.get_stats_of_series_in_dir()
     return info
+
 
 def is_dicom_dir(datapath):
     """
@@ -108,6 +71,36 @@ def is_dicom_dir(datapath):
     return False
 
 
+def decode_overlay_slice(data, i_overlay):
+        # overlay index
+        n_bits = 8
+
+        # On (60xx,3000) are stored ovelays.
+        # First is (6000,3000), second (6002,3000), third (6004,3000),
+        # and so on.
+        dicom_tag1 = 0x6000 + 2 * i_overlay
+
+        overlay_raw = data[dicom_tag1, 0x3000].value
+
+        # On (60xx,0010) and (60xx,0011) is stored overlay size
+        rows = data[dicom_tag1, 0x0010].value  # rows = 512
+        cols = data[dicom_tag1, 0x0011].value  # cols = 512
+
+        decoded_linear = np.zeros(len(overlay_raw) * n_bits)
+
+        # Decoding data. Each bit is stored as array element
+# TODO neni tady ta jednička blbě?
+        for i in range(1, len(overlay_raw)):
+            for k in range(0, n_bits):
+                # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
+                byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
+                decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
+
+        # verlay = np.array(pol)
+        overlay_slice = np.reshape(decoded_linear, [rows, cols])
+        return overlay_slice
+
+
 class DicomReader():
     """
     Example:
@@ -126,7 +119,8 @@ class DicomReader():
                  ):
         self.valid = False
         self.dirpath = os.path.expanduser(dirpath)
-        self.dicomdirectory = DicomDirectory(self.dirpath, force_create_dicomdir=force_create_dicomdir, force_read=force_read)
+        self.dicomdirectory = DicomDirectory(self.dirpath, force_create_dicomdir=force_create_dicomdir,
+                                             force_read=force_read)
         self.force_read = force_read
         # self.dicomdir_info = self.dicomdirectory.get_dicomdir_info()
         self.series_number = series_number
@@ -148,7 +142,7 @@ class DicomReader():
         # else:
     def set_series_number(self, series_number):
         self.files_in_serie, self.files_in_serie_with_info = self.dicomdirectory.get_sorted_series_files(
-            SeriesNumber=series_number, return_files_with_info=True)
+            series_number=series_number, return_files_with_info=True)
         if len(self.files_in_serie) == 0:
             # logger.exception("No data for series number {} in directory {}".format(series_number, dirpath))
             raise ValueError("No data for series number {} in directory {}".format(self.series_number, self.dirpath))
@@ -205,7 +199,7 @@ class DicomReader():
                 for i_overlay in range(0, 50):
                     try:
                         # overlay index
-                        data2d = self.decode_overlay_slice(data, i_overlay)
+                        data2d = decode_overlay_slice(data, i_overlay)
                         # mport pdb; pdb.set_trace()
                         shp2 = data2d.shape
                         overlay[i_overlay] = np.zeros([len(dcmlist), shp2[0],
@@ -221,42 +215,13 @@ class DicomReader():
             else:
                 for i_overlay in overlay.keys():
                     try:
-                        data2d = self.decode_overlay_slice(data, i_overlay)
+                        data2d = decode_overlay_slice(data, i_overlay)
                         overlay[i_overlay][-i - 1, :, :] = data2d
                     except:
                         logger.warning('Problem with overlay number ' +
                                        str(i_overlay))
 
         return overlay
-
-    def decode_overlay_slice(self, data, i_overlay):
-            # overlay index
-            n_bits = 8
-
-            # On (60xx,3000) are stored ovelays.
-            # First is (6000,3000), second (6002,3000), third (6004,3000),
-            # and so on.
-            dicom_tag1 = 0x6000 + 2 * i_overlay
-
-            overlay_raw = data[dicom_tag1, 0x3000].value
-
-            # On (60xx,0010) and (60xx,0011) is stored overlay size
-            rows = data[dicom_tag1, 0x0010].value  # rows = 512
-            cols = data[dicom_tag1, 0x0011].value  # cols = 512
-
-            decoded_linear = np.zeros(len(overlay_raw) * n_bits)
-
-            # Decoding data. Each bit is stored as array element
-# TODO neni tady ta jednička blbě?
-            for i in range(1, len(overlay_raw)):
-                for k in range(0, n_bits):
-                    # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
-                    byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
-                    decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
-
-            # verlay = np.array(pol)
-            overlay_slice = np.reshape(decoded_linear, [rows, cols])
-            return overlay_slice
 
     def _read_file(self, dcmfile):
         data = dicom.read_file(dcmfile, force=self.force_read)
@@ -363,6 +328,78 @@ class DicomReader():
     def dcmdirstats(self):
         return self.dicomdirectory.get_stats_of_series_in_dir()
 
+
+def get_one_serie_info(series_info, serie_number):
+    strl = str(serie_number) + " (" \
+           + str(series_info[serie_number]['Count'])
+    try:
+        strl = strl + ", " \
+               + str(series_info[serie_number]['Modality'])
+        strl = strl + ", " \
+               + str(series_info[serie_number]['SeriesDescription'])
+        strl = strl + ", " \
+               + str(series_info[serie_number]['ImageComments'])
+    except:
+        logger.debug(
+            'Tag Modality, SeriesDescription or ImageComment not found in dcminfo'
+        )
+        pass
+    strl = strl + ')'
+    return strl
+
+
+def files_in_dir(dirpath, wildcard="*", startpath=None):
+    """
+    Function generates list of files from specific dir
+
+    files_in_dir(dirpath, wildcard="*.*", startpath=None)
+
+    dirpath: required directory
+    wilcard: mask for files
+    startpath: start for relative path
+
+    Example
+    files_in_dir('medical/jatra-kiv','*.dcm', '~/data/')
+    """
+
+    import glob
+
+    filelist = []
+
+    if startpath is not None:
+        completedirpath = os.path.join(startpath, dirpath)
+    else:
+        completedirpath = dirpath
+
+    if os.path.exists(completedirpath):
+        logger.info('completedirpath = ' + completedirpath)
+
+    else:
+        logger.error('Wrong path: ' + completedirpath)
+        raise Exception('Wrong path : ' + completedirpath)
+
+    for infile in glob.glob(os.path.join(completedirpath, wildcard)):
+        filelist.append(infile)
+
+    if len(filelist) == 0:
+        logger.error('No required files in path: ' + completedirpath)
+        raise Exception('No required file in path: ' + completedirpath)
+
+    return filelist
+
+
+def _prepare_metadata_line(dcmdata, teil):
+
+    metadataline = {'filename': teil,
+                    'SeriesNumber': get_series_number(
+                        dcmdata),
+                    'SliceLocation': get_slice_location(
+                        dcmdata, teil)
+                    }
+    metadataline = attr_to_dict(dcmdata, "AcquisitionTime", metadataline)
+    return metadataline
+
+
 class DicomDirectory():
     def __init__(self, dirpath, force_create_dicomdir=False, force_read=False):
         self.dicomdir_filename = 'dicomdir.pkl'
@@ -422,7 +459,7 @@ class DicomDirectory():
         # automatic test is prepared
 
 
-        files, files_with_info = self.get_sorted_series_files(SeriesNumber=series_number, return_files_with_info=True)
+        files, files_with_info = self.get_sorted_series_files(series_number=series_number, return_files_with_info=True)
         metadata = {
             # 'voxelsize_mm': voxelsize_mm,
             # 'Modality': data1.Modality,
@@ -557,7 +594,7 @@ class DicomDirectory():
             series_info[bins[i]]['Count'] = counts[i]
 
             # adding information from files
-            lst = self.get_sorted_series_files(SeriesNumber=bins[i])
+            lst = self.get_sorted_series_files(series_number=bins[i])
             metadata = self.get_metaData(dcmlist=lst, series_number=bins[i])
             # adding dictionary metadata to series_info dictionary
             series_info[bins[i]] = dict(
@@ -567,25 +604,6 @@ class DicomDirectory():
 
         return series_info
 
-    def get_one_serie_info(self, series_info, serie_number):
-        strl = str(serie_number) + " (" \
-               + str(series_info[serie_number]['Count'])
-        try:
-            strl = strl + ", " \
-                   + str(series_info[serie_number]['Modality'])
-            strl = strl + ", " \
-                   + str(series_info[serie_number]['SeriesDescription'])
-            strl = strl + ", " \
-                   + str(series_info[serie_number]['ImageComments'])
-        except:
-            logger.debug(
-                'Tag Modality, SeriesDescription or ImageComment not found in dcminfo'
-            )
-            pass
-        strl = strl + ')'
-        return strl
-
-
     def print_series_info(self, series_info, minimal_series_number=1):
         """
         Print series_info from dcmdirstats
@@ -593,7 +611,7 @@ class DicomDirectory():
         strinfo = ''
         if len(series_info) > minimal_series_number:
             for serie_number in series_info.keys():
-                strl = self.get_one_serie_info(series_info, serie_number)
+                strl = get_one_serie_info(series_info, serie_number)
                 strinfo = strinfo + strl + '\n'
                 # rint strl
 
@@ -619,46 +637,6 @@ class DicomDirectory():
             study_info_msg += "StudyDate " + str(study_info["StudyDate"])
 
         return study_info_msg
-
-
-    def files_in_dir(self, dirpath, wildcard="*", startpath=None):
-        """
-        Function generates list of files from specific dir
-
-        files_in_dir(dirpath, wildcard="*.*", startpath=None)
-
-        dirpath: required directory
-        wilcard: mask for files
-        startpath: start for relative path
-
-        Example
-        files_in_dir('medical/jatra-kiv','*.dcm', '~/data/')
-        """
-
-        import glob
-
-        filelist = []
-
-        if startpath is not None:
-            completedirpath = os.path.join(startpath, dirpath)
-        else:
-            completedirpath = dirpath
-
-        if os.path.exists(completedirpath):
-            logger.info('completedirpath = ' + completedirpath)
-
-        else:
-            logger.error('Wrong path: ' + completedirpath)
-            raise Exception('Wrong path : ' + completedirpath)
-
-        for infile in glob.glob(os.path.join(completedirpath, wildcard)):
-            filelist.append(infile)
-
-        if len(filelist) == 0:
-            logger.error('No required files in path: ' + completedirpath)
-            raise Exception('No required file in path: ' + completedirpath)
-
-        return filelist
 
     def __prepare_info_from_dicomdir_file(self, writedicomdirfile=True):
         """
@@ -701,18 +679,6 @@ class DicomDirectory():
         self.files_with_info = dcmdir
         return dcmdir
 
-
-    def _prepare_metadata_line(self, dcmdata, teil):
-
-        metadataline = {'filename': teil,
-                        'SeriesNumber': get_series_number(
-                            dcmdata),
-                        'SliceLocation': get_slice_location(
-                            dcmdata, teil)
-                        }
-        metadataline = attr_to_dict(dcmdata, "AcquisitionTime", metadataline)
-        return metadataline
-
     def series_in_dir(self):
         """input is dcmdir, not dirpath """
 
@@ -748,25 +714,32 @@ class DicomDirectory():
 
         return counts.tolist(), bins.tolist()
 
-    def get_sorted_series_files(self, startpath="", SeriesNumber=None, return_files_with_info=False, sort_keys="SliceLocation", return_files=True):
+    def get_sorted_series_files(self, startpath="", series_number=None, return_files_with_info=False,
+                                sort_keys="SliceLocation", return_files=True):
         """
         Function returns sorted list of dicom files. File paths are organized
         by SeriesUID, StudyUID and FrameUID
 
         Example:
-        get_sortedlist()
+        get_sorted()
         get_sortedlist('~/data/')
+        :param startpath: path prefix
+        :param series_number: ID of series used for filtering the data
+        :param return_files_with_info: return more complex information about sorted files
+        :param return_files: return simple list of sorted files
+        :type sort_keys: One key or list of keys used for sorting method by the order of keys.
+
         """
 
         dcmdir = sort_list_of_dicts(self.files_with_info[:], keys=sort_keys )
 
         # select sublist with SeriesNumber
-        if SeriesNumber is not None:
+        if series_number is not None:
             dcmdir = [
-                line for line in dcmdir if line['SeriesNumber'] == SeriesNumber
+                line for line in dcmdir if line['SeriesNumber'] == series_number
             ]
 
-        logger.debug('SeriesNumber: ' + str(SeriesNumber))
+        logger.debug('SeriesNumber: ' + str(series_number))
 
         filelist = []
         for onefile in dcmdir:
@@ -796,7 +769,7 @@ class DicomDirectory():
         Function crates list of all files in dicom dir with all IDs
         """
 
-        filelist = self.files_in_dir(self.dirpath)
+        filelist = files_in_dir(self.dirpath)
         files = []
         metadataline = {}
 
@@ -823,7 +796,7 @@ class DicomDirectory():
                 dcmdata = None
 
             if dcmdata is not None:
-                metadataline = self._prepare_metadata_line(dcmdata, teil)
+                metadataline = _prepare_metadata_line(dcmdata, teil)
                 files.append(metadataline)
 
 
@@ -882,9 +855,9 @@ def get_series_number(dcmdata):
 def attr_to_dict(obj, attr, dct):
     """
     Add attribute to dict if it exists.
+    :param dct:
     :param obj: object
     :param attr: object attribute name
-    :param dict:  output dict
     :return:  dict
     """
     if hasattr(obj, attr):
@@ -933,6 +906,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
                              editable=False)
     sn = sbinsd[str(snstring)]
     return sn
+
 
 def get_dcmdir_qt(app=False, directory=''): # pragma: no cover
     from PyQt4.QtGui import QFileDialog, QApplication
