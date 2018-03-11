@@ -18,7 +18,7 @@ from optparse import OptionParser
 
 try:
     import dicom
-except:
+except ModuleNotFoundError:
     import pydicom as dicom
 
 import numpy as np
@@ -57,14 +57,14 @@ def is_dicom_dir(datapath):
         if f.endswith((".dcm", ".DCM")):
             retval = True
             return True
-# @todo not working and I dont know why
+        # @todo not working and I dont know why
         try:
             dicom.read_file(os.path.join(datapath, f))
 
             retval = True
-        except:
+        except Exception:
             import traceback
-            traceback.print_exc
+            traceback.print_exc()
 
         if retval:
             return True
@@ -72,33 +72,33 @@ def is_dicom_dir(datapath):
 
 
 def decode_overlay_slice(data, i_overlay):
-        # overlay index
-        n_bits = 8
+    # overlay index
+    n_bits = 8
 
-        # On (60xx,3000) are stored ovelays.
-        # First is (6000,3000), second (6002,3000), third (6004,3000),
-        # and so on.
-        dicom_tag1 = 0x6000 + 2 * i_overlay
+    # On (60xx,3000) are stored ovelays.
+    # First is (6000,3000), second (6002,3000), third (6004,3000),
+    # and so on.
+    dicom_tag1 = 0x6000 + 2 * i_overlay
 
-        overlay_raw = data[dicom_tag1, 0x3000].value
+    overlay_raw = data[dicom_tag1, 0x3000].value
 
-        # On (60xx,0010) and (60xx,0011) is stored overlay size
-        rows = data[dicom_tag1, 0x0010].value  # rows = 512
-        cols = data[dicom_tag1, 0x0011].value  # cols = 512
+    # On (60xx,0010) and (60xx,0011) is stored overlay size
+    rows = data[dicom_tag1, 0x0010].value  # rows = 512
+    cols = data[dicom_tag1, 0x0011].value  # cols = 512
 
-        decoded_linear = np.zeros(len(overlay_raw) * n_bits)
+    decoded_linear = np.zeros(len(overlay_raw) * n_bits)
 
-        # Decoding data. Each bit is stored as array element
-# TODO neni tady ta jednička blbě?
-        for i in range(1, len(overlay_raw)):
-            for k in range(0, n_bits):
-                # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
-                byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
-                decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
+    # Decoding data. Each bit is stored as array element
+    # TODO neni tady ta jednička blbě?
+    for i in range(1, len(overlay_raw)):
+        for k in range(0, n_bits):
+            # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
+            byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
+            decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
 
-        # verlay = np.array(pol)
-        overlay_slice = np.reshape(decoded_linear, [rows, cols])
-        return overlay_slice
+    # verlay = np.array(pol)
+    overlay_slice = np.reshape(decoded_linear, [rows, cols])
+    return overlay_slice
 
 
 class DicomReader():
@@ -140,6 +140,7 @@ class DicomReader():
 
         # if self.series_number is not None:
         # else:
+
     def set_series_number(self, series_number):
         self.files_in_serie, self.files_in_serie_with_info = self.dicomdirectory.get_sorted_series_files(
             series_number=series_number, return_files_with_info=True)
@@ -177,7 +178,7 @@ class DicomReader():
         return self.valid
 
     def get_4d(self):
-        #TODO create reading time series
+        # TODO create reading time series
         pass
 
     def get_overlay(self):
@@ -203,10 +204,10 @@ class DicomReader():
                         # mport pdb; pdb.set_trace()
                         shp2 = data2d.shape
                         overlay[i_overlay] = np.zeros([len(dcmlist), shp2[0],
-                                                      shp2[1]], dtype=np.int8)
+                                                       shp2[1]], dtype=np.int8)
                         overlay[i_overlay][-i - 1, :, :] = data2d
 
-                    except:
+                    except Exception:
                         # exception is exceptetd. We are trying numbers 0-50
                         # logger.exception('Problem with overlay image number ' +
                         #               str(i_overlay))
@@ -217,7 +218,7 @@ class DicomReader():
                     try:
                         data2d = decode_overlay_slice(data, i_overlay)
                         overlay[i_overlay][-i - 1, :, :] = data2d
-                    except:
+                    except Exception:
                         logger.warning('Problem with overlay number ' +
                                        str(i_overlay))
 
@@ -255,7 +256,6 @@ class DicomReader():
 
         if stop is None:
             stop = len(dcmlist)
-
 
         printRescaleWarning = False
         for i in xrange(start, stop, step):
@@ -295,12 +295,12 @@ class DicomReader():
                          + np.float(inter)
             # first readed slide is at the end
 
-            if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]) :
+            if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]):
                 data3d[-i - 1, :, :] = new_data2d
             else:
-                msg = "Problem with shape " +\
-                      "Data size: " + str(data3d.nbytes) +\
-                      ', shape: ' + str(shp2) + 'x' + str(len(dcmlist)) +\
+                msg = "Problem with shape " + \
+                      "Data size: " + str(data3d.nbytes) + \
+                      ', shape: ' + str(shp2) + 'x' + str(len(dcmlist)) + \
                       ' file ' + onefile
                 logger.warning(msg)
                 print(msg)
@@ -318,12 +318,6 @@ class DicomReader():
         dcmlist = self.files_in_serie
         # self.dicomdirectory.get_metadata_new(series_number=self.series_number)
         return self.dicomdirectory.get_metaData(dcmlist=dcmlist, series_number=self.series_number, ifile=ifile)
-        #
-        # if len(dcmlist) == 0:
-        #     return {}
-
-
-        # logger.debug("Filename: " + dcmlist[ifile])
 
     def dcmdirstats(self):
         return self.dicomdirectory.get_stats_of_series_in_dir()
@@ -339,7 +333,7 @@ def get_one_serie_info(series_info, serie_number):
                + str(series_info[serie_number]['SeriesDescription'])
         strl = strl + ", " \
                + str(series_info[serie_number]['ImageComments'])
-    except:
+    except Exception:
         logger.debug(
             'Tag Modality, SeriesDescription or ImageComment not found in dcminfo'
         )
@@ -389,7 +383,6 @@ def files_in_dir(dirpath, wildcard="*", startpath=None):
 
 
 def _prepare_metadata_line(dcmdata, teil):
-
     metadataline = {'filename': teil,
                     'SeriesNumber': get_series_number(
                         dcmdata),
@@ -458,7 +451,6 @@ class DicomDirectory():
         # TODO implement simplier metadata function
         # automatic test is prepared
 
-
         files, files_with_info = self.get_sorted_series_files(series_number=series_number, return_files_with_info=True)
         metadata = {
             # 'voxelsize_mm': voxelsize_mm,
@@ -496,14 +488,14 @@ class DicomDirectory():
             loc1 = get_slice_location(data1, teil1)
             loc2 = get_slice_location(data2, teil2)
             voxeldepth = float(np.abs(loc1 - loc2))
-        except:
+        except Exception:
             logger.warning('Problem with voxel depth. Using SliceThickness')
             logger.debug(traceback.format_exc())
             # + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
             try:
                 voxeldepth = float(data1.SliceThickness)
-            except:
+            except Exception:
                 logger.warning('Probem with SliceThicknes, setting zero. '
                                + traceback.format_exc())
                 voxeldepth = 0
@@ -621,7 +613,7 @@ class DicomDirectory():
         if series_info is None:
             series_info = self.get_stats_of_series_in_dir()
 
-        study_info={
+        study_info = {
 
         }
         key = series_info.keys()[0]
@@ -729,7 +721,7 @@ class DicomDirectory():
 
         """
 
-        dcmdir = sort_list_of_dicts(self.files_with_info[:], keys=sort_keys )
+        dcmdir = sort_list_of_dicts(self.files_with_info[:], keys=sort_keys)
 
         # select sublist with SeriesNumber
         if series_number is not None:
@@ -749,18 +741,16 @@ class DicomDirectory():
         if return_files:
             retval.append(filelist)
         if return_files_with_info:
-
             retval.append(dcmdir)
 
         if len(retval) == 0:
-            retval=None
+            retval = None
         elif len(retval) == 1:
             retval = retval[0]
         else:
             retval = tuple(retval)
 
         return retval
-
 
     def _create_dicomdir_info(self):
         """
@@ -797,13 +787,13 @@ class DicomDirectory():
                 metadataline = _prepare_metadata_line(dcmdata, teil)
                 files.append(metadataline)
 
-
         files.sort(key=lambda x: x['SliceLocation'])
 
         dcmdirplus = {'version': __version__, 'filesinfo': files, }
         if "StudyDate" in metadataline:
             dcmdirplus["StudyDate"] = metadataline["StudyDate"]
         return dcmdirplus
+
 
 def get_slice_location(dcmdata, teil=None):
     """ get location of the slice
@@ -812,7 +802,7 @@ def get_slice_location(dcmdata, teil=None):
     :param teil: filename. Used when slice location doesnt exist
     :return:
     """
-    slice_location=None
+    slice_location = None
     if hasattr(dcmdata, 'SliceLocation'):
         # print(dcmdata.SliceLocation)
         # print(type(dcmdata.SliceLocation))
@@ -831,7 +821,8 @@ def get_slice_location(dcmdata, teil=None):
         i = i[-1]
         slice_location = float(i * float(dcmdata.SliceThickness))
 
-    if slice_location is None and hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata, "ImageOrientationPatient"):
+    if slice_location is None and hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata,
+                                                                                       "ImageOrientationPatient"):
         if dcmdata.ImageOrientationPatient == [1, 0, 0, 0, 1, 0]:
             slice_location = dcmdata.ImagePositionPatient[2]
         else:
@@ -841,13 +832,12 @@ def get_slice_location(dcmdata, teil=None):
 
     return slice_location
 
-def get_series_number(dcmdata):
 
+def get_series_number(dcmdata):
     series_number = 0
     if hasattr(dcmdata, 'SeriesNumber') and dcmdata.SeriesNumber != '':
         series_number = dcmdata.SeriesNumber
         return series_number
-
 
 
 def attr_to_dict(obj, attr, dct):
@@ -862,7 +852,8 @@ def attr_to_dict(obj, attr, dct):
         dct[attr] = getattr(obj, attr)
     return dct
 
-def get_series_number_console(dcmreader, counts, bins, qt_app=None): # pragma: no cover
+
+def get_series_number_console(dcmreader, counts, bins, qt_app=None):  # pragma: no cover
 
     print('series')
     series_info = dcmreader.get_stats_of_series_in_dir()
@@ -872,10 +863,10 @@ def get_series_number_console(dcmreader, counts, bins, qt_app=None): # pragma: n
     sn = int(snstring)
     return sn
 
-def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cover
+
+def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no cover
 
     if qt_app is None:
-
         # @TODO  there is problem with type of qappliaction
         # mport PyQt4
         # rom PyQt4.QtGui import QApplication
@@ -906,7 +897,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None): # pragma: no cov
     return sn
 
 
-def get_dcmdir_qt(app=False, directory=''): # pragma: no cover
+def get_dcmdir_qt(app=False, directory=''):  # pragma: no cover
     from PyQt4.QtGui import QFileDialog, QApplication
     if app:
         dcmdir = QFileDialog.getExistingDirectory(
@@ -931,6 +922,7 @@ def get_dcmdir_qt(app=False, directory=''): # pragma: no cover
         dcmdir = None
     return dcmdir
 
+
 def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
     # use this function from imtools.dili.sort_list_of_dicts()
 
@@ -942,6 +934,7 @@ def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
     return dcmdir
 
     # dcmdir.sort(key=lambda x: x[sort_key])
+
 
 usage = '%prog [options]\n' + __doc__.rstrip()
 help = {
@@ -994,6 +987,7 @@ if __name__ == "__main__":  # pragma: no cover
     if options.zoom != 1:
         import scipy
         import scipy.ndimage
+
         # oom = float(options.zoom)
         # mport pdb; pdb.set_trace()
         data3d = scipy.ndimage.zoom(data3d, zoom=zoom)
@@ -1010,6 +1004,3 @@ if __name__ == "__main__":  # pragma: no cover
             {'data': data3d_out, 'voxelsize_mm': vs_out}
             )
     print("Data size: %d, shape: %s" % (data3d_out.nbytes, data3d_out.shape))
-
-
-
