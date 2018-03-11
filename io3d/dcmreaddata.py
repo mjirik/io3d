@@ -781,6 +781,13 @@ class DicomDirectory():
 
             retval.append(dcmdir)
 
+        if len(retval) == 0:
+            retval=None
+        elif len(retval) == 1:
+            retval = retval[0]
+        else:
+            retval = tuple(retval)
+
         return retval
 
 
