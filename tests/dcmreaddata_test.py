@@ -384,6 +384,20 @@ class DicomReaderTest(unittest.TestCase):
         # sss.visualization()
         # import pdb; pdb.set_trace()
 
+    @attr('dataset')
+    def test_is_dicomdir_information_about_files_with_perfusion_data(self):
+        """
+        files in vincentka_sample have no extension
+        """
+        dcmdir = op.join("E:\\data\\medical\\orig\\perfusion", '32584640')
+        dicomdirectory = dcmr.DicomDirectory(dcmdir)
+        files_with_info = dicomdirectory.files_with_info
+
+        sorted_files, sorted_files_with_info = dicomdirectory.get_sorted_series_files(sort_keys=["AcquisitionTime", "SeriesNumber"], return_files_with_info=True)
+        # self.assertEqual(metadata["voxelsize_mm"][1], 512)
+        print(sorted_files_with_info)
+        self.assertTrue(op.exists(sorted_files[0]))
+
     def test_is_dicomdir_information_about_files(self):
         """
         files in vincentka_sample have no extension

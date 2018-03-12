@@ -817,7 +817,7 @@ def get_slice_location(dcmdata, teil=None):
             "Estimating SliceLocation wiht image number and SliceThickness"
         )
 
-        from builtins import map
+        # from builtins import map
         i = list(map(int, re.findall('\d+', teil)))
         i = i[-1]
         slice_location = float(i * float(dcmdata.SliceThickness))
