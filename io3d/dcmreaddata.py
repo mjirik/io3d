@@ -883,7 +883,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no co
     sbins = [str(ii) for ii in bins]
     sbinsd = {}
     for serie_number in series_info.keys():
-        strl = dcmreader.get_one_serie_info(series_info, serie_number)
+        strl = get_one_serie_info(series_info, serie_number)
         sbinsd[strl] = serie_number
         # sbins.append(str(ii) + "  " + serie_number)
     sbins = sbinsd.keys()
