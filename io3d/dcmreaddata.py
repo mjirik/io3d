@@ -18,7 +18,8 @@ from optparse import OptionParser
 
 try:
     import dicom
-except ModuleNotFoundError:
+except Exception:
+# except ModuleNotFoundError:
     import pydicom as dicom
 
 import numpy as np
