@@ -857,7 +857,7 @@ def attr_to_dict(obj, attr, dct):
 def get_series_number_console(dcmreader, counts, bins, qt_app=None):  # pragma: no cover
 
     print('series')
-    series_info = dcmreader.get_stats_of_series_in_dir()
+    series_info = dcmreader.dicomdirectory.get_stats_of_series_in_dir()
     print(dcmreader.print_series_info(series_info))
     snstring = raw_input('Select Serie: ')
 
