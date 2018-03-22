@@ -22,7 +22,6 @@ except Exception:
 # except ModuleNotFoundError:
     import pydicom
 
-import pydicom.errors
 import numpy as np
 from scipy.io import savemat
 import os.path as op
@@ -64,12 +63,12 @@ def is_dicom_dir(datapath):
             pydicom.read_file(os.path.join(datapath, f))
 
             retval = True
-        except pydicom.errors.InvalidDicomError:
-            logger.debug("Invalid Dicom while reading file " + str(f))
-
+        # except pydicom.errors.InvalidDicomError:
+        #     logger.debug("Invalid Dicom while reading file " + str(f))
         except Exception:
-            import traceback
-            traceback.print_exc()
+            logger.warning("Unable to read dicom file " + str(f))
+            # import traceback
+            # traceback.print_exc()
 
         if retval:
             return True
