@@ -22,6 +22,7 @@ except Exception:
 # except ModuleNotFoundError:
     import pydicom as dicom
 
+import dicom.errors
 import numpy as np
 from scipy.io import savemat
 import os.path as op
@@ -63,6 +64,9 @@ def is_dicom_dir(datapath):
             dicom.read_file(os.path.join(datapath, f))
 
             retval = True
+        except dicom.errors.InvalidDicomError:
+            logger.debug("Invalid Dicom while reading file " + str(f))
+
         except Exception:
             import traceback
             traceback.print_exc()
@@ -406,6 +410,7 @@ class DicomDirectory():
         self.__prepare_info_from_dicomdir_file()
 
     def _read_file(self, dcmfile):
+        import dicom.errors
         data = dicom.read_file(dcmfile, force=self.force_read)
         return data
 
@@ -650,9 +655,9 @@ class DicomDirectory():
                 if dcmdirplus['version'] == __version__:
                     createdcmdir = False
                 dcmdir = dcmdirplus['filesinfo']
-            except:
+            except Exception:
                 logger.debug('Found dicomdir.pkl with wrong version')
-                pass
+                createdcmdir = True
 
         if createdcmdir or self.force_create_dicomdir:
             dcmdirplus = self._create_dicomdir_info()
