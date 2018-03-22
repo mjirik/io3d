@@ -793,7 +793,9 @@ class DicomDirectory():
                 metadataline = _prepare_metadata_line(dcmdata, teil)
                 files.append(metadataline)
 
-        files.sort(key=lambda x: x['SliceLocation'])
+        # if SliceLocation is None, it is sorted to the end
+        # this is not necessary
+        files.sort(key=lambda x: (x['SliceLocation'] is None, x["SliceLocation"]))
 
         dcmdirplus = {'version': __version__, 'filesinfo': files, }
         if "StudyDate" in metadataline:
