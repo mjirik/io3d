@@ -932,13 +932,26 @@ def get_dcmdir_qt(app=False, directory=''):  # pragma: no cover
 
 
 def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
+    """
+    Sort by defined keys.
+
+    If the key is not available, sort these to the end.
+
+    :param lst_of_dct:
+    :param keys:
+    :param reverse:
+    :param sort_args:
+    :return:
+    """
     # use this function from imtools.dili.sort_list_of_dicts()
 
     if type(keys) != list:
         keys = [keys]
     # dcmdir = lst_of_dct[:]
     dcmdir = lst_of_dct
-    dcmdir.sort(key=lambda x: [x[key] for key in keys], reverse=reverse, **sort_args)
+    # sorting is based on two values in tuple (has_this_key: bool, value_or_None)
+    dcmdir.sort(key=lambda x: [((False, x[key]) if key in x.keys() else (True, None)) for key in keys], reverse=reverse, **sort_args)
+    # dcmdir.sort(key=lambda x: [(x[key] for key in keys], reverse=reverse, **sort_args)
     return dcmdir
 
     # dcmdir.sort(key=lambda x: x[sort_key])
