@@ -277,7 +277,7 @@ class DataWriter:
 
     # allocation of dataspace
         encoded_linear = np.zeros(
-            np.prod(overlay.shape) / n_bits,
+            (np.prod(overlay.shape) / n_bits).astype(np.int),
             dtype=np.uint8
         )
 
