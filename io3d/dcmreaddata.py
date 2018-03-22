@@ -950,7 +950,7 @@ def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
     # dcmdir = lst_of_dct[:]
     dcmdir = lst_of_dct
     # sorting is based on two values in tuple (has_this_key: bool, value_or_None)
-    dcmdir.sort(key=lambda x: [((False, x[key]) if key in x.keys() else (True, None)) for key in keys], reverse=reverse, **sort_args)
+    dcmdir.sort(key=lambda x: [((False, x[key]) if key in x.keys() else (True, 0)) for key in keys], reverse=reverse, **sort_args)
     # dcmdir.sort(key=lambda x: [(x[key] for key in keys], reverse=reverse, **sort_args)
     return dcmdir
 
