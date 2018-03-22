@@ -794,7 +794,7 @@ class DicomDirectory():
                 files.append(metadataline)
 
         # if SliceLocation is None, it is sorted to the end
-        # this is not necessary
+        # this is not necessary it can be deleted
         files.sort(key=lambda x: (x['SliceLocation'] is None, x["SliceLocation"]))
 
         dcmdirplus = {'version': __version__, 'filesinfo': files, }
