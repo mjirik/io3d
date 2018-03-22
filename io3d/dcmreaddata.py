@@ -409,7 +409,6 @@ class DicomDirectory():
         self.__prepare_info_from_dicomdir_file()
 
     def _read_file(self, dcmfile):
-        import pydicom.errors
         data = pydicom.read_file(dcmfile, force=self.force_read)
         return data
 
@@ -679,18 +678,29 @@ class DicomDirectory():
     def series_in_dir(self):
         """input is dcmdir, not dirpath """
 
-        dcmdirseries = []
+        # none_count = 0
+        countsd = {}
+        # dcmdirseries = []
         for line in self.files_with_info:
             if "SeriesNumber" in line:
-                dcmdirseries.append(line['SeriesNumber'])
+                sn = line['SeriesNumber']
             else:
-                dcmdirseries.append(None)
+                sn = None
+            if sn in countsd:
+                countsd[sn] += 1
+            else:
+                countsd[sn] = 1
+
+        bins = list(countsd)
+        counts = list(countsd.values())
+
+
         # try:
         #     dcmdirseries = [line['SeriesNumber'] for line in self.files_with_info]
         # except:
         #     return [0], [0]
 
-        bins, counts = np.unique(dcmdirseries, return_counts=True)
+        # bins, counts = np.unique(dcmdirseries, return_counts=True)
         # binslist = bins.tolist()
 
         # if None in binslist:
@@ -709,7 +719,8 @@ class DicomDirectory():
         # binslist.append(mxb)
         # counts, binsvyhodit = np.histogram(dcmdirseries, bins=binslist)
 
-        return counts.tolist(), bins.tolist()
+        # return counts.tolist(), bins.tolist()
+        return counts, bins
 
     def get_sorted_series_files(self, startpath="", series_number=None, return_files_with_info=False,
                                 sort_keys="SliceLocation", return_files=True):
@@ -949,7 +960,7 @@ def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
     # dcmdir = lst_of_dct[:]
     dcmdir = lst_of_dct
     # sorting is based on two values in tuple (has_this_key: bool, value_or_None)
-    dcmdir.sort(key=lambda x: [((False, x[key]) if key in x.keys() else (True, 0)) for key in keys], reverse=reverse, **sort_args)
+    dcmdir.sort(key=lambda x: [((False, x[key]) if key in x else (True, 0)) for key in keys], reverse=reverse, **sort_args)
     # dcmdir.sort(key=lambda x: [(x[key] for key in keys], reverse=reverse, **sort_args)
     return dcmdir
 
