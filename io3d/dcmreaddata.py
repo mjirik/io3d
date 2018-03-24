@@ -28,6 +28,7 @@ import os.path as op
 
 logger = logging.getLogger(__name__)
 from . import misc
+from . import dcmtools
 
 # compatibility between python 2 and 3
 if sys.version_info[0] >= 3:
@@ -103,7 +104,6 @@ def decode_overlay_slice(data, i_overlay):
     # verlay = np.array(pol)
     overlay_slice = np.reshape(decoded_linear, [rows, cols])
     return overlay_slice
-
 
 class DicomReader():
     """
@@ -240,10 +240,10 @@ class DicomReader():
         dcmlist = self.files_in_serie
         # print('stsp ', start, stop, step)
 
-        raw_max = None
-        raw_min = None
-        slope = None
-        inter = None
+        # raw_max = None
+        # raw_min = None
+        # slope = None
+        # inter = None
 
         # get shape 2d
 
@@ -265,38 +265,25 @@ class DicomReader():
         for i in xrange(start, stop, step):
             onefile = dcmlist[i]
             data = self._read_file(onefile)
-            data2d = data.pixel_array
+            new_data2d, original_dtype = dcmtools.get_pixel_array_from_pdcm(data)
             # mport pdb; pdb.set_trace()
 
             if len(data3d) == 0:
-                shp2 = data2d.shape
+                shp2 = new_data2d.shape
                 data3d = np.zeros([len(dcmlist), shp2[0], shp2[1]],
                                   dtype=np.int16)
-                mx = np.max(data2d)
-                mn = np.min(data2d)
-                if (raw_max is None) or (raw_max < mx):
-                    raw_max = mx
-                if (raw_min is None) or (raw_min < mx):
-                    raw_min = mn
+                # mx = np.max(data2d)
+                # mn = np.min(data2d)
+                # if (raw_max is None) or (raw_max < mx):
+                #     raw_max = mx
+                # if (raw_min is None) or (raw_min < mx):
+                #     raw_min = mn
 
-            # if hasattr(data, "RescaleSlope") and hasattr(data, "RescaleIntercept") and\
-            #         data3d.dtype == np.int16 and\
-            #         (data2d.max() > np.iinfo(np.int16).max or data2d.min() < np.iinfo(np.int16).min):
-            #     data3d = data3d.astype(np.int32)
 
-            if hasattr(data, "RescaleSlope") and hasattr(data, "RescaleIntercept"):
-                slope = data.RescaleSlope
-                inter = data.RescaleIntercept
-            else:
-                slope = 1
-                inter = 0
-
-            if data2d.dtype == np.uint16 and data3d.dtype == np.int16:
+            if original_dtype == np.uint16 and data3d.dtype == np.int16:
                 data3d = data3d.astype(np.int32)
                 # or just force set slope=0.5, inter = 0
 
-            new_data2d = (np.float(slope) * data2d) \
-                         + np.float(inter)
             # first readed slide is at the end
 
             if (data3d.shape[1] == new_data2d.shape[0]) and (data3d.shape[2] == new_data2d.shape[1]):
@@ -1035,3 +1022,4 @@ if __name__ == "__main__":  # pragma: no cover
             {'data': data3d_out, 'voxelsize_mm': vs_out}
             )
     print("Data size: %d, shape: %s" % (data3d_out.nbytes, data3d_out.shape))
+

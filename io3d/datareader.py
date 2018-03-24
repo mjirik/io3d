@@ -24,7 +24,7 @@ except:
 from . import dcmreaddata as dcmr
 from . import tgz
 from . import misc
-from . import dcmreaddata
+from . import dcmtools
 
 
 # def dicomdir_info(dirpath, *args, **kwargs):
@@ -221,8 +221,9 @@ class DataReader:
     def _read_with_sitk(self, datapath):
         import SimpleITK as sitk
         image = sitk.ReadImage(datapath)
+        data3d = dcmtools.get_pixel_array_from_sitk(image)
 
-        data3d = sitk.GetArrayFromImage(image)  # + 1024
+        # data3d, original_dtype = dcmreaddata.get_pixel_array_from_dcmobj(image)
         metadata = {}  # reader.get_metaData()
         metadata['series_number'] = 0  # reader.series_number
         metadata['datadir'] = datapath

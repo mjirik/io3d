@@ -20,6 +20,7 @@ import os.path as op
 from . import rawN
 from . import misc
 # from sys import argv
+from . import dcmtools
 
 
 def write(data3d, path, filetype='auto', metadata=None):
@@ -136,9 +137,9 @@ class DataWriter:
     def _write_with_sitk(self, path, data3d, metadata):
         self._makedirs(path)
         import SimpleITK as sitk
-        mtd=metadata
-        dim = sitk.GetImageFromArray(data3d)
-        vsz = mtd['voxelsize_mm']
+
+        dim = dcmtools.get_sitk_image_from_ndarray(data3d)
+        vsz = metadata['voxelsize_mm']
         dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
         sitk.WriteImage(dim, path)
 
@@ -516,10 +517,9 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
 def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
                            crinfo, orig_shape):
     """ Save overlay to dicom. """
-    import datawriter as dwriter
+    from . import datawriter as dwriter
 
     # import qmisc
-    _
     if not os.path.exists(output_dicom_dir):
         os.makedirs(output_dicom_dir)
 

@@ -51,7 +51,7 @@ class DicomReaderTest(unittest.TestCase):
 # voxelsize depth = 5 mm
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
-    def test_dicomread_ircad(self):
+    def test_dicomreadircad(self):
         dcmdir = io3d.datasets.join_path("3Dircadb1.1/PATIENT_DICOM")
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
