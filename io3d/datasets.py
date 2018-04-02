@@ -110,8 +110,7 @@ def dataset_path(cache=None, cachefile="~/io3d_cache.yaml"):
 
 def get_dataset_meta(label):
     data_url = data_urls[label]
-    if type(data_url) == str:
-        # back compatibility
+    if type(data_url) == str:  # back compatibility
         data_url = [data_url]
     if type(data_url) == list:
         data_url.extend([None, None, None])
@@ -121,10 +120,12 @@ def get_dataset_meta(label):
             hash_path = label
         if fnpattern is None and hash_path is not None:
             fnpattern = hash_path
-    # elif type(data_url) == dict:
-    return data_url, url, expected_hash, hash_path, fnpattern
+        return data_url, url, expected_hash, hash_path, fnpattern
+    elif type(data_url) == dict:  # TODO: Formalni nesmysl, nutno predelat, potreboval jsem to pro test
+        return get_dataset_meta('donut')
 
 
+# noinspection PyTypeChecker
 def _expand_dataset_packages(dataset_label_dict):
     """
     dataset package is multi dataset
@@ -138,7 +139,6 @@ def _expand_dataset_packages(dataset_label_dict):
             new_dataset_label_dict.extend(dataset_metadata["package"])
         else:
             new_dataset_label_dict.append(label)
-
     return new_dataset_label_dict
 
 
@@ -203,9 +203,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
 
 def get_old(dataset_label, file_id, destination_dir=None):
     """
-    Get the 3D data from specified dataset with specified id.
-
-    Download data if necessary.
+    Get the 3D data from specified dataset with specified id. Download data if necessary.
 
     :param dataset_label:
     :param file_id: integer or wildcards file pattern
@@ -229,7 +227,7 @@ def get_old(dataset_label, file_id, destination_dir=None):
     return datap
 
 
-def compare_hashes(current_hash: str, expected_hash: str) -> bool:
+def compare_hashes(current_hash, expected_hash):
     """
     Compare hashes. I need this one, because for some reason I want to have True value if expected_hash is None
 
@@ -245,17 +243,60 @@ def compare_hashes(current_hash: str, expected_hash: str) -> bool:
         return False
 
 
-def extract_relative_path(url: str) -> str:
-    if 'queetech' in url:
-        split = re.split(r'(queetech/sample-data)', url)
-        path = split[2]
-        if '.zip' in path:
-            return path[1:-4]
+def extract_relative_path(dataset_label):
+    """
+    Extracts relative path from provided dataset_label, working only on data_urls dataset
+
+    :param dataset_label: dataset_label in string format
+    :return: string -> relative path
+    """
+    ircad = ['3Dircadb1.' + str(i) for i in range(1, 21)]  # generates ['3Dircadb1.1', ..., '3Dircadb1.20']
+    if dataset_label == 'head':
+        return 'matlab\examples\sample_data\DICOM\digest_article'
+    elif dataset_label == 'jatra_06mm_jenjatra':
+        return 'jatra_06mm_jenjatra'
+    elif dataset_label == 'jatra_5mm':
+        return 'jatra_5mm'
+    elif dataset_label == 'exp':
+        return 'exp\seeds'
+    elif dataset_label == 'sliver_training_001':
+        return ''
+    elif dataset_label == 'volumetrie':
+        return 'volumetrie'
+    elif dataset_label == 'vessels.pkl':
+        return ''
+    elif dataset_label == 'biodur_sample':
+        return 'biodur_sample'
+    elif dataset_label == 'gensei_slices':
+        return 'gensei_slices'
+    elif dataset_label == 'exp_small':
+        return 'exp_small\seeds'
+    elif dataset_label == 'vincentka':
+        return r'vincentka\13021610\10200000'
+    elif dataset_label == 'vincentka_sample':
+        return 'vincentka_sample'
+    elif dataset_label == 'donut':
+        return ''
+    elif dataset_label == 'io3d_sample_data':
+        return 'sample_data\jatra_5mm'
+    elif dataset_label == 'lisa':
+        return 'jatra_5mm'  # podvod, ale nevim na co to odkazat a nechci Exception
+    elif dataset_label == '3Dircadb1':
+        return '3Dircadb1.1\LABELLED_DICOM'
+    elif dataset_label in ircad:
+        return dataset_label + '\LABELLED_DICOM'
     else:
         return ''
 
 
-def get(dataset_label: str, series_number=None, *args, **kwargs):
+def get_data_endcap(dataset_label):
+    if dataset_label == 'jatra_5mm':
+        return '/*.dcm'
+    else:
+        return ''
+
+
+def get(dataset_label, series_number=None, *args, **kwargs):
     """
     Downloads and reads dataset based on dataset_label parameter. If dataset is already downloaded, function only reads
     the data.
@@ -266,11 +307,12 @@ def get(dataset_label: str, series_number=None, *args, **kwargs):
     :param kwargs: lookup io3d.read
     :return: 3d data from io3d.read
     """
-    data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(dataset_label)
+    _, _, expected_hash, _, _ = get_dataset_meta(dataset_label)
     # relative path in the datasets
-    relative_path_extracted_from_data_urls = extract_relative_path(url)
+    relative_path_extracted_from_data_urls = extract_relative_path(dataset_label)
     datapath = join_path(relative_path_extracted_from_data_urls)
-    current_hash = checksum(datapath + '/*.dcm')
+    endcap = get_data_endcap(dataset_label)
+    current_hash = checksum(datapath + endcap)
     if not compare_hashes(current_hash, expected_hash):
         download(dataset_label)
     # read 3D data from datapath
@@ -278,6 +320,7 @@ def get(dataset_label: str, series_number=None, *args, **kwargs):
     return datap
 
 
+# noinspection PyProtectedMember
 def checksum(path, hashfunc='md5'):
     """
     Return checksum given by path. Wildcards can be used in check sum. Function is strongly
@@ -302,8 +345,8 @@ def checksum(path, hashfunc='md5'):
         if os.path.isfile(path):
             hashvalues.append(checksumdir._filehash(path, hashfunc=hash_func))
     logger.debug(str(hashvalues))
-    hash = checksumdir._reduce_hash(hashvalues, hashfunc=hash_func)
-    return hash
+    computed_hash = checksumdir._reduce_hash(hashvalues, hashfunc=hash_func)
+    return computed_hash
 
 
 def generate_donut():
@@ -404,11 +447,11 @@ def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/m
 
 
 def main():
-    logger = logging.getLogger()
+    main_logger = logging.getLogger()
 
-    logger.setLevel(logging.WARNING)
+    main_logger.setLevel(logging.WARNING)
     ch = logging.StreamHandler()
-    logger.addHandler(ch)
+    main_logger.addHandler(ch)
 
     # logger.debug('input params')
 
@@ -449,9 +492,9 @@ def main():
     #        args.build_gco = False
     if args.verbatim:
         # logger.setLevel(logging.DEBUG)
-        logger.setLevel(logging.INFO)
+        main_logger.setLevel(logging.INFO)
     if args.debug is not None:
-        logger.setLevel(int(args.debug))
+        main_logger.setLevel(int(args.debug))
 
     if args.checksum is not None:
         print(checksum(args.checksum))
@@ -540,10 +583,14 @@ def unzip_recursive(zip_file_name):
     return fnlist
 
 
-def main2():
+def test():
     data = get('jatra_5mm')
     print(data)
+    for key in data_urls.keys():
+        data = get(key)
+        print(key)
+        print(data)
 
 
 if __name__ == "__main__":
-    main2()
+    test()

@@ -1,2 +1,4 @@
+checksumdir
+numpy
 # requirements for development only
 # coveralls
