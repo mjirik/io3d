@@ -14,20 +14,21 @@ import numpy as np
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
 
+
 def old_str_format_to_new(string):
     """
-    convert old format style to new style. Works for digits only
-    %05d is converted to {:05d}
+    Convert old format style to new style. Works for digits only. %05d is converted to {:05d}
+
     :param string:
     :return:
     """
     import re
-    return re.sub(r"%(\d*d)", r"{:\1}", string)
+    return re.sub(r'%(\d*d)', r'{:\1}', string)
+
 
 def suggest_filename(file_path, exists=None):
     """
-    Try if exist path and append number to its end.
-    For debug you can set as input if file exists or not.
+    Try if exist path and append number to its end. For debug you can set as input if file exists or not.
     """
     import os.path
     import re
@@ -37,7 +38,7 @@ def suggest_filename(file_path, exists=None):
     if exists:
         file_path, file_extension = os.path.splitext(file_path)
         # print(file_path)
-        m = re.search(r"\d+$", file_path)
+        m = re.search(r'\d+$', file_path)
         if m is None:
             # cislo = 2
             new_cislo_str = "2"
@@ -55,7 +56,7 @@ def suggest_filename(file_path, exists=None):
 
 
 def obj_from_file(filename='annotation.yaml', filetype='auto'):
-    ''' Read object from file '''
+    """ Read object from file """
 
     if filetype == 'auto':
         _, ext = os.path.splitext(filename)
@@ -69,8 +70,10 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
     elif filetype in ('pickle', 'pkl', 'pklz', 'picklezip'):
         fcontent = read_pkl_and_pklz(filename)
         # import pickle
-        if sys.version_info[0] < 3: import cPickle as pickle
-        else: import _pickle as pickle
+        if sys.version_info[0] < 3:
+            import cPickle as pickle
+        else:
+            import _pickle as pickle
         # import sPickle as pickle
         obj = pickle.loads(fcontent)
     else:
@@ -104,13 +107,14 @@ def read_pkl_and_pklz(filename):
 
 
 def obj_to_file(obj, filename, filetype='auto'):
-    '''Writes annotation in file.
+    """
+    Writes annotation in file.
 
-    Filetypes:
-        yaml
-        pkl, pickle
-        pklz, picklezip
-    '''
+    :param obj:
+    :param filename:
+    :param filetype: yaml; pkl, pickle; pklz, picklezip
+    :return:
+    """
     # import json
     # with open(filename, mode='w') as f:
     #    json.dump(annotation,f)
@@ -125,40 +129,35 @@ def obj_to_file(obj, filename, filetype='auto'):
         filetype = ext[1:]
 
     if filetype in ('yaml', 'yml'):
-        f = open(filename, 'wb')
         import yaml
-        yaml.dump(obj, f, encoding='utf-8')
-        f.close
+        with open(filename, 'wb') as f:
+            yaml.dump(obj, f, encoding='utf-8')
     elif filetype in ('pickle', 'pkl'):
-        f = open(filename, 'wb')
         logger.info("filename " + filename)
         # if sys.version_info[0] < 3: import cPickle as pickle
         # else: import _pickle as pickle
         import pickle
-        pickle.dump(obj, f, -1)
-        f.close
-    elif filetype in ('streamingpicklezip', 'spklz'):
-        # this is not working :-(
+        with open(filename, 'wb') as f:
+            pickle.dump(obj, f, -1)
+    elif filetype in ('streamingpicklezip', 'spklz'):  # this is not working :-(
         import gzip
         import sPickle as pickle
-        f = gzip.open(filename, 'wb', compresslevel=1)
-        # f = open(filename, 'wb')
-        pickle.s_dump(obj, f)
-        f.close
+        with gzip.open(filename, 'wb', compresslevel=1) as f:
+            pickle.s_dump(obj, f)
     elif filetype in ('picklezip', 'pklz'):
         import gzip
-        if sys.version_info[0] < 3: import cPickle as pickle
-        else: import _pickle as pickle
-        f = gzip.open(filename, 'wb', compresslevel=1)
-        # f = open(filename, 'wb')
-        pickle.dump(obj, f)
-        f.close
-    elif filetype in('mat'):
-
+        if sys.version_info[0] < 3:
+            import cPickle as pickle
+        else:
+            import _pickle as pickle
+        with gzip.open(filename, 'wb', compresslevel=1) as f:
+            pickle.dump(obj, f)
+    elif filetype in 'mat':
         import scipy.io as sio
         sio.savemat(filename, obj)
     else:
         logger.error('Unknown filetype ' + filetype)
+
 
 def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
     """
@@ -167,18 +166,19 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
     :param data: input 3d array-like data
     :param shape: shape of output data
     :param zoom: zoom is used for back compatibility
+    :param mode:
+    :param order:
     :mode: default is 'nearest'
     """
-    # @TODO remove old code in except part
+    # TODO: remove old code in except part
 
     try:
-        # rint 'pred vyjimkou'
-        # aise Exception ('test without skimage')
-        # rint 'za vyjimkou'
+        # print 'pred vyjimkou'
+        # raise Exception ('test without skimage')
+        # print 'za vyjimkou'
         import skimage
         import skimage.transform
-# Now we need reshape  seeds and segmentation to original size
-
+        # Now we need reshape  seeds and segmentation to original size
         segm_orig_scale = skimage.transform.resize(
             data, shape, order=0,
             preserve_range=True,
@@ -187,7 +187,8 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
 
         segmentation = segm_orig_scale
         logger.debug('resize to orig with skimage')
-    except:
+    except Exception as e:
+        print(e)
         import scipy
         import scipy.ndimage
         dtype = data.dtype
@@ -202,11 +203,11 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
         ).astype(dtype)
         logger.debug('resize to orig with scipy.ndimage')
 
-# @TODO odstranit hack pro oříznutí na stejnou velikost
-# v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
-# tam je bohužel patrně bug
-        # rint 'd3d ', self.data3d.shape
-        # rint 's orig scale shape ', segm_orig_scale.shape
+        # TODO: odstranit hack pro oříznutí na stejnou velikost
+        # v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
+        # tam je bohužel patrně bug
+        # print 'd3d ', self.data3d.shape
+        # print 's orig scale shape ', segm_orig_scale.shape
         shp = [
             np.min([segm_orig_scale.shape[0], shape[0]]),
             np.min([segm_orig_scale.shape[1], shape[1]]),
@@ -234,7 +235,6 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
     :voxelsize_mm: size of voxel
     :mode: default is 'nearest'
     """
-    import scipy
     import scipy.ndimage
 
     if new_voxelsize_mm == 'orig':
@@ -254,6 +254,7 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
         order=1
     ).astype(data3d.dtype)
     return data3d_res
+
 
 def use_economic_dtype(data3d):
     """ Use more economic integer-like dtype if it is possible.

@@ -52,3 +52,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# IDEs
+.idea/
+.vscode/
+
+# Temporary files
+tests/tmp/

@@ -10,14 +10,14 @@
 Module for testing format rawiv
 """
 import logging
-logger = logging.getLogger(__name__)
 import unittest
 import os.path as op
 import shutil
-
 import io3d
-
 from nose.plugins.attrib import attr
+
+logger = logging.getLogger(__name__)
+
 
 class DatasetsTest(unittest.TestCase):
 
@@ -27,16 +27,16 @@ class DatasetsTest(unittest.TestCase):
         path = io3d.datasets.dataset_path()
         self.assertEqual(type(path), str)
 
-    def test_download_package_dry_run(self):
+    def test_download_package(self):
         dataset_labels = ["lisa"]
         new_dataset_labels = io3d.datasets._expand_dataset_packages(dataset_labels)
         self.assertGreater(len(new_dataset_labels), 1)
 
-    def test_download_package_dry_run(self):
+    @staticmethod
+    def test_download_package_dry_run():
         io3d.datasets.download("lisa", dry_run=True)
 
     def test_download(self):
-
         io3d.datasets.download("gensei_slices")
         pth = io3d.datasets.join_path("gensei_slices")
         logger.debug(pth)
@@ -57,7 +57,6 @@ class DatasetsTest(unittest.TestCase):
         pth = op.join("./tmp/", "biodur_sample")
         self.assertTrue(op.exists(pth))
 
-
     def test_change_dataset_path(self):
         dp_new1 = "~/io3d_test1_dataset_dir/"
         dp_new2 = "~/io3d_test2_dataset_dir/"
@@ -77,21 +76,20 @@ class DatasetsTest(unittest.TestCase):
         io3d.datasets.set_dataset_path(dp_old)
 
     @attr('slow')
+    @unittest.skip('old, not working function')
     def test_getold(self):
         io3d.datasets.download("3Dircadb1.1")
         io3d.datasets.get_old("3Dircadb1", "*1/P*")
 
     @unittest.skip("waiting for implementation of get() function")
     def test_get_no_series_number(self):
-
         datap = io3d.datasets.get("jatra_5mm")
         self.assertEqual(datap["data3d"].shape[1], 512)
-
 
     @unittest.skip("waiting for implementation of get() function")
     def test_get_with_series_number(self):
         # remove data if they are stored
-        shutil.rmtree(io3d.daatsets.join("path_where_the_data_are_usualy_stored"))
+        shutil.rmtree(io3d.datasets.join_path("path_where_the_data_are_usualy_stored"))
 
         # first read
         datap = io3d.datasets.get("3Dircadb1", 3)

@@ -17,7 +17,7 @@ import os.path as op
 from . import misc
 
 
-class CacheFile():
+class CacheFile:
     def __init__(self, filename):
         """
 
@@ -94,7 +94,6 @@ def main():
 
     if args.debug:
         ch.setLevel(logging.DEBUG)
-
 
 
 if __name__ == "__main__":
