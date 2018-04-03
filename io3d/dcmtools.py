@@ -28,25 +28,29 @@ def get_sitk_image_from_ndarray(data3d):
     """
     Prepare SimpleItk Image object and rescale data to unsigned types.
 
+    Simple ITK with version higher than 1.0.0 can not write signed int16. This function check
+    the SimpleITK version and use work around with Rescale Intercept and Rescale Slope
     :param data3d:
     :return:
     """
 
     import SimpleITK as sitk
     rescale_intercept = None
-    if data3d.dtype == np.int16:
-        rescale_intercept = -2**15
-        data3d = (data3d - rescale_intercept).astype(np.uint16)
+    if sitk.Version.MajorVersion() > 0:
+        if data3d.dtype == np.int16:
+            rescale_intercept = -2**15
+            data3d = (data3d - rescale_intercept).astype(np.uint16)
 
-    if data3d.dtype == np.int8:
-        rescale_intercept = -2**7
-        data3d = (data3d - rescale_intercept).astype(np.uint8)
+        if data3d.dtype == np.int8:
+            rescale_intercept = -2**7
+            data3d = (data3d - rescale_intercept).astype(np.uint8)
 
     dim = sitk.GetImageFromArray(data3d)
-    if rescale_intercept is not None:
-        # rescale slope (0028|1053), rescale intercept (0028|1052)
-        dim.SetMetaData("0028|1052", str(rescale_intercept))
-        dim.SetMetaData("0028|1053", "1")
+    if sitk.Version.MajorVersion() > 0:
+        if rescale_intercept is not None:
+            # rescale slope (0028|1053), rescale intercept (0028|1052)
+            dim.SetMetaData("0028|1052", str(rescale_intercept))
+            dim.SetMetaData("0028|1053", "1")
 
     return dim
 
