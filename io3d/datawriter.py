@@ -289,7 +289,7 @@ class DataWriter:
             else:
                 bit = 0
 
-            encoded_linear[i / n_bits] |= bit << (i % n_bits)
+            encoded_linear[int(i / n_bits)] |= bit << (i % n_bits)
 
         overlay_raw = encoded_linear.tostring()
 

@@ -426,7 +426,7 @@ class DicomWriterTest(unittest.TestCase):
 
     def test_SimpleITK(self):
         path = "new_dcmfile.dcm"
-        data3d = np.zeros([10, 15, 20], dtype='int16')
+        data3d = np.zeros([10, 15, 20], dtype='uint16')
         vsz = np.asarray([2,3,1.5])
 
         import SimpleITK as sitk
