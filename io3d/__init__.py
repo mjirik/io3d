@@ -1,5 +1,5 @@
 __all__ = ['dcmreaddata', 'datareader', 'datawriter', 'rawN', "datasets"]
-__version__ = "1.3.29"
+__version__ = "1.3.30"
 # from pycut import Model, ImageGraphCut
 # from seed_editor_qt import QTSeedEditor
 from .dcmreaddata import DicomReader
