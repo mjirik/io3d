@@ -132,13 +132,12 @@ def obj_to_file(obj, filename, filetype='auto'):
 
     if filetype in ('yaml', 'yml'):
         import yaml
-        with open(filename, "w", encoding="utf-8") as f:
-            yaml.dump(obj, f)
-            # intext = f.read()
-            # obj = yaml.load(intext)
-        # f = open(filename, 'wb')
-        # import yaml
-        # f.close
+        if sys.version_info.major == 2:
+            with open(filename, 'wb') as f:
+                yaml.dump(obj, f, encoding="utf-8")
+        else:
+            with open(filename, "w", encoding="utf-8") as f:
+                yaml.dump(obj, f)
     elif filetype in ('pickle', 'pkl'):
         f = open(filename, 'wb')
         logger.info("filename " + filename)
