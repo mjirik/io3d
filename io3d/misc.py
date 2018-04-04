@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 import sys
 import os.path
 import numpy as np
+from io import open
 
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
@@ -63,9 +64,12 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
 
     if filetype in ('yaml', 'yml'):
         import yaml
-        f = open(filename, 'rb')
-        obj = yaml.load(f)
-        f.close()
+        with open(filename, encoding="utf-8") as f:
+            intext = f.read()
+            obj = yaml.load(intext)
+        # f = open(filename, 'rb')
+        # obj = yaml.load(f)
+        # f.close()
     elif filetype in ('pickle', 'pkl', 'pklz', 'picklezip'):
         fcontent = read_pkl_and_pklz(filename)
         # import pickle
