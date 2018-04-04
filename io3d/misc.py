@@ -73,8 +73,10 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
     elif filetype in ('pickle', 'pkl', 'pklz', 'picklezip'):
         fcontent = read_pkl_and_pklz(filename)
         # import pickle
-        if sys.version_info[0] < 3: import cPickle as pickle
-        else: import _pickle as pickle
+        if sys.version_info[0] < 3:
+            import cPickle as pickle
+        else:
+            import _pickle as pickle
         # import sPickle as pickle
         obj = pickle.loads(fcontent)
     else:
@@ -129,10 +131,14 @@ def obj_to_file(obj, filename, filetype='auto'):
         filetype = ext[1:]
 
     if filetype in ('yaml', 'yml'):
-        f = open(filename, 'wb')
         import yaml
-        yaml.dump(obj, f, encoding='utf-8')
-        f.close
+        with open(filename, "w", encoding="utf-8") as f:
+            yaml.dump(obj, f)
+            # intext = f.read()
+            # obj = yaml.load(intext)
+        # f = open(filename, 'wb')
+        # import yaml
+        # f.close
     elif filetype in ('pickle', 'pkl'):
         f = open(filename, 'wb')
         logger.info("filename " + filename)
