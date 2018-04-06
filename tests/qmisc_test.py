@@ -59,7 +59,7 @@ class ObjectSerializationTest(unittest.TestCase):
 
     def test_obj_to_and_from_file_yaml_with_ndarray_to_yaml(self):
         testdata = np.random.random([4, 4, 3])
-        test_object = {'a': 1, 'data': testdata}
+        test_object = {'a': 1, 'data': testdata, "lst":[1, 2, 3]}
 
         filename = 'test_obj_to_and_from_file.yaml'
         misc.obj_to_file(test_object, filename, 'yaml', ndarray_to_list=True)
