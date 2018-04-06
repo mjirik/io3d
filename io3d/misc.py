@@ -15,6 +15,8 @@ from io import open
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
 
+from .dili_subset import ndarray_to_list_in_structure
+
 def old_str_format_to_new(string):
     """
     convert old format style to new style. Works for digits only
@@ -63,13 +65,16 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
         filetype = ext[1:]
 
     if filetype in ('yaml', 'yml'):
-        import yaml
+        from ruamel.yaml import YAML
+        yaml = YAML(typ="unsafe")
         with open(filename, encoding="utf-8") as f:
-            intext = f.read()
-            obj = yaml.load(intext)
-        # f = open(filename, 'rb')
-        # obj = yaml.load(f)
-        # f.close()
+            obj = yaml.load(f)
+        if obj is None:
+            obj = {}
+        # import yaml
+        # with open(filename, encoding="utf-8") as f:
+        #     intext = f.read()
+        #     obj = yaml.load(intext)
     elif filetype in ('pickle', 'pkl', 'pklz', 'picklezip'):
         fcontent = read_pkl_and_pklz(filename)
         # import pickle
@@ -109,17 +114,23 @@ def read_pkl_and_pklz(filename):
     return fcontent
 
 
-def obj_to_file(obj, filename, filetype='auto'):
+def obj_to_file(obj, filename, filetype='auto', ndarray_to_list=False, squeeze=True):
     '''Writes annotation in file.
 
-    Filetypes:
+    :param filetype:
+        auto
         yaml
         pkl, pickle
         pklz, picklezip
+    :param ndarray_to_list: convert ndarrays in obj to lists
+    :param squeeze: squeeze ndarray
+
     '''
     # import json
     # with open(filename, mode='w') as f:
     #    json.dump(annotation,f)
+    if ndarray_to_list:
+        obj = ndarray_to_list_in_structure(obj, squeeze=squeeze)
 
     # write to yaml
     d = os.path.dirname(os.path.abspath(filename))
@@ -131,13 +142,17 @@ def obj_to_file(obj, filename, filetype='auto'):
         filetype = ext[1:]
 
     if filetype in ('yaml', 'yml'):
-        import yaml
-        if sys.version_info.major == 2:
-            with open(filename, 'wb') as f:
-                yaml.dump(obj, f, encoding="utf-8")
-        else:
-            with open(filename, "w", encoding="utf-8") as f:
-                yaml.dump(obj, f)
+        # import yaml
+        from ruamel.yaml import YAML
+        yaml = YAML(typ="unsafe")
+        with open(filename, 'wt', encoding="utf-8") as f:
+            yaml.dump(obj, f)
+        # if sys.version_info.major == 2:
+        #     with open(filename, 'wb') as f:
+        #         yaml.dump(obj, f, encoding="utf-8")
+        # else:
+        #     with open(filename, "w", encoding="utf-8") as f:
+        #         yaml.dump(obj, f)
     elif filetype in ('pickle', 'pkl'):
         f = open(filename, 'wb')
         logger.info("filename " + filename)

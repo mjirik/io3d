@@ -57,6 +57,19 @@ class ObjectSerializationTest(unittest.TestCase):
 
         os.remove(filename)
 
+    def test_obj_to_and_from_file_yaml_with_ndarray_to_yaml(self):
+        testdata = np.random.random([4, 4, 3])
+        test_object = {'a': 1, 'data': testdata}
+
+        filename = 'test_obj_to_and_from_file.yaml'
+        misc.obj_to_file(test_object, filename, 'yaml', ndarray_to_list=True)
+        saved_object = misc.obj_from_file(filename, 'yaml')
+
+        self.assertTrue(saved_object['a'] == 1)
+        self.assertTrue(saved_object['data'][1][1][1] == testdata[1, 1, 1])
+
+        os.remove(filename)
+
     def test_obj_to_and_from_file_pickle(self):
         testdata = np.random.random([4, 4, 3])
         test_object = {'a': 1, 'data': testdata}

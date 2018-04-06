@@ -38,7 +38,8 @@ requirements:
     - numpy
     - scipy
     - pydicom
-    - pyyaml
+#    - pyyaml
+    - ruamel.yaml
     - simpleitk
 
   run:
@@ -46,7 +47,8 @@ requirements:
     - numpy
     - scipy
     - pydicom
-    - pyyaml
+#    - pyyaml
+    - ruamel.yaml
     - h5py
     - checksumdir
     - simpleitk # version0.9.* is ok for python2.7
