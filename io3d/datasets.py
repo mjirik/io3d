@@ -74,14 +74,14 @@ data_urls= {
 }
 # cachefile = "~/io3d_cache.yaml"
 
-def join_path(path_to_join):
+def join_path(*path_to_join):
     """
     join input path to sample data path (usually in ~/lisa_data)
-    :param path_to_join:
+    :param path_to_join: one or more paths
     :return:
     """
     sdp = dataset_path()
-    pth = os.path.join(sdp, path_to_join)
+    pth = os.path.join(sdp, *path_to_join)
     logger.debug('sample_data_path' + sdp)
     logger.debug('path ' + pth)
     return pth
@@ -93,6 +93,12 @@ def set_dataset_path(path, cache=None, cachefile="~/io3d_cache.yaml"):
     cache.update("local_dataset_dir", path)
 
 def dataset_path(cache=None, cachefile="~/io3d_cache.yaml"):
+    """
+    Get dataset path.
+    :param cache: CacheFile object
+    :param cachefile:  cachefile path
+    :return:
+    """
     local_data_dir = local_dir
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
