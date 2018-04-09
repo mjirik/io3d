@@ -26,6 +26,7 @@ before_install:
     - conda info -a
 
 install:
+    - conda config --add channels conda-forge
     - conda config --add channels SimpleITK
     - conda config --add channels mjirik
     - sudo apt-get install -qq $(< apt_requirements.txt)
@@ -37,7 +38,7 @@ install:
     - source activate travis
 #    - conda install --yes pip nose coverage
     - pip install python-coveralls
-    - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt python=$CONDA_PYTHON_VERSION
+    - conda install --yes --file requirements_conda.txt python=$CONDA_PYTHON_VERSION
 #    - pip install checksumdir
     - pip install .
     - conda list
