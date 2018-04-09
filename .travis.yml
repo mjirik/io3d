@@ -26,19 +26,21 @@ before_install:
     - conda info -a
 
 install:
+    - conda config --add channels SimpleITK
+    - conda config --add channels mjirik
     - sudo apt-get install -qq $(< apt_requirements.txt)
     - mkdir -p ~/data/medical/orig
     - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip
     - unzip -d ~/data/medical/orig/ io3d_sample_data.zip
 # command to install dependencies
-    - conda create --yes -n travis python=$CONDA_PYTHON_VERSION
+    - conda create --yes -n travis pip nose python=$CONDA_PYTHON_VERSION
     - source activate travis
 #    - conda install --yes pip nose coverage
-    - conda install --yes pip nose
     - pip install python-coveralls
-    - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt
+    - conda install --yes -c SimpleITK -c mjirik --file requirements_conda.txt python=$CONDA_PYTHON_VERSION
 #    - pip install checksumdir
     - pip install .
+    - conda list
 
     - python -m io3d.datasets -l 3Dircadb1.1 jatra_5mm
 #    - pip install -r requirements.txt
