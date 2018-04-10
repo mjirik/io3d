@@ -51,8 +51,8 @@ class DicomReaderTest(unittest.TestCase):
 # voxelsize depth = 5 mm
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
-    def test_dicomreadircad(self):
-        dcmdir = io3d.datasets.join_path("3Dircadb1.1/PATIENT_DICOM")
+    def test_dicomread_ircad(self):
+        dcmdir = io3d.datasets.join_path("3Dircadb1.1", "PATIENT_DICOM")
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
         # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
         data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
@@ -68,6 +68,22 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(data3d[0, 0, 0], -1024)
         self.assertEqual(np.max(data3d), 1023)
 
+    def test_dicomread_jatra5mm(self):
+        dcmdir = io3d.datasets.join_path("jatra_5mm")
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        data3d, metadata = io3d.datareader.read(dcmdir, dataplus_format=False)
+        #slice size is 512x512
+        self.assertEqual(data3d.shape[0], 93)
+        self.assertEqual(data3d.shape[2], 512)
+
+        self.assertEqual(np.round(metadata['voxelsize_mm'][0], 2), 5.0)
+        self.assertEqual(np.round(metadata['voxelsize_mm'][1], 2), 0.75)
+        self.assertEqual(np.round(metadata['voxelsize_mm'][2], 2), 0.75)
+
+        # intensity check
+        self.assertEqual(data3d[0, 0, 0], -1024)
+        self.assertEqual(np.max(data3d), 1503)
 
     def test_dicomread_read_corrupted_dcmdir_file(self):
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')

@@ -14,7 +14,7 @@ def get_pixel_array_from_sitk(sitk_image):
     if dim.HasMetaDataKey("0028|1052") and dim.HasMetaDataKey("0028|1053"):
         rescale_intercept = dim.GetMetaData("0028|1052")
         rescale_slope = dim.GetMetaData("0028|1053")
-        slope, inter = get_slope_and_intercept(rescale_slope, rescale_intercept)
+        slope, inter = get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept)
     else:
         slope = 1
         inter = 0
@@ -37,13 +37,17 @@ def get_sitk_image_from_ndarray(data3d):
     import SimpleITK as sitk
     rescale_intercept = None
     if sitk.Version.MajorVersion() > 0:
-        if data3d.dtype == np.int16:
-            rescale_intercept = -2**15
-            data3d = (data3d - rescale_intercept).astype(np.uint16)
-
         if data3d.dtype == np.int8:
             rescale_intercept = -2**7
             data3d = (data3d - rescale_intercept).astype(np.uint8)
+        elif data3d.dtype == np.int16:
+            # simpleitk is not able to store this. It uses only 11 bites
+            # rescale_intercept = -2**15
+            rescale_intercept = -2**10
+            data3d = (data3d - rescale_intercept).astype(np.uint16)
+        elif data3d.dtype == np.int32:
+            rescale_intercept = -2**31
+            data3d = (data3d - rescale_intercept).astype(np.uint16)
 
     dim = sitk.GetImageFromArray(data3d)
     if sitk.Version.MajorVersion() > 0:
@@ -54,7 +58,7 @@ def get_sitk_image_from_ndarray(data3d):
 
     return dim
 
-def get_slope_and_intercept(rescale_slope, rescale_intercept):
+def get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept):
     if type(rescale_slope) is str:
         slope = float(rescale_slope)
     else:
@@ -77,32 +81,39 @@ def get_slope_and_intercept_from_pdcm(dcmdata):
     if hasattr(dcmdata, "RescaleSlope") and hasattr(dcmdata, "RescaleIntercept"):
         rescale_slope = dcmdata.RescaleSlope
         rescale_intercept = dcmdata.RescaleIntercept
-        slope, inter = get_slope_and_intercept(rescale_slope, rescale_intercept)
+        slope, inter = get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept)
     else:
         slope = 1
         inter = 0
 
     return slope, inter
 
-def get_pixel_array_from_pdcm(data):
-    """
-    Get data2d and rescale
-    :param data: pydicom dcmobj
-    :return: data2d, original_data2d_dtype
-    """
-    from . import dcmtools
-    data2d = data.pixel_array
-    slope, inter = get_slope_and_intercept_from_pdcm(data)
-    new_data2d = rescale_pixel_array(data2d, slope, inter)
-    return new_data2d, data2d.dtype
+# def get_pixel_array_from_pdcm(data):
+#     """
+#     Get data2d and rescale
+#     :param data: pydicom dcmobj
+#     :return: data2d, original_data2d_dtype
+#     """
+#     from . import dcmtools
+#     data2d = data.pixel_array
+#     slope, inter = get_slope_and_intercept_from_pdcm(data)
+#     # new_data2d = rescale_pixel_array(data2d, slope, inter)
+#     return data2d, slope, inter
 
-def rescale_pixel_array(data2d, slope, inter, dtype=None):
-    orig_dtype = data2d.dtype
-    if dtype is None:
-        if orig_dtype is np.uint16 and inter == -2**15:
-            dtype = np.int16
-        else:
-            dtype = orig_dtype
+from .misc import use_economic_dtype as rescale_pixel_array
 
-    new_data2d = ((np.float(slope) * data2d) + np.float(inter)).astype(dtype)
-    return new_data2d
+# def rescale_pixel_array(data2d, slope, inter, dtype=None):
+#     from .misc import
+#     orig_dtype = data2d.dtype
+#     if dtype is None:
+#         if orig_dtype is np.uint16 and inter == -2**15:
+#             dtype = np.int16
+#         elif orig_dtype is np.uint16 and inter < 0:
+#             dtype = np.int16
+#         elif orig_dtype is np.uint32 and inter < 0:
+#             dtype = np.int32
+#         else:
+#             dtype = orig_dtype
+#
+#     new_data2d = ((np.float(slope) * data2d) + np.float(inter)).astype(dtype)
+#     return new_data2d

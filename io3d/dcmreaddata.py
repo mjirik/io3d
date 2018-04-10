@@ -261,28 +261,21 @@ class DicomReader():
         if stop is None:
             stop = len(dcmlist)
 
-        printRescaleWarning = False
+        # printRescaleWarning = False
         for i in xrange(start, stop, step):
             onefile = dcmlist[i]
             data = self._read_file(onefile)
-            new_data2d, original_dtype = dcmtools.get_pixel_array_from_pdcm(data)
+            new_data2d = data.pixel_array
+            # new_data2d, slope, inter = dcmtools.get_pixel_array_from_pdcm(data)
             # mport pdb; pdb.set_trace()
 
             if len(data3d) == 0:
                 shp2 = new_data2d.shape
                 data3d = np.zeros([len(dcmlist), shp2[0], shp2[1]],
-                                  dtype=np.int16)
-                # mx = np.max(data2d)
-                # mn = np.min(data2d)
-                # if (raw_max is None) or (raw_max < mx):
-                #     raw_max = mx
-                # if (raw_min is None) or (raw_min < mx):
-                #     raw_min = mn
+                                  dtype=new_data2d.dtype)
+                slope, inter = dcmtools.get_slope_and_intercept_from_pdcm(data)
 
 
-            if original_dtype == np.uint16 and data3d.dtype == np.int16:
-                data3d = data3d.astype(np.int32)
-                # or just force set slope=0.5, inter = 0
 
             # first readed slide is at the end
 
@@ -299,9 +292,15 @@ class DicomReader():
             logger.debug("Data size: " + str(data3d.nbytes)
                          + ', shape: ' + str(shp2) + 'x' + str(len(dcmlist))
                          + ' file ' + onefile)
-        if printRescaleWarning:
-            print("Automatic Rescale with slope 0.5")
-            logger.warning("Automatic Rescale with slope 0.5")
+        data3d = misc.use_economic_dtype(data3d, slope=slope, inter=inter)
+        # if original_dtype == np.uint16 and data3d.dtype == np.int16:
+        #     data3d = data3d.astype(np.int32)
+            # or just force set slope=0.5, inter = 0
+        # new_data2d = rescale_pixel_array(data2d, slope, inter)
+        # if printRescaleWarning:
+        #     print("Automatic Rescale with slope 0.5")
+        #     logger.warning("Automatic Rescale with slope 0.5")
+        # data3d = dcmtools.rescale_pixel_array(data3d, slope=slope, inter=inter)
 
         return data3d
 

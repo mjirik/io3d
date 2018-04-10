@@ -279,21 +279,47 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
     ).astype(data3d.dtype)
     return data3d_res
 
-def use_economic_dtype(data3d):
+def suits_with_dtype(mn, mx, dtype):
+    """
+    Check whether range of values can be stored into defined data type.
+    :param mn: range minimum
+    :param mx: range maximum
+    :param dtype:
+    :return:
+    """
+    type_info = np.iinfo(dtype)
+    if mx < type_info.max and mn > type_info.min:
+        return True
+    else:
+        return False
+
+def use_economic_dtype(data3d, slope=1, inter=0, dtype=None):
     """ Use more economic integer-like dtype if it is possible.
 
     :param data3d:
+    :param dtype: if dtype is not used, the automatic is used
     :return:
     """
-    dtype = data3d.dtype
-    if issubclass(dtype.type, np.integer):
 
-        i16 = np.iinfo(np.int16)
-        # i8 = np.iinfo(np.int8)
-        mx = data3d.max()
-        mn = data3d.min()
-        if mx < i16.max and mn > i16.min:
-            data3d = data3d.astype(np.int16)
+    if dtype is None:
+        dtype = data3d.dtype
+        if issubclass(dtype.type, np.integer):
+            mn = data3d.min() * slope + inter
+            mx = data3d.max() * slope + inter
+            if suits_with_dtype(mn, mx, dtype=np.uint8):
+                dtype = np.uint8
+            elif suits_with_dtype(mn, mx, dtype=np.int8):
+                dtype = np.int8
+            elif suits_with_dtype(mn, mx, dtype=np.uint16):
+                dtype = np.uint16
+            elif suits_with_dtype(mn, mx, dtype=np.int16):
+                dtype = np.int16
+            elif suits_with_dtype(mn, mx, dtype=np.uint32):
+                dtype = np.uint32
+            elif suits_with_dtype(mn, mx, dtype=np.int32):
+                dtype = np.int32
 
-    return data3d
+    # new_data3d = ((np.float(slope) * data3d) + np.float(inter)).astype(dtype)
+    new_data3d = ((slope * data3d) + inter).astype(dtype)
+    return new_data3d
 
