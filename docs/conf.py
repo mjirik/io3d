@@ -25,7 +25,7 @@ import mock
 
 MOCK_MODULES = [
     'numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'matplotlib.widgets',
-    "scipy.io", "yaml",
+    "scipy.io", "yaml", "pydicom",
     # 'scipy.interpolate', 'scipy.ndimage', 'pycut', 'io3d', 'sed3', 'pysegbase',
     # 'pysegbase.pycut', 'sklearn', 'skimage', 'dicom', 'vtk', 'vtk.util',
     # 'larcc', 'larcc.VIEW', 'larcc.MKPOL', 'larcc.AA', 'larcc.INTERVALS',
