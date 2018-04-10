@@ -25,11 +25,12 @@ import mock
 
 MOCK_MODULES = [
     'numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'matplotlib.widgets',
-    "scipy.io",
+    "scipy.io", "yaml",
     # 'scipy.interpolate', 'scipy.ndimage', 'pycut', 'io3d', 'sed3', 'pysegbase',
     # 'pysegbase.pycut', 'sklearn', 'skimage', 'dicom', 'vtk', 'vtk.util',
     # 'larcc', 'larcc.VIEW', 'larcc.MKPOL', 'larcc.AA', 'larcc.INTERVALS',
-    # 'larcc.MAP', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', 'web', 'lar2psm',
+    # 'larcc.MAP',
+    'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', #'web', 'lar2psm',
     # 'scipy.ndimage.measurements',  'lar', 'extern.lar', 'splines',
     # 'scipy.sparse', 'skimage.filter', 'mapper', 'skelet3d', 'numpy.core',
     # 'skimage.filters', 'skimage.restoration','skimage.io',
@@ -45,8 +46,10 @@ MOCK_MODULES = [
     # 'morphsnakes', 'scipy.ndimage.filters', 'scipy.signal', 'pandas',
     # 'scipy.stats', 'io3d.misc', 'lisa.extern.lar', 'scipy.cluster',
     # 'scipy.cluster.vq', 'scipy.cluster.vq',
-    # 'ipdb', 'multipolyfit', 'PIL', 'yaml', 'SimpleITK',
+    # 'ipdb', 'multipolyfit', 'PIL', 'yaml',
+    'SimpleITK',
     # 'six', 'nearpy', 'SimpleITK', 'lar', 'pandas'
+    "ruamel.yaml.YAML",
 ]
 #
 for mod_name in MOCK_MODULES:
