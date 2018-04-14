@@ -35,7 +35,7 @@ import io3d.dcmreaddata as dcmr
 sample_data_path = "~/data/medical/orig/sample_data/"
 sample_data_path = op.expanduser(sample_data_path)
 
-
+alternative_data_path = "e:\\data\\medical\\orig\\"
 
 class DicomReaderTest(unittest.TestCase):
     interactivetTest = False
@@ -259,6 +259,34 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(stats[7]['Modality'], 'CT')
         self.assertTrue(info_str,
                         '7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n')
+
+
+    @attr('dataset')
+    def test_dcmread_perfusion_data_with_strange_serieses(self):
+        # there was problem with DICOMDIR file
+
+        dcmdir = alternative_data_path + "perfusion\\32584640\\"
+        # os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        reader = dcmr.DicomReader(dcmdir, force_create_dicomdir=True, series_number=17)
+        data3d = reader.get_3Ddata()
+        metadata = reader.get_metaData()
+        stats = reader.dcmdirstats()
+        info_str = reader.print_series_info(stats, minimal_series_number=0)
+
+        # import sed3
+        # ed = sed3.sed3(data3d)
+        # ed.show()
+        # slice size is 512x512
+        self.assertEqual(data3d.shape[2], 512)
+        # voxelsize depth = 5 mm
+        self.assertLess(data3d[0, 0, 0], -1000)
+        # in the middle of image should be density higher than 50
+        self.assertGreater(np.max(data3d[:, 100:-100, 100:-100]), 50)
+
+        # self.assertTrue(info_str,
+        #                 '7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n')
 
     @attr('dataset')
     def test_dcmread_some_strange_data(self):

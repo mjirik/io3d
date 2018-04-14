@@ -722,14 +722,14 @@ class DicomDirectory():
         :type sort_keys: One key or list of keys used for sorting method by the order of keys.
 
         """
-
-        dcmdir = sort_list_of_dicts(self.files_with_info[:], keys=sort_keys)
+        dcmdir = self.files_with_info[:]
 
         # select sublist with SeriesNumber
         if series_number is not None:
             dcmdir = [
                 line for line in dcmdir if line['SeriesNumber'] == series_number
             ]
+        dcmdir = sort_list_of_dicts(dcmdir, keys=sort_keys)
 
         logger.debug('SeriesNumber: ' + str(series_number))
 
@@ -777,9 +777,10 @@ class DicomDirectory():
                     # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
                 except Exception as e:
                     if teil != self.dicomdir_filename:
-                        print('Dicom read problem with file ' + filepath)
-                    import traceback
-                    logger.debug(traceback.format_exc())
+                        # print('Dicom read problem with file ' + filepath)
+                        logger.info('Dicom read problem with file ' + filepath)
+                        import traceback
+                        logger.debug(traceback.format_exc())
             if hasattr(dcmdata, "DirectoryRecordSequence"):
                 # file is DICOMDIR - metainfo about files in directory
                 # we are not using this info
@@ -946,7 +947,8 @@ def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
     # dcmdir = lst_of_dct[:]
     dcmdir = lst_of_dct
     # sorting is based on two values in tuple (has_this_key: bool, value_or_None)
-    dcmdir.sort(key=lambda x: [((False, x[key]) if key in x else (True, 0)) for key in keys], reverse=reverse, **sort_args)
+    # dcmdir.sort(key=lambda x: [((False, x[key] if x[key] is not None else 0) if key in x else (True, 0)) for key in keys], reverse=reverse, **sort_args)
+    dcmdir.sort(key=lambda x: [((False, x[key] if x[key] is not None else 0) if key in x else (True, 0)) for key in keys], reverse=reverse, **sort_args)
     # dcmdir.sort(key=lambda x: [(x[key] for key in keys], reverse=reverse, **sort_args)
     return dcmdir
 
