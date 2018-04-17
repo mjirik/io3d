@@ -38,7 +38,9 @@ class ImageManipulationTest(unittest.TestCase):
         print(data_out.shape)
         # print data
         # print data_out
-        self.assertItemsEqual(expected_shape, data_out.shape)
+        self.assertEquals(expected_shape[0], data_out.shape[0])
+        self.assertEquals(expected_shape[1], data_out.shape[1])
+        self.assertEquals(expected_shape[2], data_out.shape[2])
 
 if __name__ == "__main__":
     unittest.main()
