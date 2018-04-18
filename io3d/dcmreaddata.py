@@ -98,7 +98,12 @@ def decode_overlay_slice(data, i_overlay):
     for i in range(1, len(overlay_raw)):
         for k in range(0, n_bits):
             # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
-            byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
+            one_byte = overlay_raw[i]
+            if sys.version_info.major == 2:
+                byte_as_int = ord(one_byte)
+            else:
+                byte_as_int = one_byte
+            # byte_as_int = ord(overlay_raw[i]) if type(overlay_raw[i]) == type(str("")) else overlay_raw[i]
             decoded_linear[i * n_bits + k] = (byte_as_int >> k) & 0b1
 
     # verlay = np.array(pol)
