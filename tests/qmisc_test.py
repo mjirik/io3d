@@ -105,5 +105,10 @@ class ObjectSerializationTest(unittest.TestCase):
         shutil.rmtree(dirname)
 
 
+    def test_read_python27_pickle(self):
+        import io3d
+        datap = io3d.read(io3d.datasets.join_path("exp_small", "seeds", "org-liver-orig003-seeds.pklz"), dataplus_format=True)
+        self.assertTrue("segmentation" in datap)
+
 if __name__ == "__main__":
     unittest.main()
