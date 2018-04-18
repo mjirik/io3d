@@ -83,7 +83,10 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
         else:
             import _pickle as pickle
         # import sPickle as pickle
-        obj = pickle.loads(fcontent, encoding="latin1")
+        if sys.version_info.major == 2:
+            obj = pickle.loads(fcontent)
+        else:
+            obj = pickle.loads(fcontent, encoding="latin1")
     else:
         logger.error('Unknown filetype ' + filetype)
     return obj
