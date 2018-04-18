@@ -30,12 +30,12 @@ class ImageManipulationTest(unittest.TestCase):
 
     def test_resize_to_mm(self):
 
-        data = np.random.rand(3, 4, 5)
+        data = np.random.rand(3, 4, 6)
         voxelsize_mm = [2, 3, 1]
         new_voxelsize_mm = [1, 3, 2]
         expected_shape = [6, 4, 3]
         data_out = io3d.misc.resize_to_mm(data, voxelsize_mm, new_voxelsize_mm)
-        print(data_out.shape)
+        # print(data_out.shape)
         # print data
         # print data_out
         self.assertEquals(expected_shape[0], data_out.shape[0])
