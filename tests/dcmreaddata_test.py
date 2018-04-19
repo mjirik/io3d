@@ -161,8 +161,8 @@ class DicomReaderTest(unittest.TestCase):
         # plt.imshow(overlay[1][:,:,0])
         # plt.show()
 
-        self. assertEqual(overlay[1][0, 200, 200], 1)
-        self. assertEqual(overlay[1][0, 100, 100], 0)
+        self.assertEqual(overlay[1][0, 200, 200], 1)
+        self.assertEqual(overlay[1][0, 100, 100], 0)
 
     def test_read_volumetry_overlay_with_dicom_module(self):
         """
