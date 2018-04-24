@@ -17,10 +17,10 @@ import glob
 import os.path as op
 import io3d
 from . import cachefile as cachef
-if sys.version_info < (3, 0):
-    import urllib as urllibr
-else:
-    import urllib.request as urllibr
+# if sys.version_info < (3, 0):
+#     import urllib as urllibr
+# else:
+#     import urllib.request as urllibr
 
 
 # you can get hash from command line with:
@@ -467,8 +467,11 @@ def downzip(url, destination='./sample_data/'):
     logmsg = "downloading from '" + url + "' to '" + destination + "'"
     print(logmsg)
     logger.info(logmsg)
-    zip_file_name = os.path.join(destination, 'tmp.zip')
-    urllibr.urlretrieve(url, zip_file_name)
+    tmp_filename = "tmp.zip"
+    # urllibr.urlretrieve(url, zip_file_name)
+    from . import network
+    network.download_file(url, destination, filename=tmp_filename)
+    zip_file_name = os.path.join(destination, tmp_filename)
     unzip_recursive(zip_file_name)
     # unzip_one(local_file_name)
 
