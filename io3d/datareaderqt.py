@@ -56,9 +56,9 @@ class DataReaderWidget(QtGui.QWidget):
         # status function can be used to proceed messages out of this module
         # it is defined fcn(str)
         self.show_message_function = show_message_function
-        self.loadfiledir = loadfiledir
-        self.loaddir = loaddir
-        self.datapath = datapath
+        self.loadfiledir = str(loadfiledir)
+        self.loaddir = str(loaddir)
+        self.datapath = str(datapath)
         self.after_function = after_function
         self.before_function = before_function
         self.cachefile = cachefile
@@ -95,31 +95,33 @@ class DataReaderWidget(QtGui.QWidget):
         """
 
         if self.cache is not None:
-            self.loadfiledir = str(self.cache.get_or_none('loadfiledir'))
+            cache_loadfiledir = self.cache.get_or_none('loadfiledir')
+            self.loadfiledir = str(cache_loadfiledir)
 
         if self.loadfiledir is None:
             self.loadfiledir = ''
         directory = str(self.loadfiledir)
         from PyQt4.QtGui import QFileDialog
         if app:
-            dcmdir = str(QFileDialog.getOpenFileName(
+            dcmdir = QFileDialog.getOpenFileName(
                 caption='Select Data File',
                 directory=directory
                 # ptions=QFileDialog.ShowDirsOnly,
-            ))
+            )
         else:
             app = QApplication(sys.argv)
-            dcmdir = str(QFileDialog.getOpenFileName(
+            dcmdir = QFileDialog.getOpenFileName(
                 caption='Select DICOM Folder',
                 # ptions=QFileDialog.ShowDirsOnly,
                 directory=directory
-            ))
+            )
             # pp.exec_()
             app.exit(0)
         if len(dcmdir) > 0:
-
-            dcmdir = "%s" % (dcmdir)
-            dcmdir = dcmdir.encode("utf8")
+        #
+        #     dcmdir = "%s" % (dcmdir)
+        #     dcmdir = dcmdir.encode("utf8")
+            pass
         else:
             dcmdir = None
 
@@ -137,7 +139,9 @@ class DataReaderWidget(QtGui.QWidget):
         # if :
         #     directory = self.oseg.input_datapath_start
         if self.cache is not None:
-            self.loaddir = str(self.cache.get_or_none('loaddir'))
+            cache_loaddir = self.cache.get_or_none('loaddir')
+            self.loaddir = str(cache_loaddir)
+            # self.loaddir = str(self.cache.get_or_none('loaddir'))
 
         if self.loaddir is None:
             self.loaddir = ''
@@ -146,30 +150,32 @@ class DataReaderWidget(QtGui.QWidget):
 
         from PyQt4.QtGui import QFileDialog
         if app:
-            dcmdir = str(QFileDialog.getExistingDirectory(
+            dcmdir = QFileDialog.getExistingDirectory(
                 caption='Select DICOM Folder',
                 options=QFileDialog.ShowDirsOnly,
                 directory=directory
-            ))
+            )
         else:
             app = QApplication(sys.argv)
-            dcmdir = str(QFileDialog.getExistingDirectory(
+            dcmdir = QFileDialog.getExistingDirectory(
                 caption='Select DICOM Folder',
                 options=QFileDialog.ShowDirsOnly,
                 directory=directory
-            ))
+            )
             # pp.exec_()
             app.exit(0)
         if len(dcmdir) > 0:
 
-            dcmdir = "%s" % (dcmdir)
-            dcmdir = dcmdir.encode("utf8")
+
+            # dcmdir = "%s" % (dcmdir)
+            # dcmdir = dcmdir.encode("utf8")
+            pass
         else:
             dcmdir = None
 
         if self.cache is not None:
             self.cache.update('loaddir', dcmdir)
-        return dcmdir
+        return str(dcmdir)
 
     def read_data_file_dialog(self):
 
@@ -331,6 +337,14 @@ def main():
     w.show()
 
     sys.exit(app.exec_())
+
+# def something_to_str(path):
+#     outpath = None
+#     if type(path) is str:
+#         outpath = path
+#     else:
+#         outpath = str(path)
+#     return outpath
 
 
 if __name__ == "__main__":

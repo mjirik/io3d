@@ -85,7 +85,7 @@ class DataReader:
         if type(datapath) is str:
             pass
         else:
-            datapath = datapath.decode("utf8")
+            datapath = str(datapath)
         datapath = os.path.normpath(datapath)
 
         self.start = start
