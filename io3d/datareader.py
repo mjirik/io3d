@@ -82,6 +82,10 @@ class DataReader:
             from PyQt4.QtGui import QApplication
             qt_app = QApplication(sys.argv)
 
+        if type(datapath) is str:
+            pass
+        else:
+            datapath = datapath.decode("utf8")
         datapath = os.path.normpath(datapath)
 
         self.start = start
