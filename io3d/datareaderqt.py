@@ -95,25 +95,25 @@ class DataReaderWidget(QtGui.QWidget):
         """
 
         if self.cache is not None:
-            self.loadfiledir = self.cache.get_or_none('loadfiledir')
+            self.loadfiledir = str(self.cache.get_or_none('loadfiledir'))
 
         if self.loadfiledir is None:
             self.loadfiledir = ''
-        directory=self.loadfiledir
+        directory = str(self.loadfiledir)
         from PyQt4.QtGui import QFileDialog
         if app:
-            dcmdir = QFileDialog.getOpenFileName(
+            dcmdir = str(QFileDialog.getOpenFileName(
                 caption='Select Data File',
                 directory=directory
                 # ptions=QFileDialog.ShowDirsOnly,
-            )
+            ))
         else:
             app = QApplication(sys.argv)
-            dcmdir = QFileDialog.getOpenFileName(
+            dcmdir = str(QFileDialog.getOpenFileName(
                 caption='Select DICOM Folder',
                 # ptions=QFileDialog.ShowDirsOnly,
                 directory=directory
-            )
+            ))
             # pp.exec_()
             app.exit(0)
         if len(dcmdir) > 0:
@@ -137,7 +137,7 @@ class DataReaderWidget(QtGui.QWidget):
         # if :
         #     directory = self.oseg.input_datapath_start
         if self.cache is not None:
-            self.loaddir = self.cache.get_or_none('loaddir')
+            self.loaddir = str(self.cache.get_or_none('loaddir'))
 
         if self.loaddir is None:
             self.loaddir = ''
@@ -146,18 +146,18 @@ class DataReaderWidget(QtGui.QWidget):
 
         from PyQt4.QtGui import QFileDialog
         if app:
-            dcmdir = QFileDialog.getExistingDirectory(
+            dcmdir = str(QFileDialog.getExistingDirectory(
                 caption='Select DICOM Folder',
                 options=QFileDialog.ShowDirsOnly,
                 directory=directory
-            )
+            ))
         else:
             app = QApplication(sys.argv)
-            dcmdir = QFileDialog.getExistingDirectory(
+            dcmdir = str(QFileDialog.getExistingDirectory(
                 caption='Select DICOM Folder',
                 options=QFileDialog.ShowDirsOnly,
                 directory=directory
-            )
+            ))
             # pp.exec_()
             app.exit(0)
         if len(dcmdir) > 0:
