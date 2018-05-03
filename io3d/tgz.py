@@ -36,7 +36,7 @@ def untar(fname, path=".", output_dir_by_filename=True, force_rewrite=False):
 
         tar.extractall(path=path)
         tar.close()
-        logger.debug("Extracted in " + path)
+        logger.debug("Extracted in " + str(path))
         return path
     else:
         logger.warning("Not a tar.bz2 file: '%s '" % path)

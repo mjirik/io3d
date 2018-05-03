@@ -212,7 +212,7 @@ class DataReader:
             new_datapath = tgz.untar(datapath)
             data3d, metadata = self.__ReadFromDirectory(new_datapath)
         else:
-            logger.debug('file format "' + ext + '"')
+            logger.debug('file format "' + str(ext) + '"')
             # reading raw file
             data3d, metadata = self._read_with_sitk(datapath)
 

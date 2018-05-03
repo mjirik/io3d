@@ -82,8 +82,8 @@ def join_path(*path_to_join):
     """
     sdp = dataset_path()
     pth = os.path.join(sdp, *path_to_join)
-    logger.debug('sample_data_path' + sdp)
-    logger.debug('path ' + pth)
+    logger.debug('sample_data_path' + str(sdp))
+    logger.debug('path ' + str(pth))
     return pth
 
 def set_dataset_path(path, cache=None, cachefile="~/io3d_cache.yaml"):
