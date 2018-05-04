@@ -6,7 +6,6 @@ import logging
 import argparse
 import numpy as np
 import h5py
-import sed3
 import SimpleITK as sitk
 
 import os.path
@@ -319,6 +318,7 @@ def main():
     data3d, metadata = read(args.inputfile,
                             series_number=args.seriesnumber,
                             dataplus_format=False)
+    import sed3
     ed = sed3.sed3(data3d)
     ed.show()
 
