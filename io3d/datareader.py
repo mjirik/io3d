@@ -6,7 +6,7 @@ import logging
 import argparse
 import numpy as np
 import h5py
-import SimpleITK as sitk
+import SimpleITK as Sitk
 
 import os.path
 import sys
@@ -15,6 +15,8 @@ try:
 except ModuleNotFoundError:
     import pydicom as dicom
 
+# NOTE(mareklovci - 2018_05_13): Absolute imports are prefered in Python, so eg. "from io3d import tgz" should be used.
+# https://www.python.org/dev/peps/pep-0008/#imports
 from . import dcmreaddata as dcmr
 from . import tgz
 from . import misc
@@ -58,17 +60,25 @@ class DataReader:
     def __init__(self):
         self.overlay_fcn = None
 
-    # noinspection PyIncorrectDocstring,PyAttributeOutsideInit,PyUnboundLocalVariable
+    # noinspection PyAttributeOutsideInit,PyUnboundLocalVariable,PyPep8Naming
     def Get3DData(self, datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1,
                   convert_to_gray=True, series_number=None, use_economic_dtype=True, **kwargs):
-        """Returns 3D data and it's metadata.
+        """Returns 3D data and its metadata.
 
-        # NOTE :qt_app: If it is set to None (as default) all dialogs for series selection are performed
-                in terminal. If qt_app is set to QtGui.QApplication() dialogs are in Qt.
+        # NOTE(:param qt_app:) If it is set to None (as default) all dialogs for series selection are performed in
+        terminal. If qt_app is set to QtGui.QApplication() dialogs are in Qt.
 
         :param datapath: directory with input data
         :param qt_app: Dialog destination. If None (default) -> terminal, if 'QtGui.QApplication()' -> Qt
         :param dataplus_format: New data format. Metadata and data are returned in one structure.
+        :param gui: True if 'QtGui.QApplication()' instead of terminal should be used
+        :param int start: used for DicomReader, defines where 3D data reading should start
+        :param int stop: used for DicomReader, defines where 3D data reading should stop
+        :param int step: used for DicomReader, defines step for 3D data reading
+        :param bool convert_to_gray: if True -> RGB is converted to gray
+        :param int series_number: used in DicomReader, essential in metadata
+        :param use_economic_dtype: if True, casts 3D data array to less space consuming dtype
+        :return: tuple (data3d, metadata)
         """
         self.orig_datapath = datapath
         datapath = os.path.expanduser(datapath)
@@ -124,7 +134,13 @@ class DataReader:
         else:
             return data3d, metadata
 
+    # noinspection PyPep8Naming
     def __ReadFromDirectory(self, datapath):
+        """This function is actually the ONE, which reads 3D data from file
+
+        :param datapath: path to file
+        :return: tuple (data3d, metadata)
+        """
         start = self.start
         stop = self.stop
         step = self.step
@@ -149,7 +165,7 @@ class DataReader:
             flist = []
             for f in os.listdir(datapath):
                 try:
-                    sitk.ReadImage(os.path.join(datapath, f))
+                    Sitk.ReadImage(os.path.join(datapath, f))
                 except Exception as e:
                     logger.warning("Cant load file: " + str(f))
                     logger.warning(e)
@@ -158,19 +174,37 @@ class DataReader:
             flist.sort()
 
             logger.debug('Reading image data...')
-            image = sitk.ReadImage(flist)
+            image = Sitk.ReadImage(flist)
             logger.debug('Getting numpy array from image data...')
-            data3d = sitk.GetArrayFromImage(image)
-
+            data3d = Sitk.GetArrayFromImage(image)
             metadata = _metadata(image, datapath)
-
         return data3d, metadata
 
     @staticmethod
     def __use_economic_dtype(data3d):
+        """Casts 3D data array to less space consuming dtype.
+
+        :param data3d: array of 3D data to reformat
+        :return: reformated array
+        """
         return misc.use_economic_dtype(data3d)
 
+    # noinspection PyPep8Naming
     def __ReadFromFile(self, datapath):
+        """Reads file and returns containing 3D data and its metadata.
+        Supported formats: pklz, pkl, hdf5, idx, dcm, Dcm, dicom, bz2 and "raw files"
+
+        :param datapath: path to file to read
+        :return: tuple (data3d, metadata)
+        """
+        def _create_meta(_datapath):
+            """Just simply returns some dict. This functions exists in order to keep DRY"""
+            meta = {
+                'series_number': 0,
+                'datadir': _datapath
+            }
+            return meta
+
         path, ext = os.path.splitext(datapath)
         ext = ext[1:]
         if ext in ('pklz', 'pkl'):
@@ -178,11 +212,8 @@ class DataReader:
             from . import misc
             data = misc.obj_from_file(datapath, filetype='pkl')
             data3d = data.pop('data3d')
-            # etadata must have series_number
-            metadata = {
-                'series_number': 0,
-                'datadir': datapath
-            }
+            # metadata must have series_number
+            metadata = _create_meta(datapath)
             metadata.update(data)
 
         elif ext in ['hdf5']:
@@ -192,11 +223,8 @@ class DataReader:
             # back compatibility
             if 'metadata' in data.keys():
                 data = data['metadata']
-            # etadata must have series_number
-            metadata = {
-                'series_number': 0,
-                'datadir': datapath
-            }
+            # metadata must have series_number
+            metadata = _create_meta(datapath)
             metadata.update(data)
 
         elif ext in ['idx']:
@@ -217,7 +245,12 @@ class DataReader:
 
     @staticmethod
     def _read_with_sitk(datapath):
-        image = sitk.ReadImage(datapath)
+        """Reads file using SimpleITK. Returns array of pixels (image located in datapath) and its metadata.
+
+        :param datapath: path to file (img or dicom)
+        :return: tuple (data3d, metadata), where data3d is array of pixels
+        """
+        image = Sitk.ReadImage(datapath)
         data3d = dcmtools.get_pixel_array_from_sitk(image)
         # data3d, original_dtype = dcmreaddata.get_pixel_array_from_dcmobj(image)
         metadata = _metadata(image, datapath)
@@ -227,9 +260,9 @@ class DataReader:
     def _fix_sitk_bug(path, metadata):
         """There is a bug in simple ITK for Z axis in 3D images. This is a fix.
 
-        :param path:
-        :param metadata:
-        :return:
+        :param path: path to dicom file to read
+        :param metadata: metadata to correct
+        :return: corrected metadata
         """
         ds = dicom.read_file(path)
         try:
@@ -239,11 +272,12 @@ class DataReader:
         return metadata
 
     def read_hdf5(self, datapath):
-        """
-        Method is not implemented
-        """
-        # TODO: implement this better, this is not working
+        """Warning: Method is not implemented!
+        Should read hdf5 data and return dictionary with data3d and metadata in itself.
 
+        :param datapath: path to hdf5 file
+        :return: dict with data3d and metadata"""
+        # TODO: implement this better, this is not working
         f = h5py.File(datapath, 'r')
         # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
         dd = self.__read_h5_key(f)
@@ -254,6 +288,12 @@ class DataReader:
         return dd
 
     def __read_h5_key(self, grp):
+        """Recursive function for reading h5 key.
+        Used in "read_hdf5" method. Reads hdf5 file with h5py package and returns dictionary.
+
+        :param grp: hdf5 file to process
+        :return: dict hopefully containing data3d and metadata aquired from hdf5 file
+        """
         retval = {}
         for key in grp.keys():
             data = grp.get(key)
@@ -285,7 +325,8 @@ class DataReader:
             return self.overlay_fcn()
 
 
-# NOTE(mareklovci): Should not this be dcmr.get_dcmdir_qt() instead? I would bet, dcmr.get_datapath_qt() does not exists
+# NOTE(mareklovci - 2018_05_13): Should not this be dcmr.get_dcmdir_qt() instead? I would bet, dcmr.get_datapath_qt()
+# does not exists
 def get_datapath_qt(qt_app):
     # just call function from dcmr
     return dcmr.get_datapath_qt(qt_app)
