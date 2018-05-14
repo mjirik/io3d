@@ -10,9 +10,10 @@ import SimpleITK as Sitk
 
 import os.path
 import sys
+
 try:
     import dicom
-except ModuleNotFoundError:
+except ImportError:
     import pydicom as dicom
 
 # NOTE(mareklovci - 2018_05_13): Absolute imports are prefered in Python, so eg. "from io3d import tgz" should be used.

@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Module is used for visualization of segmentation stored in pkl file.
+Module is used for visualization of segmentation stored in pkl, dcm and other files.
 """
 
 import logging
@@ -74,10 +74,10 @@ data_urls = {
 
 
 def join_path(*path_to_join):
-    """
-    join input path to sample data path (usually in ~/lisa_data)
+    """Join input path to sample data path (usually in ~/lisa_data)
+
     :param path_to_join: one or more paths
-    :return:
+    :return: joined path
     """
     sdp = dataset_path()
     pth = os.path.join(sdp, *path_to_join)
@@ -87,18 +87,23 @@ def join_path(*path_to_join):
 
 
 def set_dataset_path(path, cache=None, cachefile="~/io3d_cache.yaml"):
+    """Sets path to dataset. Warning: function with side effects!
+
+    :param path: path you want to store dataset
+    :param cache: CacheFile object
+    :param cachefile: default '~/io3d_cache.yaml'
+    """
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
-
     cache.update("local_dataset_dir", path)
 
 
 def dataset_path(cache=None, cachefile="~/io3d_cache.yaml"):
-    """
-    Get dataset path.
+    """Get dataset path.
+
     :param cache: CacheFile object
-    :param cachefile:  cachefile path
-    :return:
+    :param cachefile: cachefile path, default '~/io3d_cache.yaml'
+    :return: path to dataset
     """
     local_data_dir = local_dir
     if cachefile is not None:
@@ -115,6 +120,11 @@ def dataset_path(cache=None, cachefile="~/io3d_cache.yaml"):
 
 # noinspection PyUnboundLocalVariable
 def get_dataset_meta(label):
+    """Gives you metadata for dataset chosen via 'label' param
+
+    :param label: label = key in data_url dict (that big dict containing all possible datasets)
+    :return: tuple (data_url, url, expected_hash, hash_path, fnpattern)
+    """
     data_url = data_urls[label]
     if type(data_url) == str:
         # back compatibility
@@ -123,10 +133,8 @@ def get_dataset_meta(label):
         data_url.extend([None, None, None])
         data_url = data_url[:4]
         url, expected_hash, hash_path, fnpattern = data_url
-
         if hash_path is None:
             hash_path = label
-
         if fnpattern is None and hash_path is not None:
             fnpattern = hash_path
     # elif type(data_url) == dict:
@@ -135,10 +143,12 @@ def get_dataset_meta(label):
 
 # noinspection PyTypeChecker
 def _expand_dataset_packages(dataset_label_dict):
-    """
-    dataset package is multi dataset
-    :param dataset_label_dict:
-    :return:
+    """Returns list of possible packages contained in dataset, in case the dataset is multi dataset, eg. 'lisa'.
+
+    In case the param is not pointing to multidataset returns only that label in a list.
+
+    :param str dataset_label_dict: label of multi dataset
+    :return: list of labels
     """
     new_dataset_label_dict = []
     for label in dataset_label_dict:
@@ -147,17 +157,17 @@ def _expand_dataset_packages(dataset_label_dict):
             new_dataset_label_dict.extend(dataset_metadata["package"])
         else:
             new_dataset_label_dict.append(label)
-
     return new_dataset_label_dict
 
 
-# noinspection PyIncorrectDocstring
 def download(dataset_label=None, destination_dir=None, dry_run=False):
-    """
-    Download sample data by data label. Labels can be listed by sample_data.data_urls.keys()
+    """Download sample data by data label. Warning: function with side effect!
+
+    Labels can be listed by sample_data.data_urls.keys(). Returns downloaded files.
+
     :param dataset_label: label of data. If it is set to None, all data are downloaded
     :param destination_dir: output dir for data
-    :return:
+    :param dry_run: runs function without downloading anything
     """
     if destination_dir is None:
         destination_dir = dataset_path()
@@ -233,12 +243,12 @@ def get_old(dataset_label, data_id, destination_dir=None):
     print(paths)
     print(data_id)
     pathsf = fnmatch.filter(paths, data_id)
-    print(pathsf
-          )
+    print(pathsf)
     datap = io3d.read(pathsf[0], dataplus_format=True)
     return datap
 
 
+# NOTE(mareklovci - 2018_05_14): work in progress
 # noinspection PyUnusedLocal
 def get(dataset_label, series_number=None, *args, **kwargs):
     """
@@ -260,13 +270,13 @@ def get(dataset_label, series_number=None, *args, **kwargs):
 
 # noinspection PyProtectedMember
 def checksum(path, hashfunc='md5'):
-    """
-    Return checksum given by path. Wildcards can be used in check sum. Function is strongly
-    dependent on checksumdir package by 'cakepietoast'.
+    """Return checksum of files given by path.
 
-    :param path:
-    :param hashfunc:
-    :return:
+    Wildcards can be used in check sum. Function is strongly dependent on checksumdir package by 'cakepietoast'.
+
+    :param path: path of files to get hash from
+    :param hashfunc: function used to get hash, default 'md5'
+    :return: (str) hash of the file/files given by path
     """
     import checksumdir
     hash_func = checksumdir.HASH_FUNCS.get(hashfunc)
@@ -290,7 +300,7 @@ def checksum(path, hashfunc='md5'):
 def generate_donut():
     """Generate donut like shape with stick inside
 
-    :return: datap with keys data3d, segmentation and voxelsize_mm
+    :return: dict {'data3d': '', 'segmentation': '', 'voxelsize_mm': ''}
     """
     segmentation = np.zeros([20, 30, 40])
     # generate test data
@@ -315,6 +325,17 @@ def generate_donut():
 
 def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal_vein_intensity=130,
                        spleen_intensity=90):
+    """Create artificial abdominal like data. Outputs a cube.
+
+    {0: nothing, 1: liver, 2: portal_vein, 17: spleen}
+
+    :param size: the length of the cube edge
+    :param liver_intensity: "luminosity" of liver
+    :param noise_intensity: adding noise to data
+    :param portal_vein_intensity: "luminosity" of portal vein
+    :param spleen_intensity: "luminosity" of spleen
+    :return: {'data3d': '', 'segmentation': '', 'voxelsize_mm': '', 'seeds': '', 'slab': ''}
+    """
     boundary = int(size/4)
     voxelsize_mm = [1.0, 1.5, 1.5]
     slab = {
@@ -359,7 +380,7 @@ def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/m
     :param sliver_reference_dir: directory with sliver .mhd and .raw files
     :param read_orig: read image data if is set True
     :param read_seg: read segmentation data if is set True
-    :return: numeric_label, vs_mm, oname, orig_data, rname, ref_data
+    :return: tuple (numeric_label, vs_mm, oname, orig_data, rname, ref_data)
     """
     sliver_reference_dir = op.expanduser(sliver_reference_dir)
     orig_fnames = glob.glob(sliver_reference_dir + "*orig" + filename_end_mask)
@@ -387,6 +408,10 @@ def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/m
 
 
 def remove(local_file_name):
+    """Function attempts to remove file, if failure occures -> print exception
+
+    :param local_file_name: name of file to remove
+    """
     try:
         os.remove(local_file_name)
     except Exception as e:
@@ -395,8 +420,12 @@ def remove(local_file_name):
 
 
 def downzip(url, destination='./sample_data/'):
-    """
-    Download, unzip and delete.
+    """Download, unzip and delete. Warning: function with strong side effects!
+
+    Returns downloaded data.
+
+    :param str url: url from which data should be donloaded
+    :param destination: destination to which data should be downloaded
     """
 
     # url = "http://147.228.240.61/queetech/sample-data/jatra_06mm_jenjatra.zip"
@@ -427,10 +456,10 @@ def downzip(url, destination='./sample_data/'):
 
 
 def unzip_one(local_file_name):
-    """
-    Unzip one file and delete it.
-    :param local_file_name: file name of zip file
-    :return:
+    """Unzips one file and deletes it. Warning: function with side effects!
+
+    :param str local_file_name: file name of zip file
+    :return: list of archive members by name.
     """
     local_file_name = op.expanduser(local_file_name)
     destination = op.dirname(local_file_name)
@@ -447,11 +476,10 @@ def unzip_one(local_file_name):
 
 
 def unzip_recursive(zip_file_name):
-    """
-    Unzip file with all recursive zip files inside and delete zip files after that.
+    """Unzip file with all recursive zip files inside and delete zip files after that.
 
-    :param zip_file_name:
-    :return:
+    :param zip_file_name: file name of zip file
+    :return: list of archive members by name.
     """
     logger.debug("unzipping " + zip_file_name)
     fnlist = unzip_one(zip_file_name)
@@ -459,7 +487,6 @@ def unzip_recursive(zip_file_name):
         if zipfile.is_zipfile(fn):
             local_fnlist = unzip_recursive(fn)
             fnlist.extend(local_fnlist)
-
     return fnlist
 
 
