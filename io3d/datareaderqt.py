@@ -117,6 +117,9 @@ class DataReaderWidget(QtGui.QWidget):
             )
             # pp.exec_()
             app.exit(0)
+
+        dcmdir = get_str(dcmdir)
+
         if len(dcmdir) > 0:
         #
         #     dcmdir = "%s" % (dcmdir)
@@ -164,6 +167,9 @@ class DataReaderWidget(QtGui.QWidget):
             )
             # pp.exec_()
             app.exit(0)
+
+        dcmdir = get_str(dcmdir)
+
         if len(dcmdir) > 0:
 
 
@@ -268,6 +274,14 @@ def my_after_fcn(arg):
     print(arg)
     print(arg.loaddir)
     print(arg.loadfiledir)
+
+def get_str(text):
+    if sys.version_info.major == 2:
+        import PyQt4.QtCore
+        if type(text) is PyQt4.QtCore.QString:
+            text = str(text)
+
+    return text
 
 def main():
     logger = logging.getLogger()

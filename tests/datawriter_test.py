@@ -244,7 +244,7 @@ class DicomWriterTest(unittest.TestCase):
         # print("asdfa")
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData('tests_outputs', dataplus_format=False)
-        newoverlay = dr.GetOverlay()
+        newoverlay = dr.get_overlay()
         # print(newoverlay)
 
         # ed = pyed.py3DSeedEditor(newoverlay[6])
@@ -292,7 +292,11 @@ class DicomWriterTest(unittest.TestCase):
 # try read written data
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData(filedir, dataplus_format=False)
+
+        # test old function
         newoverlay = dr.GetOverlay()
+        newoverlay = dr.get_overlay()
+
 
         self.assertTrue((newoverlay[i_overlay] == overlays[i_overlay]).all())
 

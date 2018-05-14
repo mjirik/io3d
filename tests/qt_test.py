@@ -112,5 +112,16 @@ class QtTest(unittest.TestCase):
         app.exec_()
         # self.assertEqual(error, 0)
 
+    def test_qstring(self):
+        if sys.version_info.major == 2:
+            from PyQt4.QtCore import QString
+            text = QString("i am qstring")
+        else:
+            text = "i am str"
+
+        txt = io3d.datareaderqt.get_str(text)
+        self.assertTrue(type(txt) is str)
+
+
 if __name__ == "__main__":
     unittest.main()
