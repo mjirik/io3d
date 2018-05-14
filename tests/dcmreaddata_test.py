@@ -452,8 +452,19 @@ class DicomReaderTest(unittest.TestCase):
 
         sorted_files, sorted_files_with_info = dicomdirectory.get_sorted_series_files(sort_keys=["AcquisitionTime", "SeriesNumber"], return_files_with_info=True)
         # self.assertEqual(metadata["voxelsize_mm"][1], 512)
-        print(sorted_files_with_info)
+        # print(sorted_files_with_info)
         self.assertTrue(op.exists(sorted_files[0]))
+
+
+    def test_parts_of_pyqt_get_series_number(self):
+        dcmdir = op.join(sample_data_path, 'vincentka_sample/')
+        dicomdirectory = dcmr.DicomDirectory(dcmdir)
+        files_with_info = dicomdirectory.files_with_info
+
+        series_info = dicomdirectory.get_stats_of_series_in_dir()
+        message = dicomdirectory.get_study_info_msg(series_info=series_info)
+
+        self.assertTrue(type(message) is str)
 
     # @attr('actual')
     def test_is_dicomdir(self):
