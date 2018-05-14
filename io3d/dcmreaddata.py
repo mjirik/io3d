@@ -66,8 +66,9 @@ def is_dicom_dir(datapath):
             retval = True
         # except pydicom.errors.InvalidDicomError:
         #     logger.debug("Invalid Dicom while reading file " + str(f))
-        except Exception:
+        except Exception as e:
             logger.warning("Unable to read dicom file " + str(f))
+            logger.warning(e)
             # import traceback
             # traceback.print_exc()
 
@@ -97,7 +98,8 @@ def decode_overlay_slice(data, i_overlay):
     # TODO neni tady ta jednička blbě?
     for i in range(1, len(overlay_raw)):
         for k in range(0, n_bits):
-            # Python2 returns str, Python3 returns int. (Could also by caused by slight difference in dicom lib version number)
+            # NOTE: Python2 returns str, Python3 returns int.
+            #       Could be by caused by slight difference in dicom lib version number.
             one_byte = overlay_raw[i]
             if sys.version_info.major == 2:
                 byte_as_int = ord(one_byte)
@@ -110,7 +112,8 @@ def decode_overlay_slice(data, i_overlay):
     overlay_slice = np.reshape(decoded_linear, [rows, cols])
     return overlay_slice
 
-class DicomReader():
+
+class DicomReader:
     """
     Example:
 
@@ -388,7 +391,7 @@ def _prepare_metadata_line(dcmdata, teil):
     return metadataline
 
 
-class DicomDirectory():
+class DicomDirectory:
     def __init__(self, dirpath, force_create_dicomdir=False, force_read=False):
         self.dicomdir_filename = 'dicomdir.pkl'
         self.standard_dicomdir_filename = 'DICOMDIR'
