@@ -614,7 +614,7 @@ class DicomDirectory:
         study_info = {
 
         }
-        key = series_info.keys()[0]
+        key = list(series_info)[0]
         if "StudyDate" in series_info[key]:
             study_info["StudyDate"] = series_info[key]["StudyDate"]
         return study_info
@@ -898,7 +898,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no co
         strl = get_one_serie_info(series_info, serie_number)
         sbinsd[strl] = serie_number
         # sbins.append(str(ii) + "  " + serie_number)
-    sbins = sbinsd.keys()
+    sbins = list(sbinsd)
     snstring, ok = \
         QInputDialog.getItem(qt_app,
                              'Serie Selection',

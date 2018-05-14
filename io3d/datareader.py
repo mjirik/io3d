@@ -310,7 +310,7 @@ class DataReader:
     @deprecated("Deprecated! Please, use get_overlay() function instead.")
     def GetOverlay(self):
         """Generates dictionary of ovelays"""
-        self.get_overlay()
+        return self.get_overlay()
 
     def get_overlay(self):
         """Generates dictionary of ovelays
