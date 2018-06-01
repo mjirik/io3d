@@ -541,7 +541,7 @@ def main():
         default=False, action="store_true",
         help='Get standard dataset path')
 
-    args = parser.parse_args(sys.argv)
+    args = parser.parse_args()
 
     # if args.get_sample_data == False and args.install == False and args.build_gco == False:
     # default setup is install and get sample data
@@ -573,10 +573,10 @@ def main():
         print(sorted(data_urls.keys()))
         return
 
-    download(args.labels, destination_dir=args.destination_dir)
+    if args.labels is not None:
+        download(args.labels, destination_dir=args.destination_dir)
 
     # submodule_update()
-
 
 if __name__ == "__main__":
     main()

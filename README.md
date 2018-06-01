@@ -65,13 +65,13 @@ datap = w.datap
 Get sample data with `io3d` package:
 
 ```shell
-python -m io3d.datasets -l 3Dircadb1.1
+python -m io3d -l 3Dircadb1.1
 ```
 
 Get list of available datasets:
 
 ```shell
-python -m io3d.datasets -L
+python -m io3d -L
 ```
 
 ... or download data:
@@ -86,5 +86,5 @@ Put this data into sample_data dir.
 ### File or directory checksum
 
 ```shell
-python -m io3d.datasets -c directory_path
+python -m io3d -c directory_path
 ```

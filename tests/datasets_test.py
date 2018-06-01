@@ -104,7 +104,7 @@ class DatasetsTest(unittest.TestCase):
 
     def test_main_list_labels(self):
         tmpargv = sys.argv
-        sys.argv = ["-L"]
+        sys.argv = [tmpargv[0], "-L"]
         io3d.datasets.main()
         sys.argv = tmpargv
 
@@ -112,9 +112,10 @@ class DatasetsTest(unittest.TestCase):
     def test_main_get_dataset_path(self):
 
         tmpargv = sys.argv
-        sys.argv = ["-gdp"]
+        sys.argv = [tmpargv[0], "-gdp"]
         io3d.datasets.main()
         sys.argv = tmpargv
+
 
 if __name__ == "__main__":
     unittest.main()
