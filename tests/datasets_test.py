@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 import unittest
 import os.path as op
 import shutil
+import sys
 
 import io3d
 
@@ -101,6 +102,19 @@ class DatasetsTest(unittest.TestCase):
         datap = io3d.datasets.get("3Dircadb1", 3)
         self.assertEqual(datap["data3d"].shape[1], 512)
 
+    def test_main_list_labels(self):
+        tmpargv = sys.argv
+        sys.argv = ["-L"]
+        io3d.datasets.main()
+        sys.argv = tmpargv
+
+
+    def test_main_get_dataset_path(self):
+
+        tmpargv = sys.argv
+        sys.argv = ["-gdp"]
+        io3d.datasets.main()
+        sys.argv = tmpargv
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,7 @@ Module is used for visualization of segmentation stored in pkl, dcm and other fi
 
 import logging
 import os.path
+import sys
 import argparse
 import numpy as np
 import zipfile
@@ -45,7 +46,12 @@ data_urls = {
     "lisa": {"package": ["donut", "vincentka_sample", "exp_small", "gensei_slices",
                          "biodur_sample", "vessels.pkl", "sliver_training_001", "jatra_5mm",
                          "head", "volumetrie"]},
-    "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
+    # "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
+    "3Dircadb1" : {"package": [
+        "3Dircadb1.1", "3Dircadb1.2", "3Dircadb1.3", "3Dircadb1.4", "3Dircadb1.5", "3Dircadb1.6", "3Dircadb1.7",
+        "3Dircadb1.8", "3Dircadb1.9", "3Dircadb1.10", "3Dircadb1.11", "3Dircadb1.12", "3Dircadb1.13",
+        "3Dircadb1.14", "3Dircadb1.15", "3Dircadb1.16", "3Dircadb1.17", "3Dircadb1.18", "3Dircadb1.19", "3Dircadb1.20",
+    ]},
     "3Dircadb1.1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
     "3Dircadb1.3": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip",
@@ -86,23 +92,23 @@ def join_path(*path_to_join):
     return pth
 
 
-def set_dataset_path(path, cache=None, cachefile="~/io3d_cache.yaml"):
+def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     """Sets path to dataset. Warning: function with side effects!
 
     :param path: path you want to store dataset
     :param cache: CacheFile object
-    :param cachefile: default '~/io3d_cache.yaml'
+    :param cachefile: default '~/.io3d_cache.yaml'
     """
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
     cache.update("local_dataset_dir", path)
 
 
-def dataset_path(cache=None, cachefile="~/io3d_cache.yaml"):
+def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml"):
     """Get dataset path.
 
     :param cache: CacheFile object
-    :param cachefile: cachefile path, default '~/io3d_cache.yaml'
+    :param cachefile: cachefile path, default '~/.io3d_cache.yaml'
     :return: path to dataset
     """
     local_data_dir = local_dir
@@ -521,13 +527,21 @@ def main():
     parser.add_argument(
         '-d', '--debug',  # action="store_true",
         default=None,
-        help='set debug level')
+        help='Set debug level')
     parser.add_argument(
         '-o', '--destination_dir',
         default=dataset_path(),
-        help='set output directory')
+        help='Set output directory. If not used, the standard dataset dir is used')
+    parser.add_argument(
+        '-sdp', '--set_dataset_path',
+        default=None,
+        help='Set standard dataset path')
+    parser.add_argument(
+        '-gdp', '--get_dataset_path',
+        default=False, action="store_true",
+        help='Get standard dataset path')
 
-    args = parser.parse_args()
+    args = parser.parse_args(sys.argv)
 
     # if args.get_sample_data == False and args.install == False and args.build_gco == False:
     # default setup is install and get sample data
@@ -539,6 +553,17 @@ def main():
         main_logger.setLevel(logging.INFO)
     if args.debug is not None:
         main_logger.setLevel(int(args.debug))
+
+    if args.set_dataset_path is not None:
+        set_dataset_path(args.set_dataset_path)
+        logger.info("Dataset path changed")
+        return
+
+    if args.get_dataset_path:
+        dp = dataset_path()
+        print(dp)
+        # logger.info("Dataset path changed")
+        return
 
     if args.checksum is not None:
         print(checksum(args.checksum))
