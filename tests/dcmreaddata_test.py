@@ -442,6 +442,16 @@ class DicomReaderTest(unittest.TestCase):
         print(sorted_files_with_info)
         self.assertTrue(op.exists(sorted_files[0]))
 
+    @attr('dataset')
+    def test_read_big_big_data(self):
+        """
+        files in nejlepsi_rozli_nevycistene
+        """
+        dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
+        io3d.read(dcmdir)
+        # print(sorted_files_with_info)
+        # self.assertTrue(op.exists(sorted_files[0]))
+
     def test_is_dicomdir_information_about_files(self):
         """
         files in vincentka_sample have no extension

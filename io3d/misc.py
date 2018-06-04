@@ -291,7 +291,7 @@ def suits_with_dtype(mn, mx, dtype):
     :return:
     """
     type_info = np.iinfo(dtype)
-    if mx < type_info.max and mn > type_info.min:
+    if mx <= type_info.max and mn >= type_info.min:
         return True
     else:
         return False
@@ -323,6 +323,10 @@ def use_economic_dtype(data3d, slope=1, inter=0, dtype=None):
                 dtype = np.int32
 
     # new_data3d = ((np.float(slope) * data3d) + np.float(inter)).astype(dtype)
-    new_data3d = ((slope * data3d) + inter).astype(dtype)
+    if slope == 1 and inter == 0:
+        # this can prevent out of memmory
+        new_data3d = data3d.astype(dtype)
+    else:
+        new_data3d = ((slope * data3d) + inter).astype(dtype)
     return new_data3d
 
