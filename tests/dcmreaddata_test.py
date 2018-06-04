@@ -452,6 +452,20 @@ class DicomReaderTest(unittest.TestCase):
         # print(sorted_files_with_info)
         # self.assertTrue(op.exists(sorted_files[0]))
 
+    @attr('dataset')
+    def test_read_dataset_where_is_voxelsize_equal_zero(self):
+        """
+        voxelsize_mm[0] should be grater than zero
+        """
+        # TODO fix voxelsize
+        dcmdir = r"E:\data\medical\orig\ct porctine liver\P03\23-9-13_23913\Makro\VEN_ABDOMEN_5_0_B31S_0002"
+        # dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
+        datap = io3d.read(dcmdir)
+
+        self.assertGreater(datap["voxelsize_mm"][0], 0)
+        # print(sorted_files_with_info)
+        # self.assertTrue(op.exists(sorted_files[0]))
+
     def test_is_dicomdir_information_about_files(self):
         """
         files in vincentka_sample have no extension
