@@ -457,7 +457,6 @@ class DicomReaderTest(unittest.TestCase):
         """
         voxelsize_mm[0] should be grater than zero
         """
-        # TODO fix voxelsize
         dcmdir = r"E:\data\medical\orig\ct_porcine_liver\P03\23-9-13_23913\Makro\VEN_ABDOMEN_5_0_B31S_0002"
         # dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
         datap = io3d.read(dcmdir)
@@ -465,6 +464,18 @@ class DicomReaderTest(unittest.TestCase):
         self.assertGreater(datap["voxelsize_mm"][0], 0)
         # print(sorted_files_with_info)
         # self.assertTrue(op.exists(sorted_files[0]))
+
+    @attr('dataset')
+    def test_read_dataset_to_fix_problem_with_out_of_memory(self):
+        """
+        voxelsize_mm[0] should be grater than zero
+        """
+        dcmdir = r"E:\data\medical\orig\ct_porcine_liver\P01\29-8-12-a\MIkroCT-nejhrubsi_rozliseni\DICOM_liver-1st-important_Macro_pixel-size53.0585um"
+        # dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
+        datap = io3d.read(dcmdir)
+
+        io3d.write(datap, "~/tmp/nejhrubsi.mhd")
+        self.assertGreater(datap["voxelsize_mm"][0], 0)
 
     def test_is_dicomdir_information_about_files(self):
         """

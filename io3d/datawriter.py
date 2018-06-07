@@ -81,7 +81,7 @@ class DataWriter:
 
         if filetype == 'auto':
             startpath, ext = os.path.splitext(path)
-            filetype = ext[1:]
+            filetype = ext[1:].lower()
 
         segmentation = None
         if metadata is not None and "segmentation" in metadata.keys():
@@ -106,7 +106,7 @@ class DataWriter:
     #
     # def _all_in_one_file(self, data3d, path, filetype, metadata):
 
-        if filetype in ['vtk', 'tiff', 'tif']:
+        if filetype in ['vtk', 'tiff', 'tif', "mhd", "nii", "raw"]:
             self._write_with_sitk(path, data3d, metadata)
             if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, metadata)
@@ -131,6 +131,7 @@ class DataWriter:
 
         else:
             logger.error('Unknown filetype: "' + filetype + '"')
+            raise ValueError("Unknown filetype: '" + filetype +"'")
 
             # data = dicom.read_file(onefile)
 
