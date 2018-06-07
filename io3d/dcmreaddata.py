@@ -496,7 +496,7 @@ class DicomDirectory:
             voxeldepth = self._get_slice_location_difference(dcmlist, ifile)
             voxeldepth_end = self._get_slice_location_difference(dcmlist, -2)
             if voxeldepth != voxeldepth_end:
-                logger.warnning("Depth of slices is not the same in whole sequence")
+                logger.warning("Depth of slices is not the same in beginning and end of the sequence")
                 voxeldepth_1 = self._get_slice_location_difference(dcmlist, 1)
                 voxeldepth = np.median([voxeldepth, voxeldepth_end, voxeldepth_1])
 

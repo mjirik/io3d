@@ -466,16 +466,31 @@ class DicomReaderTest(unittest.TestCase):
         # self.assertTrue(op.exists(sorted_files[0]))
 
     @attr('dataset')
-    def test_read_dataset_to_fix_problem_with_out_of_memory(self):
+    def test_read_and_write_dataset_to_fix_problem_with_out_of_memory(self):
         """
         voxelsize_mm[0] should be grater than zero
         """
         dcmdir = r"E:\data\medical\orig\ct_porcine_liver\P01\29-8-12-a\MIkroCT-nejhrubsi_rozliseni\DICOM_liver-1st-important_Macro_pixel-size53.0585um"
+        # dcmdir = r"E:\tmp\data\medical\orig\ct_porcine_liver\P01\29-8-12-a\MIkroCT-nejhrubší rozlišení\DICOM_liver-1st-important_Macro_pixel-size53.0585um"
         # dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
         datap = io3d.read(dcmdir)
 
         io3d.write(datap, "~/tmp/nejhrubsi.mhd")
         self.assertGreater(datap["voxelsize_mm"][0], 0)
+
+    def test_save_big_data(self):
+        output_filename = "~/tmp/big_data.mhd"
+        if op.exists(op.expanduser(output_filename)):
+            os.remove(op.expanduser(output_filename))
+        data3d = np.zeros([1024, 1024, 1024], dtype=np.uint16)
+        voxelsize_mm = [0.5, 0.5, 0.5]
+        datap = dict(data3d=data3d, voxelsize_mm=voxelsize_mm)
+        io3d.write(datap, output_filename)
+
+        self.assertTrue(op.exists(op.expanduser(output_filename)))
+        # clean
+        if op.exists(op.expanduser(output_filename)):
+            os.remove(op.expanduser(output_filename))
 
     def test_is_dicomdir_information_about_files(self):
         """
