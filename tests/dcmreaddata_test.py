@@ -447,7 +447,7 @@ class DicomReaderTest(unittest.TestCase):
         """
         files in nejlepsi_rozli_nevycistene
         """
-        dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
+        dcmdir = r"E:\data\medical\orig\ct_porcine_liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
         io3d.read(dcmdir)
         # print(sorted_files_with_info)
         # self.assertTrue(op.exists(sorted_files[0]))
@@ -458,7 +458,7 @@ class DicomReaderTest(unittest.TestCase):
         voxelsize_mm[0] should be grater than zero
         """
         # TODO fix voxelsize
-        dcmdir = r"E:\data\medical\orig\ct porctine liver\P03\23-9-13_23913\Makro\VEN_ABDOMEN_5_0_B31S_0002"
+        dcmdir = r"E:\data\medical\orig\ct_porcine_liver\P03\23-9-13_23913\Makro\VEN_ABDOMEN_5_0_B31S_0002"
         # dcmdir = r"E:\data\medical\orig\ct porctine liver\P01\29-8-12-a\Nejlep_rozli_nevycistene"
         datap = io3d.read(dcmdir)
 

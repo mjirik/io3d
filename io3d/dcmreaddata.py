@@ -312,10 +312,10 @@ class DicomReader:
 
         return data3d
 
-    def get_metaData(self, ifile=0):
+    def get_metaData(self):
         dcmlist = self.files_in_serie
         # self.dicomdirectory.get_metadata_new(series_number=self.series_number)
-        return self.dicomdirectory.get_metaData(dcmlist=dcmlist, series_number=self.series_number, ifile=ifile)
+        return self.dicomdirectory.get_metaData(dcmlist=dcmlist, series_number=self.series_number)
 
     def dcmdirstats(self):
         return self.dicomdirectory.get_stats_of_series_in_dir()
@@ -463,7 +463,18 @@ class DicomDirectory:
         }
         return metadata
 
-    def get_metaData(self, dcmlist, series_number, ifile=0):
+    def _get_slice_location_difference(self, dcmlist, ifile, step=1):
+        head1, teil1 = os.path.split(dcmlist[ifile])
+        head2, teil2 = os.path.split(dcmlist[ifile + step])
+
+        data1 = self._read_file(dcmlist[ifile])
+        data2 = self._read_file(dcmlist[ifile + step])
+        loc1 = get_slice_location(data1, teil1)
+        loc2 = get_slice_location(data2, teil2)
+        voxeldepth = float(np.abs(loc1 - loc2))
+        return voxeldepth
+
+    def get_metaData(self, dcmlist, series_number):
         """
         Get metadata.
         Voxel size is obtained from PixelSpacing and difference of
@@ -473,19 +484,31 @@ class DicomDirectory:
         # if dcmlist is None:
         #     dcmlist = self.files_in_serie
 
+        # number of slice where to extract metadata inforamtion
+        ifile = 0
         if len(dcmlist) == 0:
             return {}
 
         logger.debug("Filename: " + dcmlist[ifile])
         data1 = self._read_file(dcmlist[ifile])
         try:
-            head1, teil1 = os.path.split(dcmlist[ifile])
-            head2, teil2 = os.path.split(dcmlist[ifile + 1])
+            # try to get difference from the beginning and also from the end
+            voxeldepth = self._get_slice_location_difference(dcmlist, ifile)
+            voxeldepth_end = self._get_slice_location_difference(dcmlist, -2)
+            if voxeldepth != voxeldepth_end:
+                logger.warnning("Depth of slices is not the same in whole sequence")
+                voxeldepth_1 = self._get_slice_location_difference(dcmlist, 1)
+                voxeldepth = np.median([voxeldepth, voxeldepth_end, voxeldepth_1])
 
-            data2 = self._read_file(dcmlist[ifile + 1])
-            loc1 = get_slice_location(data1, teil1)
-            loc2 = get_slice_location(data2, teil2)
-            voxeldepth = float(np.abs(loc1 - loc2))
+
+
+            # head1, teil1 = os.path.split(dcmlist[ifile])
+            # head2, teil2 = os.path.split(dcmlist[ifile + 1])
+            #
+            # data2 = self._read_file(dcmlist[ifile + 1])
+            # loc1 = get_slice_location(data1, teil1)
+            # loc2 = get_slice_location(data2, teil2)
+            # voxeldepth = float(np.abs(loc1 - loc2))
         except Exception:
             logger.warning('Problem with voxel depth. Using SliceThickness')
             logger.debug(traceback.format_exc())
@@ -717,7 +740,7 @@ class DicomDirectory:
         return counts, bins
 
     def get_sorted_series_files(self, startpath="", series_number=None, return_files_with_info=False,
-                                sort_keys="SliceLocation", return_files=True):
+                                sort_keys="SliceLocation", return_files=True, remove_doubled_slice_locations=True):
         """
         Function returns sorted list of dicom files. File paths are organized
         by SeriesUID, StudyUID and FrameUID
@@ -741,11 +764,15 @@ class DicomDirectory:
 
         logger.debug('SeriesNumber: ' + str(series_number))
 
+        if remove_doubled_slice_locations:
+            dcmdir = self._remove_doubled_slice_locations(dcmdir)
+
         filelist = []
         for onefile in dcmdir:
             filelist.append(os.path.join(startpath,
                                          self.dirpath, onefile['filename']))
             # head, tail = os.path.split(onefile['filename'])
+
 
         retval = []
         if return_files:
@@ -761,6 +788,17 @@ class DicomDirectory:
             retval = tuple(retval)
 
         return retval
+
+    def _remove_doubled_slice_locations(self, dcmdir):
+        new_dcmdir = []
+        prev_slice_location = None
+        for item in dcmdir:
+            actual_slice_location = item["SliceLocation"]
+            if  actual_slice_location != prev_slice_location:
+                new_dcmdir.append(item)
+            prev_slice_location = actual_slice_location
+
+        return new_dcmdir
 
     def _create_dicomdir_info(self):
         """
