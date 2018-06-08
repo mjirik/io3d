@@ -27,6 +27,7 @@ local_dir = "~/data/medical/orig/"
 # vessels.pkl nejprve vytvoří prázný adresář s názvem vessels.pkl, pak jej při rozbalování zase smaže
 __url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 __url_server = "http://147.228.240.61/queetech/"
+__url_server = "http://home.zcu.cz/~mjirik/lisa/"
 data_urls = {
     "head": [__url_server + "sample-data/head.zip", "89e9b60fd23257f01c4a1632ff7bb800", "matlab"],
     "jatra_06mm_jenjatra": [__url_server + "sample-data/jatra_06mm_jenjatra.zip", None, "jatra_06mm_jenjatra/*.dcm"],
@@ -39,7 +40,7 @@ data_urls = {
     "biodur_sample": [__url_server + "sample-data/biodur_sample.zip", "d459dd5b308ca07d10414b3a3a9000ea"],
     "gensei_slices": [__url_server + "sample-data/gensei_slices.zip", "ef93b121add8e4a133bb086e9e6491c9"],
     "exp_small": [__url_server + "sample-data/exp_small.zip", "0526ba8ea363fe8b5227f5807b7aaca7"],
-    "vincentka": [__url_server + "vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
+    "vincentka": [__url_server + "sample-data/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
     "donut": __url_server + "sample-data/donut.zip",
     "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
