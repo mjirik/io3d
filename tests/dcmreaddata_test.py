@@ -31,9 +31,11 @@ except:
 
 #
 import io3d
+import io3d.datasets
 import io3d.dcmreaddata as dcmr
-sample_data_path = "~/data/medical/orig/sample_data/"
-sample_data_path = op.expanduser(sample_data_path)
+# sample_data_path = "~/data/medical/orig/sample_data/"
+# sample_data_path = op.expanduser(sample_data_path)
+sample_data_path = io3d.datasets.join_path("sample_data")
 
 alternative_data_path = "e:\\data\\medical\\orig\\"
 
@@ -87,10 +89,11 @@ class DicomReaderTest(unittest.TestCase):
 
     def test_dicomread_read_corrupted_dcmdir_file(self):
         dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
-        pth_dicomdir = os.path.join(
-                sample_data_path, '../sample_data/jatra_5mm/dicomdir.pkl')
-        pth_dicomdir_bck = os.path.join(
-                sample_data_path, '../sample_data/jatra_5mm/dicomdir.pkl.bck')
+        dcmdir = io3d.datasets.join_path("sample_data", "jatra_5mm")
+        pth_dicomdir = io3d.datasets.join_path(
+                 '../sample_data/jatra_5mm/dicomdir.pkl')
+        pth_dicomdir_bck = io3d.datasets.join_path(
+                '../sample_data/jatra_5mm/dicomdir.pkl.bck')
         import shutil
 # Backup file
         shutil.copy2(pth_dicomdir, pth_dicomdir_bck)
@@ -554,7 +557,6 @@ class DicomReaderTest(unittest.TestCase):
         # ed = sed3.sed3(data3d)
         # ed.show()
 
-    @attr('actual')
     def test_compare_dcmread_and_dataread(self):
 
         # dcmdir = os.path.join(path_to_script, '../vincentka_2013_06mm/')
