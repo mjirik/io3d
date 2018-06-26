@@ -1,9 +1,9 @@
 numpy
 scipy
 h5py
-#SimpleITK=0.9.* # problem with dicom write
-SimpleITK=1.0.* # version 1.1.* fails on import on windows
+SimpleITK=0.9.* 
+# SimpleITK=1.0.* # problem with dicom write
+# SimpleITK version 1.1.* fails on import on windows
 libpng # kvuli simpleik 0.9.
-# simpleitk
 checksumdir
 pyqt=4.11.*
