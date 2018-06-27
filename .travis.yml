@@ -43,7 +43,7 @@ install:
     - pip install .
     - conda list
 
-    - python -m io3d.datasets -l 3Dircadb1.1 jatra_5mm exp_small
+    - python -m io3d.datasets -l 3Dircadb1.1 -l jatra_5mm exp_small -l sliver_training_001
 #    - pip install -r requirements.txt
 #    -
 # command to run tests
