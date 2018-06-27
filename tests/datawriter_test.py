@@ -138,7 +138,7 @@ class DicomWriterTest(unittest.TestCase):
                          newmetadata['voxelsize_mm'][0])
 
 
-    @unittest.skip('SliceThickness is not stored in dicom files')
+    # @unittest.skip('SliceThickness is not stored in dicom files')
     def test_write_dcm_slices_datap(self):
         # Z nějakého důvodu plošné snímky neukládají tloušťku řezu. Jinak by test měl fungovat.
         datadir = "test_dcm"
