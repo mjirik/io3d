@@ -496,6 +496,12 @@ def unzip_recursive(zip_file_name):
             fnlist.extend(local_fnlist)
     return fnlist
 
+class ExtendAction(argparse.Action):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
 
 def main():
     main_logger = logging.getLogger()
@@ -509,8 +515,9 @@ def main():
     # input parser
     parser = argparse.ArgumentParser(
         description="Work on dataset")
+    parser.register('action', 'extend', ExtendAction)
     parser.add_argument(
-        "-l", "--labels", metavar="N", nargs="+",
+        "-l", "--labels", metavar="N", nargs="+", action="extend",
         default=None,
         help='Get sample data')
     parser.add_argument(
@@ -541,6 +548,10 @@ def main():
         '-gdp', '--get_dataset_path',
         default=False, action="store_true",
         help='Get standard dataset path')
+    parser.add_argument(
+        '--dry_run', action="store_true",
+        default=False,
+        help='Do not download')
 
     args = parser.parse_args()
 
@@ -575,7 +586,7 @@ def main():
         return
 
     if args.labels is not None:
-        download(args.labels, destination_dir=args.destination_dir)
+        download(args.labels, destination_dir=args.destination_dir, dry_run=args.dry_run)
 
     # submodule_update()
 

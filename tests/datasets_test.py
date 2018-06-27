@@ -116,6 +116,12 @@ class DatasetsTest(unittest.TestCase):
         io3d.datasets.main()
         sys.argv = tmpargv
 
+    def test_main_get_dataset_multiple_labels(self):
+
+        tmpargv = sys.argv
+        sys.argv = [tmpargv[0], "-l", "jatra_5mm", "head", "-l", "exp", "--dry_run"]
+        io3d.datasets.main()
+        sys.argv = tmpargv
 
 if __name__ == "__main__":
     unittest.main()
