@@ -1,8 +1,8 @@
 numpy
 scipy
 h5py
-SimpleITK=0.9.* 
-# SimpleITK=1.0.* # problem with dicom write
+# SimpleITK=0.9.* # does not exists for py36-linux
+SimpleITK=1.0.* # problem with dicom write
 # SimpleITK version 1.1.* fails on import on windows
 libpng # kvuli simpleik 0.9.
 checksumdir
