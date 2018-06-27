@@ -2,10 +2,13 @@ numpy
 scipy
 h5py
 # SimpleITK=0.9.* # does not exists for py36-linux
+SimpleITK=1.0.*
 # SimpleITK=1.0.* # problem with dicom write
 # SimpleITK version 1.1.* fails on import on windows (py27)
 # SimpleITK==0.9|1.1.1 # combination
-SimpleITK=1.0.*
+# SimpleITK=1.0.1=py36h1e9fa56_0 # works on py36 win
+# SimpleITK=1.0.1=py27hbe2d434_0 # works on py27 linux
+# SimpleITK=1.0.1=py36h6ab5f95_0 # works on py36 linux
 libpng # kvuli simpleik 0.9.
 checksumdir
 pyqt=4.11.*
