@@ -53,7 +53,7 @@ data_urls = {
         "3Dircadb1.8", "3Dircadb1.9", "3Dircadb1.10", "3Dircadb1.11", "3Dircadb1.12", "3Dircadb1.13",
         "3Dircadb1.14", "3Dircadb1.15", "3Dircadb1.16", "3Dircadb1.17", "3Dircadb1.18", "3Dircadb1.19", "3Dircadb1.20",
     ]},
-    "3Dircadb1.1": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
+    "3Dircadb1.1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip", "8ab16d83bfb58b790b9ca18f81401cdf"],
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
     "3Dircadb1.3": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip",
     "3Dircadb1.4": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.4.zip",
