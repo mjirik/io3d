@@ -163,13 +163,13 @@ class DicomWriterTest(unittest.TestCase):
         # os.removedirs()
         shutil.rmtree(datadir)
 
-    # @attr("slow")
+    @attr("slow")
     def test_read_mhd_and_write_pklz(self):
         """
         test data on sliver dataset
         :return:
         """
-        infn = op.join(op.expanduser(io3d.datasets.local_dir), "sliver07/training/liver-orig001.mhd")
+        # infn = op.join(op.expanduser(io3d.datasets.local_dir), "sliver07/training/liver-orig001.mhd")
         infn = io3d.datasets.join_path("liver-orig001.mhd")
         datap = io3d.read(infn, dataplus_format=True)
         datap["segmentation"] = np.zeros_like(datap["data3d"], dtype=np.uint8)
