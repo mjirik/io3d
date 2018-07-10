@@ -15,6 +15,7 @@ import unittest
 import os.path as op
 import shutil
 import sys
+import numpy as np
 
 import io3d
 
@@ -122,6 +123,11 @@ class DatasetsTest(unittest.TestCase):
         sys.argv = [tmpargv[0], "-l", "jatra_5mm", "head", "-l", "exp", "--dry_run"]
         io3d.datasets.main()
         sys.argv = tmpargv
+
+    def test_generate_round_data(self):
+        img, segm, seeds = io3d.datasets.generate_round_data(43)
+
+        self.assertTrue(np.array_equal([43, 44, 45], img.shape))
 
 if __name__ == "__main__":
     unittest.main()

@@ -344,7 +344,7 @@ def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal
     :param spleen_intensity: "luminosity" of spleen
     :return: {'data3d': '', 'segmentation': '', 'voxelsize_mm': '', 'seeds': '', 'slab': ''}
     """
-    boundary = int(size/4)
+    boundary = int(size / 4)
     voxelsize_mm = [1.0, 1.5, 1.5]
     slab = {
         'liver': 1,
@@ -379,6 +379,46 @@ def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal
     }
     return datap
 
+
+def generate_round_data(sz=32, offset=0, radius=7, seedsz=3, add_object_without_seeds=False):
+    """
+    Generate data with two sphere objects.
+    :param sz: output data shape is [sz, sz+1, sz+2]
+    :param offset:
+    :param radius:
+    :param seedsz:
+    :param add_object_without_seeds: Add also one cube-like object in the corner.
+    :return:
+    """
+
+    import scipy.ndimage
+    #seedsz= int(sz/10)
+    space=2
+    seeds = np.zeros([sz, sz+1, sz+2], dtype=np.int8)
+    xmin = radius + seedsz + offset + 2
+    ymin = radius + seedsz + offset + 6
+    seeds[offset + 12, xmin + 3:xmin + 7 + seedsz, ymin:ymin+2] = 1
+    seeds[offset + 20, xmin + 7:xmin + 12 + seedsz, ymin+5:ymin+7] = 1
+
+    # add temp seed
+    if add_object_without_seeds:
+        seeds[-3, -3, -3] = 1
+    img = np.ones([sz, sz+1, sz+2])
+    img = img - seeds
+
+    seeds[
+    2:10 + seedsz,
+    2:9+ seedsz,
+    2:3+ seedsz] = 2
+
+    # remove temo seed
+    if add_object_without_seeds:
+        seeds[-3, -3, -3] = 0
+
+    img = scipy.ndimage.morphology.distance_transform_edt(img)
+    segm = img < radius
+    img = (100 * segm + 80 * np.random.random(img.shape)).astype(np.uint8)
+    return img, segm, seeds
 
 def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/medical/orig/sliver07/training/",
                   read_orig=True, read_seg=False):
