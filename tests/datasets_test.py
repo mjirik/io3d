@@ -59,7 +59,6 @@ class DatasetsTest(unittest.TestCase):
         pth = op.join("./tmp/", "biodur_sample")
         self.assertTrue(op.exists(pth))
 
-
     def test_change_dataset_path(self):
         dp_new1 = "~/io3d_test1_dataset_dir/"
         dp_new2 = "~/io3d_test2_dataset_dir/"
@@ -128,6 +127,20 @@ class DatasetsTest(unittest.TestCase):
         img, segm, seeds = io3d.datasets.generate_round_data(43)
 
         self.assertTrue(np.array_equal([43, 44, 45], img.shape))
+
+    def test_generate_face_2d(self):
+        img = io3d.datasets.generate_face()
+
+        self.assertTrue(np.array_equal([32, 32], img.shape))
+        self.assertEqual(img[0, 0], False, "In the corner should be False")
+        self.assertEqual(img[15, 15], True, "In the middle of face should be True")
+
+    def test_generate_face_3d(self):
+        img = io3d.datasets.generate_face([5, 42, 34])
+
+        self.assertTrue(np.array_equal([5, 42, 34], img.shape))
+        self.assertEqual(img[2, 0, 0], False, "In the corner should be False")
+        self.assertEqual(img[2, 21, 17], True, "In the middle of face should be True")
 
 if __name__ == "__main__":
     unittest.main()

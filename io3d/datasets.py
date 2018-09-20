@@ -420,6 +420,74 @@ def generate_round_data(sz=32, offset=0, radius=7, seedsz=3, add_object_without_
     img = (100 * segm + 80 * np.random.random(img.shape)).astype(np.uint8)
     return img, segm, seeds
 
+
+def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
+    """
+    Create 2D binar face
+    :param shape:
+    :param face_r:
+    :param smile_r1:
+    :param smile_r2:
+    :param eye_r:
+    :return:
+    """
+
+    # data3d = np.zeros([1,7,7], dtype=np.int16)
+    if shape is None:
+        shape = [32, 32]
+
+    center = ((np.asarray(shape) - 1) / 2.0)
+    r = np.min(center) * face_r
+
+    # np.min(np.asarray(shape) / 2.0)
+    # shape = data3d.shape[1:]
+    # data3d[center[0], center[1], center[2]] = 1
+    x, y = np.meshgrid(range(shape[1]), range(shape[0]))
+
+    head = (x - center[0]) ** 2 + (y - center[1]) ** 2 < r ** 2
+
+    smile = ((x - center[0]) ** 2 + (y - center[1]) ** 2 < (r * smile_r2) ** 2) & (y > (center[1] + 0.3 * r)) & (
+                (x - center[0]) ** 2 + (y - center[1]) ** 2 >= (r * smile_r1) ** 2)
+    smile
+    e1c = center + r * np.array([-0.35, -0.2])
+    e2c = center + r * np.array([0.35, -0.2])
+
+    eyes = (x - e1c[0]) ** 2 + (y - e1c[1]) ** 2 <= (r * eye_r) ** 2
+    eyes += (x - e2c[0]) ** 2 + (y - e1c[1]) ** 2 <= (r * eye_r) ** 2
+
+    face = head & ~smile & ~eyes
+    return face
+
+
+def generate_face(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
+    """
+    Create 2D or 3D binar data with smile face.
+
+    :param shape: 2D or 3D shape of data
+    :param face_r:
+    :param smile_r1:
+    :param smile_r2:
+    :param eye_r:
+    :return: binar ndarray
+    """
+    # TODO add axis (ax=0)
+    if shape is None:
+        shape = [32, 32]
+    nd = len(shape)
+    if nd == 2:
+        sh2 = shape
+    else:
+        sh2 = shape[1:]
+    fc2 = _get_face2(sh2, face_r=face_r, smile_r1=smile_r1, smile_r2=smile_r2, eye_r=eye_r)
+
+    if nd == 2:
+        return fc2
+    else:
+        fc3 = np.zeros(shape)
+        for i in range(fc3.shape[0]):
+            fc3[i, :, :] = fc2
+        return fc3
+
 def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/medical/orig/sliver07/training/",
                   read_orig=True, read_seg=False):
     """Generator for reading sliver data from directory structure.
