@@ -540,25 +540,26 @@ class DicomDirectory:
             metadata['SeriesDescription'] = data1.SeriesDescription
 
         except:
-            logger.warning(
+            logger.info(
                 'Problem with tag SeriesDescription, SeriesNumber: ' +
                 str(data1.SeriesNumber))
         try:
             metadata['ImageComments'] = data1.ImageComments
         except:
-            logger.warning(
+            logger.info(
                 'Problem with tag ImageComments')
             # , SeriesNumber: ' +
             # str(data1.SeriesNumber))
         try:
             metadata['Modality'] = data1.Modality
         except:
-            logger.warning(
+            logger.info(
                 'Problem with tag Modality')
             # SeriesNumber: ' +
             #     str(data1.SeriesNumber))
         metadata = attr_to_dict(data1, "AcquisitionDate", metadata)
         metadata = attr_to_dict(data1, "StudyDate", metadata)
+        metadata = attr_to_dict(data1, "StudyID", metadata)
         metadata = attr_to_dict(data1, "StudyDescription", metadata)
         metadata = attr_to_dict(data1, "RequestedProcedureDescription", metadata)
         # metadata = attr_to_dict(data1, "AcquisitionTime", metadata)
@@ -860,17 +861,23 @@ def get_slice_location(dcmdata, teil=None):
         try:
             slice_location = float(dcmdata.SliceLocation)
         except Exception as exc:
-            logger.warning("It is not possible to use SliceLocation")
-            logger.info(traceback.format_exc())
+            logger.info("It is not possible to use SliceLocation")
+            logger.debug(traceback.format_exc())
     if slice_location is None and hasattr(dcmdata, "SliceThickness") and teil is not None:
-        logger.warning(
+        logger.debug(
             "Estimating SliceLocation wiht image number and SliceThickness"
         )
 
         # from builtins import map
         i = list(map(int, re.findall('\d+', teil)))
         i = i[-1]
-        slice_location = float(i * float(dcmdata.SliceThickness))
+        try:
+            slice_location = float(i * float(dcmdata.SliceThickness))
+        except ValueError as e:
+            print(type(dcmdata.SliceThickness))
+            print(dcmdata.SliceThickness)
+            logger.debug(traceback.format_exc())
+            logger.debug("SliceThickness problem")
 
     if slice_location is None and hasattr(dcmdata, "ImagePositionPatient") and hasattr(dcmdata,
                                                                                        "ImageOrientationPatient"):
