@@ -819,6 +819,9 @@ class DicomDirectory:
         for filepath in filelist:
             head, teil = os.path.split(filepath)
             dcmdata = None
+            if os.path.isdir(filepath):
+                logger.debug("Subdirectory found in series dir is ignored: " + str(filepath))
+                continue
             try:
                 dcmdata = pydicom.read_file(filepath)
 
