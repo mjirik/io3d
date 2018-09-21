@@ -576,6 +576,12 @@ class DicomDirectory:
         }
         return retval
 
+    def get_stats_of_series_in_dir_as_dataframe(self, study_id=None):
+        series_stats = self.get_stats_of_series_in_dir(study_id)
+        import pandas as pd
+        study_df = pd.DataFrame(series_stats).transpose()
+        return study_df
+
     def get_stats_of_series_in_dir(self, study_id=None):
         """ Dicom series staticstics, input is dcmdir, not dirpath
         Information is generated from dicomdir.pkl and first files of series
