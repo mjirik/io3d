@@ -35,7 +35,7 @@ def read(datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=N
     dr = DataReader()
     return dr.Get3DData(datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format, gui=gui, start=start,
                         stop=stop, step=step, convert_to_gray=convert_to_gray, series_number=series_number,
-                        use_economic_dtype=True, dicom_expected=dicom_expected, **kwargs)
+                        use_economic_dtype=True, dicom_expected=dicom_expected  , **kwargs)
 
 
 # NOTE(mareklovci): The same code was used in two functions, so according to DRY principle I cleaned it up.
@@ -152,6 +152,7 @@ class DataReader:
 
         if (dicom_expected is not False) and (dcmr.is_dicom_dir(datapath)):  # reading dicom
             logger.debug('Dir - DICOM')
+            logger.debug("dicom_expected " + str(dicom_expected))
             reader = dcmr.DicomReader(datapath,
                                       series_number=self.series_number,
                                       gui=gui,
