@@ -30,12 +30,12 @@ logger = logging.getLogger(__name__)
 
 
 def read(datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1, convert_to_gray=True,
-         series_number=None, **kwargs):
+         series_number=None, dicom_expected=None, **kwargs):
     """Simple read function. Internally calls DataReader.Get3DData()"""
     dr = DataReader()
     return dr.Get3DData(datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format, gui=gui, start=start,
                         stop=stop, step=step, convert_to_gray=convert_to_gray, series_number=series_number,
-                        use_economic_dtype=True, **kwargs)
+                        use_economic_dtype=True, dicom_expected=dicom_expected, **kwargs)
 
 
 # NOTE(mareklovci): The same code was used in two functions, so according to DRY principle I cleaned it up.
@@ -63,7 +63,7 @@ class DataReader:
 
     # noinspection PyAttributeOutsideInit,PyUnboundLocalVariable,PyPep8Naming
     def Get3DData(self, datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1,
-                  convert_to_gray=True, series_number=None, use_economic_dtype=True, **kwargs):
+                  convert_to_gray=True, series_number=None, use_economic_dtype=True, dicom_expected=None, **kwargs):
         """Returns 3D data and its metadata.
 
         # NOTE(:param qt_app:) If it is set to None (as default) all dialogs for series selection are performed in
@@ -79,6 +79,7 @@ class DataReader:
         :param bool convert_to_gray: if True -> RGB is converted to gray
         :param int series_number: used in DicomReader, essential in metadata
         :param use_economic_dtype: if True, casts 3D data array to less space consuming dtype
+        :param dicom_expected: set true if it is known that data is in dicom format.
         :return: tuple (data3d, metadata)
         """
         self.orig_datapath = datapath
@@ -113,7 +114,7 @@ class DataReader:
 
         elif os.path.exists(datapath):
             logger.debug('directory read recognized')
-            data3d, metadata = self.__ReadFromDirectory(datapath=datapath)
+            data3d, metadata = self.__ReadFromDirectory(datapath=datapath, dicom_expected=dicom_expected)
             # datapath, start, stop, step, gui=gui, **kwargs)
         else:
             logger.error('Data path {} not found'.format(datapath))
@@ -136,7 +137,7 @@ class DataReader:
             return data3d, metadata
 
     # noinspection PyPep8Naming
-    def __ReadFromDirectory(self, datapath):
+    def __ReadFromDirectory(self, datapath, dicom_expected=None):
         """This function is actually the ONE, which reads 3D data from file
 
         :param datapath: path to file
@@ -148,7 +149,7 @@ class DataReader:
         kwargs = self.kwargs
         gui = self.gui
 
-        if dcmr.is_dicom_dir(datapath):  # reading dicom
+        if (dicom_expected is not False) and (dcmr.is_dicom_dir(datapath)):  # reading dicom
             logger.debug('Dir - DICOM')
             reader = dcmr.DicomReader(datapath,
                                       series_number=self.series_number,
