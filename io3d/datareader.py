@@ -79,7 +79,8 @@ class DataReader:
         :param bool convert_to_gray: if True -> RGB is converted to gray
         :param int series_number: used in DicomReader, essential in metadata
         :param use_economic_dtype: if True, casts 3D data array to less space consuming dtype
-        :param dicom_expected: set true if it is known that data is in dicom format.
+        :param dicom_expected: set true if it is known that data is in dicom format. Set False to suppress
+        dicom warnings.
         :return: tuple (data3d, metadata)
         """
         self.orig_datapath = datapath
