@@ -17,6 +17,7 @@ import numpy as np
 import os
 
 import io3d.rawN
+import io3d.datasets
 
 
 class RawIOTest(unittest.TestCase):
@@ -24,7 +25,7 @@ class RawIOTest(unittest.TestCase):
     # @attr('interactive')
     def test_rawiv_read(self):
         # import sed3
-        data3d, metadata = io3d.rawN.read('~/data/medical/orig/sample_data/ct_head.rawiv')
+        data3d, metadata = io3d.rawN.read(io3d.datasets.join_path('sample_data/ct_head.rawiv'))
         # ed = sed3.sed3(data3d)
         # ed.show()
         # on this index sould be number 119
