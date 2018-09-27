@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
+logger = logging.getLogger(__name__)
 
 import os.path
 import sys
@@ -10,8 +12,6 @@ sys.path.append(os.path.join(path_to_script, "../extern/sed3"))
 
 import numpy as np
 
-import logging
-logger = logging.getLogger(__name__)
 
 import scipy
 import scipy.ndimage
