@@ -131,7 +131,7 @@ class DataWriter:
 
         else:
             logger.error('Unknown filetype: "' + filetype + '"')
-            raise ValueError("Unknown filetype: '" + filetype +"'")
+            raise ValueError("Unknown filetype: '" + filetype + "'")
 
             # data = dicom.read_file(onefile)
 
