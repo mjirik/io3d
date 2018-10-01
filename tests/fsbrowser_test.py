@@ -28,6 +28,7 @@ try:
     pydicom.debug(False)
 except:
     import pydicom
+    pydicom.config.debug(False)
 
 #
 import io3d
@@ -48,6 +49,71 @@ class FileSystemBrowserTest(unittest.TestCase):
         self.assertTrue("path" in dirlist[0])
         self.assertTrue("name" in dirlist[0])
 
+    @unittest.skip('technology test')
+    def test_devel_qt_dialog_fsbrowser(self):
+        import PyQt4
+        import sys
+        from PyQt4.QtGui import QApplication, QWidget, QLineEdit, QPushButton, QImage, QPixmap, QLabel
+        import matplotlib.pyplot as plt
+
+        # Create an PyQT4 application object.
+        a = QApplication(sys.argv)
+
+        # The QWidget widget is the base class of all user interface objects in PyQt4.
+        w = QWidget()
+
+        # Set window size.
+        w.resize(320, 240)
+
+        # Set window title
+        w.setWindowTitle("Hello World!")
+
+        # Get filename using QFileDialog
+        # filename = QFileDialog.getOpenFileName(w, 'Open File', '/')
+        # print(filename)
+
+        qfd = QFileDialog(None)
+
+        lineedit = QLineEdit(qfd)
+        # Create a button in the window
+        button = QPushButton('Click me', qfd)
+
+
+        # Image
+        image = io3d.datasets.generate_face([1, 100, 100]).squeeze()
+
+        cmap = np.uint8(np.round(255 * plt.get_cmap('magma')(np.arange(256))))
+        image /= image.max()
+        image = np.minimum(image, 1.0)
+        image = np.round(255 * image).astype('uint8')
+        Y, X = image.shape
+        self._bgra = np.zeros((Y, X, 4), dtype=np.uint8, order='C')
+        self._bgra[..., 0] = cmap[:, 2][image]
+        self._bgra[..., 1] = cmap[:, 1][image]
+        self._bgra[..., 2] = cmap[:, 0][image]
+        qimage = QImage(self._bgra.data, X, Y, QImage.Format_RGB32)
+
+        pixmap = QPixmap.fromImage(qimage)
+
+        label = QLabel(w)
+        # pixmap = QPixmap(os.getcwd() + 'https://pythonspot-9329.kxcdn.com/logo.png')
+        label.setPixmap(pixmap)
+        w.resize(pixmap.width(), pixmap.height())
+        # success = img.loadFromData(image_data)
+        # painter = QPainter(img)
+        layout = qfd.layout()
+
+        layout.addWidget(lineedit)
+        layout.addWidget(button, 2, 5)
+        layout.addWidget(label, 1, 5)
+
+        if qfd.exec():
+            print(qfd.selectedFiles())
+        else:
+
+            print("Cancel")
+
+        # a.exec_()
 
 if __name__ == "__main__":
     unittest.main()
