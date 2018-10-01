@@ -41,6 +41,7 @@ requirements:
 #    - pyyaml
     - ruamel.yaml
     - simpleitk
+    - scikit-image
 
   run:
     - python

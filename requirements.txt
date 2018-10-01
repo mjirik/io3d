@@ -5,6 +5,5 @@ h5py
 numpy
 sed3
 pydicom
-dicom
 # requirements for development only
 # coveralls
