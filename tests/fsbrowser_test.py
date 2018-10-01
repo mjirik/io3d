@@ -30,7 +30,6 @@ except:
     import pydicom
     pydicom.config.debug(False)
 
-import pydicom.data
 from distutils.version import LooseVersion
 #
 import io3d
@@ -44,7 +43,7 @@ class FileSystemBrowserTest(unittest.TestCase):
     # @unittest.skip('waiting for implementation')
     @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"))
     def test_fsbrowser_path_info(self):
-
+        import pydicom.data
 
         filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
@@ -57,6 +56,7 @@ class FileSystemBrowserTest(unittest.TestCase):
     @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"))
     def test_fsbrowser_dir_list(self):
 
+        import pydicom.data
         # TODO make test stronger
         filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
