@@ -30,6 +30,7 @@ except:
     import pydicom
     pydicom.config.debug(False)
 
+import pydicom.data
 #
 import io3d
 import io3d.dcmreaddata as dcmr
@@ -39,13 +40,23 @@ sample_data_path = op.expanduser(sample_data_path)
 
 class FileSystemBrowserTest(unittest.TestCase):
 
+    # @unittest.skip('waiting for implementation')
+    def test_fsbrowser_path_info(self):
+
+
+        filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
+        fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
+        dirlist = fsb.get_path_info(filepath)
+        self.assertTrue("path" in dirlist)
+        self.assertTrue("name" in dirlist)
+
     @unittest.skip('waiting for implementation')
-    def test_fsbrowser(self):
+    def test_fsbrowser_dir_list(self):
 
         # TODO make test stronger
         filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
-        dirlist = fsb.list_directory()
+        dirlist = fsb.get_dir_list()
         self.assertTrue("path" in dirlist[0])
         self.assertTrue("name" in dirlist[0])
 

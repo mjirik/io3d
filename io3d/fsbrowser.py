@@ -10,7 +10,29 @@ class FileSystemBrowser():
         self.preview_size = [100, 100]
         pass
 
-    def list_directory(self):
+    def get_path_info(self, path):
+        """
+        Get information about path (dir or file).
+        :return:
+        """
+
+        # Fallowing function can be used for directory analysis
+        # import io3d.dcmreaddata
+        # dd = io3d.dcmreaddata.DicomDirectory(dirpath=path)
+        # dd.get_stats_of_series_in_dir()
+
+        retval = {
+            "name": "Study0545",
+            "type": "dir",
+            "preview": np.zeros(self.preview_size),
+            "text": "1 study, 3 series, 18321 files, acquisition_date=2017-02-16 to 2017-02-19",
+            "acquisition_date": ["2015-02-16", "2015-02-16"],
+            "modality": "MRI",
+            "path": "C:/data/Study0545"
+        }
+        return retval
+
+    def get_dir_list(self):
         # TODO check the design of output structure
         retval = [
             {
