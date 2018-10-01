@@ -652,7 +652,6 @@ def squeeze_labels(segmentation, try_inplace=True):
     else:
         inplace_possible = False
 
-
     if inplace_possible:
         output = segmentation
     else:
