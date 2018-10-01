@@ -31,6 +31,7 @@ except:
     pydicom.config.debug(False)
 
 import pydicom.data
+from distutils.version import LooseVersion
 #
 import io3d
 import io3d.dcmreaddata as dcmr
@@ -41,6 +42,7 @@ sample_data_path = op.expanduser(sample_data_path)
 class FileSystemBrowserTest(unittest.TestCase):
 
     # @unittest.skip('waiting for implementation')
+    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"))
     def test_fsbrowser_path_info(self):
 
 
@@ -50,7 +52,9 @@ class FileSystemBrowserTest(unittest.TestCase):
         self.assertTrue("path" in dirlist)
         self.assertTrue("name" in dirlist)
 
-    @unittest.skip('waiting for implementation')
+    #  comment next line if you want to run the test
+    # @unittest.skip('waiting for implementation')
+    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"))
     def test_fsbrowser_dir_list(self):
 
         # TODO make test stronger
