@@ -24,6 +24,7 @@ try:
     pydicom.debug(False)
 except:
     import pydicom
+    pydicom.config.debug(False)
 
 #
 import io3d

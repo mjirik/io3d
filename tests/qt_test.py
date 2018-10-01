@@ -26,6 +26,7 @@ try:
     dicom.debug(False)
 except:
     import pydicom as dicom
+    dicom.config.debug(False)
 
 #
 import sys

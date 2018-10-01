@@ -28,7 +28,7 @@ try:
     dicom.debug(False)
 except:
     import pydicom as dicom
-
+    dicom.config.debug(False)
 #
 import io3d
 import io3d.datasets

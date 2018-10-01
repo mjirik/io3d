@@ -3,6 +3,8 @@
 """Module for reading 3D dicom data"""
 
 import logging
+logger = logging.getLogger(__name__)
+
 import argparse
 import numpy as np
 import h5py
@@ -13,8 +15,10 @@ import sys
 
 try:
     import dicom
+    dicom.debug(False)
 except ImportError:
     import pydicom as dicom
+    dicom.config.debug(False)
 
 # NOTE(mareklovci - 2018_05_13): Absolute imports are prefered in Python, so eg. "from io3d import tgz" should be used.
 # https://www.python.org/dev/peps/pep-0008/#imports
@@ -26,7 +30,6 @@ from . import dcmtools
 # Decorator used for labeling old or unsuitable functions as 'deprecated'
 from io3d.deprecation import deprecated
 
-logger = logging.getLogger(__name__)
 
 
 def read(datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1, convert_to_gray=True,

@@ -5,6 +5,7 @@ Module is used for visualization of segmentation stored in pkl, dcm and other fi
 """
 
 import logging
+logger = logging.getLogger(__name__)
 import os.path
 import sys
 import argparse
@@ -19,7 +20,6 @@ from . import cachefile as cachef
 # else:
 #     import urllib.request as urllibr
 
-logger = logging.getLogger(__name__)
 
 # you can get hash from command line with:
 #  python imtools/sample_data.py -v sliver_training_001
@@ -612,12 +612,15 @@ class ExtendAction(argparse.Action):
         items.extend(values)
         setattr(namespace, self.dest, items)
 
-def main():
-    main_logger = logging.getLogger()
+def main(turn_on_logging=False):
+    if turn_on_logging:
+        main_logger = logging.getLogger(__file__ + "datasets commandline")
 
-    main_logger.setLevel(logging.WARNING)
-    ch = logging.StreamHandler()
-    main_logger.addHandler(ch)
+        main_logger.setLevel(logging.WARNING)
+        ch = logging.StreamHandler()
+        main_logger.addHandler(ch)
+    else:
+        main_logger = logger
 
     # logger.debug('input params')
 
@@ -700,4 +703,4 @@ def main():
     # submodule_update()
 
 if __name__ == "__main__":
-    main()
+    main(turn_on_logging=True)

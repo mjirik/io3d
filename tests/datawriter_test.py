@@ -19,11 +19,13 @@ import shutil
 import numpy as np
 
 from nose.plugins.attrib import attr
+
 try:
     import dicom
     dicom.debug(False)
 except:
     import pydicom as dicom
+    dicom.config.debug(False)
 
 #
 import io3d
@@ -35,8 +37,10 @@ SAMPLE_DATA_DIR = io3d.datasets.join_path("sample_data")
 # SAMPLE_DATA_DIR = "~/data/medical/orig/sample_data"
 
 
+
 class DicomWriterTest(unittest.TestCase):
     # def setUp(self):
+
     #     import imtools
     #     import imtools.sample_data
     #     imtools.sample_data.get_sample_data(["jatra_5mm", "volumetrie"], SAMPLE_DATA_DIR)
@@ -219,6 +223,8 @@ class DicomWriterTest(unittest.TestCase):
         os.remove(filename)
 
     def test_add_overlay_and_read_one_file_with_overlay(self):
+        logger.info("test started")
+        logger.info(logger.handlers)
         filename = 'tests_outputs/test_file.dcm'
         filedir = os.path.dirname(filename)
 
@@ -242,6 +248,7 @@ class DicomWriterTest(unittest.TestCase):
             i_overlay,
             filename
         )
+        logger.info("data saved")
         # import ipdb; ipdb.set_trace()
         # print("asdfa")
         dr = dreader.DataReader()
@@ -431,6 +438,8 @@ class DicomWriterTest(unittest.TestCase):
         shutil.rmtree(testdatadir)
 
     def test_SimpleITK(self):
+        logger.debug(logger)
+        logger.debug("test SimpleITK started")
         path = "new_dcmfile.dcm"
         data3d = np.zeros([10, 15, 20], dtype='uint16')
         vsz = np.asarray([2,3,1.5])
@@ -458,6 +467,7 @@ class DicomWriterTest(unittest.TestCase):
                 "~/data/medical/orig/dicom_test_claudio", dataplus_format=False
         )
         metadata
+
 
 if __name__ == "__main__":
     unittest.main()

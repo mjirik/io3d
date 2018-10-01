@@ -11,12 +11,12 @@ Module for testing format rawiv
 """
 import logging
 logger = logging.getLogger(__name__)
+
 import unittest
 import os.path as op
 import shutil
 import sys
 import numpy as np
-
 import io3d
 
 from nose.plugins.attrib import attr
@@ -35,6 +35,7 @@ class DatasetsTest(unittest.TestCase):
         self.assertGreater(len(new_dataset_labels), 1)
 
     def test_download_package_dry_run(self):
+        logger.debug("download in progress")
         io3d.datasets.download("lisa", dry_run=True)
 
     def test_download(self):
@@ -107,7 +108,6 @@ class DatasetsTest(unittest.TestCase):
         sys.argv = [tmpargv[0], "-L"]
         io3d.datasets.main()
         sys.argv = tmpargv
-
 
     def test_main_get_dataset_path(self):
 

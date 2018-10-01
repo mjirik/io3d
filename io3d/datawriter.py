@@ -14,8 +14,13 @@ import os.path
 import re
 try:
     import dicom
+    dicom.debug(False)
+    print("imported dicom")
 except:
     import pydicom as dicom
+    dicom.config.debug(False)
+    print("imported pydicom")
+
 import os.path as op
 from . import rawN
 from . import misc
@@ -242,7 +247,6 @@ class DataWriter:
         data = dicom.read_file(filename)
         data = self.encode_overlay_slice(data, overlay, i_overlay)
         data.save_as(filename_out)
-        pass
 
     def encode_overlay_slice(self, data, overlay, i_overlay):
         """
