@@ -60,7 +60,7 @@ class FileSystemBrowserTest(unittest.TestCase):
         self.assertTrue("path" in dirlist[0])
         self.assertTrue("name" in dirlist[0])
 
-    @unittest.skip('technology test')
+    # @unittest.skip('technology test')
     def test_devel_qt_dialog_fsbrowser(self):
         import PyQt4
         import sys
@@ -118,10 +118,9 @@ class FileSystemBrowserTest(unittest.TestCase):
         layout.addWidget(button, 2, 5)
         layout.addWidget(label, 1, 5)
 
-        if qfd.exec():
+        if qfd.exec_():
             print(qfd.selectedFiles())
         else:
-
             print("Cancel")
 
         # a.exec_()

@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import unittest
-import io3d.dili as dili
+from io3d import dili
 
 
 class DictListTestCase(unittest.TestCase):
