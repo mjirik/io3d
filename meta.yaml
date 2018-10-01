@@ -52,6 +52,7 @@ requirements:
     - h5py
     - checksumdir
     - simpleitk # version0.9.* is ok for python2.7
+    - scikit-image
 
 test:
   # Python imports
