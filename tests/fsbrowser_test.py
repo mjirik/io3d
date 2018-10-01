@@ -41,7 +41,7 @@ sample_data_path = op.expanduser(sample_data_path)
 class FileSystemBrowserTest(unittest.TestCase):
 
     # @unittest.skip('waiting for implementation')
-    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"))
+    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"), "Data from pydicom >= 1.0.0 required")
     def test_fsbrowser_path_info(self):
         import pydicom.data
 
@@ -53,7 +53,7 @@ class FileSystemBrowserTest(unittest.TestCase):
 
     #  comment next line if you want to run the test
     # @unittest.skip('waiting for implementation')
-    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"))
+    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"), "Data from pydicom >= 1.0.0 required")
     def test_fsbrowser_dir_list(self):
 
         import pydicom.data
