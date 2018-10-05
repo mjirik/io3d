@@ -40,7 +40,7 @@ requirements:
     - pydicom
 #    - pyyaml
     - ruamel.yaml
-    - simpleitk
+    # - simpleitk
     - scikit-image
 
   run:
@@ -52,7 +52,7 @@ requirements:
     - ruamel.yaml
     - h5py
     - checksumdir
-    - simpleitk # version0.9.* is ok for python2.7
+    # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
 
 test:

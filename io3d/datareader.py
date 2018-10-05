@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 import argparse
 import numpy as np
 import h5py
-import SimpleITK as Sitk
 
 import os.path
 import sys
@@ -170,6 +169,10 @@ class DataReader:
 
             logger.debug('Getting list of readable files...')
             flist = []
+            try:
+                import SimpleITK as Sitk
+            except ImportError as e:
+                logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
             for f in os.listdir(datapath):
                 try:
                     Sitk.ReadImage(os.path.join(datapath, f))
