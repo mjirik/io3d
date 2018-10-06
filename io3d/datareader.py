@@ -260,6 +260,10 @@ class DataReader:
         :param datapath: path to file (img or dicom)
         :return: tuple (data3d, metadata), where data3d is array of pixels
         """
+        try:
+            import SimpleITK as Sitk
+        except ImportError as e:
+            logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
         image = Sitk.ReadImage(datapath)
         data3d = dcmtools.get_pixel_array_from_sitk(image)
         # data3d, original_dtype = dcmreaddata.get_pixel_array_from_dcmobj(image)
