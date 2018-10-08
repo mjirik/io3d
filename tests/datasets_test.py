@@ -150,5 +150,6 @@ class DatasetsTest(unittest.TestCase):
         self.assertTrue(np.array_equal(data3d.shape, seeds_liver.shape))
         self.assertEqual(np.max(segm), 2, "Maximum label is 2")
 
+
 if __name__ == "__main__":
     unittest.main()
