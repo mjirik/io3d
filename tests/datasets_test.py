@@ -142,5 +142,13 @@ class DatasetsTest(unittest.TestCase):
         self.assertEqual(img[2, 0, 0], False, "In the corner should be False")
         self.assertEqual(img[2, 21, 17], True, "In the middle of face should be True")
 
+    def test_generate_synghetic_liver(self):
+        data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta = io3d.datasets.generate_synthetic_liver()
+
+        self.assertTrue(np.array_equal(data3d.shape, segm.shape))
+        self.assertTrue(np.array_equal(data3d.shape, seeds_porta.shape))
+        self.assertTrue(np.array_equal(data3d.shape, seeds_liver.shape))
+        self.assertEqual(np.max(segm), 2, "Maximum label is 2")
+
 if __name__ == "__main__":
     unittest.main()

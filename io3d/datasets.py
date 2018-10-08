@@ -333,7 +333,7 @@ def generate_donut():
 
 def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal_vein_intensity=130,
                        spleen_intensity=90):
-    """Create artificial abdominal like data. Outputs a cube.
+    """Create scaleable artificial abdominal like data. Outputs a cube.
 
     {0: nothing, 1: liver, 2: portal_vein, 17: spleen}
 
@@ -419,6 +419,41 @@ def generate_round_data(sz=32, offset=0, radius=7, seedsz=3, add_object_without_
     segm = img < radius
     img = (100 * segm + 80 * np.random.random(img.shape)).astype(np.uint8)
     return img, segm, seeds
+
+
+def generate_synthetic_liver():
+    """
+    Create synthetic data. There is some liver and porta -like object.
+    :return data3d, segmentation, voxelsize_mm, slab, seeds_liver, seeds_porta:
+    """
+    # data
+    slab = {'none': 0, 'liver': 1, 'porta': 2}
+    voxelsize_mm = np.array([1.0, 1.0, 1.2])
+
+    segm = np.zeros([80, 256, 250], dtype=np.int16)
+
+    # liver
+    segm[30:60, 70:180, 40:190] = slab['liver']
+    # porta
+    segm[40:45, 120:130, 70:190] = slab['porta']
+    segm[40:45, 80:130, 100:110] = slab['porta']
+    segm[40:44, 120:170, 130:135] = slab['porta']
+
+    data3d = np.zeros(segm.shape)
+    data3d[segm == slab['liver']] = 146
+    data3d[segm == slab['porta']] = 206
+    noise = (np.random.normal(0, 10, segm.shape))  # .astype(np.int16)
+    data3d = (data3d + noise).astype(np.int16)
+
+
+    seeds_liver = np.zeros(data3d.shape, np.int8)
+    seeds_liver[40:55, 90:120, 70:110] = 1
+    seeds_liver[30:45, 190:200, 40:90] = 2
+
+    seeds_porta = np.zeros(data3d.shape, np.int8)
+    seeds_porta[40:45, 121:139, 80:95] = 1
+
+    return data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta
 
 
 def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
