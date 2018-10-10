@@ -303,11 +303,11 @@ class ImageManipulationTest(unittest.TestCase):
         data3d = datap["data3d"]
         phi_deg, theta_deg = imma.random_rotate_paramteres()
         data3d_rot = imma.rotate(data3d, phi_deg, theta_deg)
-        import sed3
-        ed = sed3.sed3(data3d)
-        ed.show()
-        # self.assertEqual(np.min(data3d), np.min(data3d_rot))
-        # self.assertEqual(np.max(data3d), np.max(data3d_rot))
+        # import sed3
+        # ed = sed3.sed3(data3d)
+        # ed.show()
+        self.assertEqual(np.min(data3d), np.min(data3d_rot))
+        self.assertEqual(np.max(data3d), np.max(data3d_rot))
 
     def test_multiple_crop_and_uncrop_nearest_outside(self):
         """

@@ -7,7 +7,6 @@ import glob
 import numpy as np
 import logging
 logger = logging.getLogger(__name__)
-import sed3
 
 class IDXReader:
     def _init__(self):
@@ -49,6 +48,7 @@ class IDXReader:
         shape = [1024, 1024, 10]
         d3 = np.reshape(data[:np.prod(shape)],shape)
 
+        import sed3
         ed = sed3.sed3(d3[:200, :200, :])
         ed.show()
         print("all ok")
