@@ -7,17 +7,14 @@ logger = logging.getLogger(__name__)
 
 import os.path
 import sys
-
-path_to_script = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(path_to_script, "../extern/sed3"))
-
 import numpy as np
-
 import scipy
 import scipy.ndimage
 
 from io3d import dili
 
+path_to_script = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(path_to_script, "../extern/sed3"))
 
 def select_labels(segmentation, labels, slab=None):
     """
@@ -574,7 +571,7 @@ def select_objects_by_seeds(binar_data, seeds, ignore_background_seeds=True, bac
     return output
 
 
-def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), order=0, **kwargs):
+def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), order=1, **kwargs):
     """
     Rotate 3D data by use angle and its axes or two angles.
 
@@ -583,14 +580,14 @@ def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), 
     :param phi_axes: deg
     :param theta_deg: deg
     :param theta_axes: deg
-    :param order: optional, int. Default is 0. The order of the spline interpolation. See scipy for more details.
+    :param order: optional, int. Default is 1. The order of the spline interpolation. See scipy for more details.
     :param kwargs: See scipy.ndimage.interpolation.rotate for more options
     :return:
     """
 
-    data3d = scipy.ndimage.interpolation.rotate(data3d, phi_deg, phi_axes, order=0, **kwargs)
+    data3d = scipy.ndimage.interpolation.rotate(data3d, phi_deg, phi_axes, order=order, **kwargs)
     if theta_deg is not None:
-        data3d = scipy.ndimage.interpolation.rotate(data3d, theta_deg, theta_axes, **kwargs)
+        data3d = scipy.ndimage.interpolation.rotate(data3d, theta_deg, theta_axes, order=order, **kwargs)
     return data3d
     # segmentation = scipy.ndimage.interpolation.rotate(segmentation, angle, axes)
     # seeds = scipy.ndimage.interpolation.rotate(seeds, angle, axes)

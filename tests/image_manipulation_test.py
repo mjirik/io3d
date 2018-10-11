@@ -306,8 +306,11 @@ class ImageManipulationTest(unittest.TestCase):
         # import sed3
         # ed = sed3.sed3(data3d)
         # ed.show()
-        self.assertEqual(np.min(data3d), np.min(data3d_rot))
-        self.assertEqual(np.max(data3d), np.max(data3d_rot))
+        # import sed3
+        # ed = sed3.sed3(data3d_rot, contour=(data3d_rot < 0))
+        # ed.show()
+        self.assertLessEqual(np.min(data3d), np.min(data3d_rot))
+        self.assertGreaterEqual(np.max(data3d), np.max(data3d_rot))
 
     def test_multiple_crop_and_uncrop_nearest_outside(self):
         """
