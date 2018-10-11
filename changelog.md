@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.8.0
+
 * New function for removing files
 
 ## 1.7.0
