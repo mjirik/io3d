@@ -573,7 +573,7 @@ def select_objects_by_seeds(binar_data, seeds, ignore_background_seeds=True, bac
     # ed.show()
     return output
 
-def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), **kwargs):
+def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), order=0, **kwargs):
     """
     Rotate 3D data by use angle and its axes or two angles.
 
@@ -582,11 +582,12 @@ def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), 
     :param phi_axes: deg
     :param theta_deg: deg
     :param theta_axes: deg
+    :param order: optional, int. Default is 0. The order of the spline interpolation. See scipy for more details.
     :param kwargs: See scipy.ndimage.interpolation.rotate for more options
     :return:
     """
 
-    data3d = scipy.ndimage.interpolation.rotate(data3d, phi_deg, phi_axes, **kwargs)
+    data3d = scipy.ndimage.interpolation.rotate(data3d, phi_deg, phi_axes, order=0, **kwargs)
     if theta_deg is not None:
         data3d = scipy.ndimage.interpolation.rotate(data3d, theta_deg, theta_axes, **kwargs)
     return data3d
