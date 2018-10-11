@@ -129,5 +129,16 @@ class FileSystemBrowserTest(unittest.TestCase):
 
         # a.exec_()
 
+    def test_remove(self):
+        fn = "try_to_remove.txt"
+        io3d.remove_if_exists(fn)
+        with open(fn, "w") as f:
+            f.write("ahoj")
+
+        io3d.remove_if_exists(fn)
+
+        self.assertFalse(op.exists(fn))
+
+
 if __name__ == "__main__":
     unittest.main()

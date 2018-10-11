@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* New function for removing files
+
 ## 1.7.0
 
 * New distance segmentation function

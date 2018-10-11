@@ -2,7 +2,11 @@ import logging
 logger = logging.getLogger(__name__)
 import glob
 import numpy as np
+import os
 
+def remove_if_exists(filename):
+    if os.path.exists(filename):
+        os.remove(filename)
 
 class FileSystemBrowser():
     def __init__(self, path=None):
