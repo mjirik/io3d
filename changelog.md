@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.7.0
+
+* New distance segmentation function
+
 ## 1.6.1
 
 * New dataset generate function with synthetic liver and portal vein
