@@ -660,3 +660,32 @@ def squeeze_labels(segmentation, try_inplace=True):
         output[segmentation == level] = new_level
 
     return output
+
+
+def distance_segmentation(seeds, method="edt"):
+    """
+    Separates space based on distance to seeds.
+    :param seeds: ndarray with zeros for background and labeled seeds.
+    :param method: scipy.ndimage.distance_transform function.
+    The `distance_transform_edt` is used if is set to "edt"
+    :return:
+    """
+    if method is "edt":
+        dst_transform = scipy.ndimage.distance_transform_edt
+    else:
+        dst_transform = method
+
+    inds = dst_transform(seeds==0, return_indices=True, return_distances=False)
+
+    lin_inds = []
+    for one_ax in inds:
+        lin_inds.append(one_ax.ravel())
+
+    segm = seeds[lin_inds].reshape(seeds.shape)
+    return segm
+
+
+
+    pass
+
+

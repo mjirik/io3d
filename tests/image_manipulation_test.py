@@ -370,8 +370,6 @@ class ImageManipulationTest(unittest.TestCase):
         self.assertTrue(img_uncropped[-1, -1, -1] == 0)
         self.assertTrue(img_uncropped[4 + 5, 4 + 2, 3 + 1] == img_in[4 , 4, 3])
 
-
-
     def test_squeeze_labels(self):
         seeds = np.zeros([50, 60, 70])
         seeds[20:30, 20:30, 20:30] = 30
@@ -387,6 +385,27 @@ class ImageManipulationTest(unittest.TestCase):
         seeds[20:30, 10:200, 40:60] = 61
         squeezed_seeds = io3d.image_manipulation.squeeze_labels(seeds)
         self.assertEqual(np.max(squeezed_seeds), 3)
+
+    def test_dist_segmentation(self):
+        seeds = np.zeros([8, 10])
+        seeds[1:7, 8] = 1
+        seeds[6, 5] = 2
+        seeds[2, 0] = 3
+
+        import matplotlib.pyplot as plt
+        # plt.imshow(seeds, interpolation="nearest")
+        # plt.show()
+
+        segm = imma.distance_segmentation(seeds)
+
+        # plt.imshow(segm, interpolation="nearest")
+        # plt.show()
+
+        self.assertEqual(segm[2, 2], 3)
+        self.assertEqual(segm[5, 5], 2)
+
+        # dist, inds = scipy.in
+
 
 if __name__ == "__main__":
     unittest.main()
