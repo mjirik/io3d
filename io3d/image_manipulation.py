@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import os.path
@@ -12,11 +13,11 @@ sys.path.append(os.path.join(path_to_script, "../extern/sed3"))
 
 import numpy as np
 
-
 import scipy
 import scipy.ndimage
 
 from io3d import dili
+
 
 def select_labels(segmentation, labels, slab=None):
     """
@@ -60,7 +61,6 @@ def get_nlabels(slab, labels, labels_meta=None, return_mode="num", return_first=
     :return:
     """
 
-
     if type(labels) not in (list, np.ndarray):
         labels = [labels]
         labels_meta = [labels_meta]
@@ -75,12 +75,11 @@ def get_nlabels(slab, labels, labels_meta=None, return_mode="num", return_first=
         nlabels.append(nlab)
 
     if return_first:
-        nlabels=nlabels[0]
+        nlabels = nlabels[0]
     return nlabels
 
 
 def get_nlabel(slab, label, label_meta=None, return_mode="num"):
-
     """
     Add label if it is necessery and return its numeric value.
 
@@ -155,6 +154,7 @@ def update_slab(slab, numeric_label, string_label):
     logger.debug('self.slab')
     logger.debug(str(slab))
 
+
 def add_slab_label_carefully2(slab, numeric_label, string_label):
     """ Add label to slab if it is not there yet.
 
@@ -172,7 +172,6 @@ def add_missing_labels(segmentation, slab):
     get_nlabels(slab, labels)
 
 
-
 def add_slab_label_carefully(slab, numeric_label, string_label):
     """ Add label to slab if it is not there yet.
 
@@ -186,10 +185,10 @@ def add_slab_label_carefully(slab, numeric_label, string_label):
     logger.debug('self.slab')
     logger.debug(str(slab))
 
+
 def add_missing_labels(segmentation, slab):
     labels = np.unique(segmentation)
     get_nlabels(slab, labels)
-
 
 
 class SparseMatrix():
@@ -232,7 +231,7 @@ def manualcrop(data):  # pragma: no cover
         [np.min(nzs[0]), np.max(nzs[0])],
         [np.min(nzs[1]), np.max(nzs[1])],
         [np.min(nzs[2]), np.max(nzs[2])],
-        ]
+    ]
     data = crop(data, crinfo)
     return data, crinfo
 
@@ -248,10 +247,10 @@ def crop(data, crinfo):
     """
     crinfo = fix_crinfo(crinfo)
     return data[
-        __int_or_none(crinfo[0][0]):__int_or_none(crinfo[0][1]),
-        __int_or_none(crinfo[1][0]):__int_or_none(crinfo[1][1]),
-        __int_or_none(crinfo[2][0]):__int_or_none(crinfo[2][1])
-        ]
+           __int_or_none(crinfo[0][0]):__int_or_none(crinfo[0][1]),
+           __int_or_none(crinfo[1][0]):__int_or_none(crinfo[1][1]),
+           __int_or_none(crinfo[2][0]):__int_or_none(crinfo[2][1])
+           ]
 
 
 def __int_or_none(number):
@@ -271,7 +270,7 @@ def combinecrinfo(crinfo1, crinfo2):
         [crinfo1[0][0] + crinfo2[0][0], crinfo1[0][0] + crinfo2[0][1]],
         [crinfo1[1][0] + crinfo2[1][0], crinfo1[1][0] + crinfo2[1][1]],
         [crinfo1[2][0] + crinfo2[2][0], crinfo1[2][0] + crinfo2[2][1]]
-        ]
+    ]
 
     return crinfo
 
@@ -300,7 +299,7 @@ def crinfo_from_specific_data(data, margin=0):
     z1 = np.min(nzi[2]) - margin[0]
     z2 = np.max(nzi[2]) + margin[0] + 1
 
-# ošetření mezí polí
+    # ošetření mezí polí
     if x1 < 0:
         x1 = 0
     if y1 < 0:
@@ -315,7 +314,7 @@ def crinfo_from_specific_data(data, margin=0):
     if z2 > data.shape[2]:
         z2 = data.shape[2] - 1
 
-# ořez
+    # ořez
     crinfo = [[x1, x2], [y1, y2], [z1, z2]]
     return crinfo
 
@@ -413,7 +412,6 @@ def fix_crinfo(crinfo, to='axis'):
     return crinfo
 
 
-
 def get_one_biggest_object(data):
     """ Return biggest object """
     lab, num = scipy.ndimage.label(data)
@@ -506,6 +504,7 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
         del segm_orig_scale
     return segmentation
 
+
 def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='edge', order=1):
     """
     Function can resize data3d or segmentation to specifed voxelsize_mm
@@ -545,6 +544,7 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='edge', order=1):
     ).astype(data3d.dtype)
 
     return data3d_res2
+
 
 def select_objects_by_seeds(binar_data, seeds, ignore_background_seeds=True, background_label=0):
     """
@@ -594,7 +594,6 @@ def rotate(data3d, phi_deg, theta_deg=None, phi_axes=(1, 2), theta_axes=(0, 1), 
     return data3d
     # segmentation = scipy.ndimage.interpolation.rotate(segmentation, angle, axes)
     # seeds = scipy.ndimage.interpolation.rotate(seeds, angle, axes)
-
 
     return data3d
 
@@ -664,4 +663,3 @@ def squeeze_labels(segmentation, try_inplace=True):
         output[segmentation == level] = new_level
 
     return output
-
