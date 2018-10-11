@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.6.1
+
+* New dataset generate function with synthetic liver and portal vein
+* Rotation works now with interpolation order = 1
+
 ## 1.5.2
 
 * Test and first development on File System Browser
