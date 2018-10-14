@@ -440,10 +440,10 @@ def generate_synthetic_liver(return_dataplus=False):
     segm[41:44, 122:127, 68:70] = slab['porta'] # hack to fix stability of skeleton algorithm
     #
     segm[40:45, 80:130, 100:110] = slab['porta']
-    segm[41:44, 78:80, 101:109] = slab['porta']
+    segm[42:44, 77:80, 103:106] = slab['porta'] # hack to fix stability of skeleton algorithm
+    # segm[41:44, 78:80, 101:109] = slab['porta']
     # vertical branch under main branch
     segm[40:44, 120:170, 130:135] = slab['porta']
-    segm[42:44, 77:80, 103:106] = slab['porta'] # hack to fix stability of skeleton algorithm
 
     data3d = np.zeros(segm.shape)
     data3d[segm == slab['liver']] = 146
