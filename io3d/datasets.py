@@ -353,9 +353,9 @@ def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal
     }
 
     segmentation = np.zeros([size, size, size], dtype=np.uint8)
-    segmentation[boundary:-boundary, boundary:-2*boundary, 2*boundary:-boundary] = 1
-    segmentation[:, boundary*2:boundary*2+5, boundary*2:boundary*2+5] = 2
-    segmentation[:, boundary*2:boundary*2+5, boundary*2:boundary*2+5] = 2
+    segmentation[boundary:-boundary, boundary:-2*boundary, 2*boundary:-boundary] = slab["liver"]
+    segmentation[:, boundary*2:boundary*2+5, boundary*2:boundary*2+5] = slab["porta"]
+    segmentation[:, boundary*2:boundary*2+5, boundary*2:boundary*2+5] = slab["porta"]
     segmentation[:, -5:, -boundary:] = 17
     seeds = np.zeros([size, size, size], dtype=np.uint8)
     seeds[
@@ -421,7 +421,7 @@ def generate_round_data(sz=32, offset=0, radius=7, seedsz=3, add_object_without_
     return img, segm, seeds
 
 
-def generate_synthetic_liver():
+def generate_synthetic_liver(return_dataplus=False):
     """
     Create synthetic data. There is some liver and porta -like object.
     :return data3d, segmentation, voxelsize_mm, slab, seeds_liver, seeds_porta:
@@ -459,7 +459,19 @@ def generate_synthetic_liver():
     seeds_porta = np.zeros(data3d.shape, np.int8)
     seeds_porta[40:45, 121:139, 80:95] = 1
 
-    return data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta
+    if return_dataplus:
+        datap = {
+            "data3d": data3d,
+            "voxelsize_mm": voxelsize_mm,
+            "slab": slab,
+            "seeds_liver": seeds_liver,
+            "seeds_porta": seeds_porta,
+            "segmentation": segm
+
+        }
+        return datap
+    else:
+        return data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta
 
 
 def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):

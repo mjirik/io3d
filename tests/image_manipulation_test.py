@@ -72,7 +72,6 @@ class ImageManipulationTest(unittest.TestCase):
 
         self.assertTrue(img_uncropped[4, 4, 3] == img_in[4, 4, 3])
 
-
     def test_crop_from_specific_data(self):
 
         datap = io3d.datasets.generate_abdominal()
@@ -81,6 +80,10 @@ class ImageManipulationTest(unittest.TestCase):
         crinfo_auto1 = io3d.image_manipulation.crinfo_from_specific_data(segmentation, [5])
         crinfo_auto2 = io3d.image_manipulation.crinfo_from_specific_data(segmentation, 5)
         crinfo_auto3 = io3d.image_manipulation.crinfo_from_specific_data(segmentation, [5,5, 5])
+
+        # import sed3
+        # ed = sed3.sed3(data3d, contour=segmentation)
+        # ed.show()
 
         crinfo_expected = [[0, 99], [20, 99], [45, 99]]
 
