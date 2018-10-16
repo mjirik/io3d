@@ -15,11 +15,9 @@ import re
 try:
     import dicom
     dicom.debug(False)
-    print("imported dicom")
 except:
     import pydicom as dicom
     dicom.config.debug(False)
-    print("imported pydicom")
 
 import os.path as op
 from . import rawN
