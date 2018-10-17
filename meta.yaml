@@ -42,7 +42,7 @@ requirements:
     - ruamel.yaml
     # - simpleitk
     - scikit-image
-
+    - imma
   run:
     - python
     - numpy
@@ -54,6 +54,7 @@ requirements:
     - checksumdir
     # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
+    - imma
 
 test:
   # Python imports
