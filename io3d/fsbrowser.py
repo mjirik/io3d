@@ -4,6 +4,8 @@ import glob
 import numpy as np
 import os
 
+from .import datareader
+
 def remove_if_exists(filename):
     if os.path.exists(filename):
         os.remove(filename)
@@ -25,6 +27,18 @@ class FileSystemBrowser():
         # dd = io3d.dcmreaddata.DicomDirectory(dirpath=path)
         # dd.get_stats_of_series_in_dir()
 
+        # dd = dcmreaddata.DicomDirectory(self.path)
+        # stats = dd.get_stats_of_series_in_dir()
+        # studies_and_series = dd.get_stats_of_studies_and_series_in_dir()
+        # import pydicom
+        # pydicom.read_file(stats[7].dcmfilelist[0])
+
+        # np.ndarray.resize()
+        # JPG
+        # import SimpleITK as Sitk
+
+        # image = Sitk.ReadImage(datapath)
+        # data3d = dcmtools.get_pixel_array_from_sitk(image)
         retval = {
             "name": "Study0545",
             "type": "dir",
@@ -37,6 +51,9 @@ class FileSystemBrowser():
         return retval
 
     def get_dir_list(self):
+
+        from . import dcmreaddata
+        # datareader.read()
         # TODO check the design of output structure
         retval = [
             {

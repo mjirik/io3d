@@ -16,6 +16,8 @@ from io3d import dili
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "../extern/sed3"))
 
+DeprecationWarning("Image_manipulation would be removed from io3d in the future. Use imma.image_manipulation.")
+
 def select_labels(segmentation, labels, slab=None):
     """
     return ndimage with zeros and ones based on input labels
