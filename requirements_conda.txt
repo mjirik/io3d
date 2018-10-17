@@ -14,3 +14,4 @@ checksumdir
 pyqt=4.11.*
 pydicom
 scikit-image
+imma
