@@ -10,3 +10,4 @@ from .datareader import read
 from .datawriter import write
 from .datasets import download
 from .fsbrowser import remove_if_exists
+from imma import image_manipulation
