@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 import unittest
 import os
 import os.path as op
+import warnings
 
 # path_to_script = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
@@ -303,7 +304,11 @@ class DicomWriterTest(unittest.TestCase):
         newdata, newmetadata = dr.Get3DData(filedir, dataplus_format=False)
 
         # test old function
-        newoverlay = dr.GetOverlay()
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("use get_overlay()")
+            newoverlay = dr.GetOverlay()
+
         newoverlay = dr.get_overlay()
 
 
