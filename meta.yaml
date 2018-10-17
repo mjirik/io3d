@@ -1,10 +1,10 @@
 package:
   name: io3d
-  version: "1.10.2"
+  version: "1.10.3"
 
 source:
 # this is used for build from git hub
-  git_rev: 1.10.2
+  git_rev: 1.10.3
   git_url: https://github.com/mjirik/io3d.git
 
 # this is used for pypi 
@@ -42,7 +42,7 @@ requirements:
     - ruamel.yaml
     # - simpleitk
     - scikit-image
-
+    - imma
   run:
     - python
     - numpy
@@ -54,6 +54,7 @@ requirements:
     - checksumdir
     # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
+    - imma
 
 test:
   # Python imports
