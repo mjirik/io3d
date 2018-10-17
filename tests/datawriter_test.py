@@ -306,7 +306,7 @@ class DicomWriterTest(unittest.TestCase):
         # test old function
 
         with warnings.catch_warnings():
-            warnings.simplefilter("use get_overlay()")
+            warnings.simplefilter("ignore")
             newoverlay = dr.GetOverlay()
 
         newoverlay = dr.get_overlay()
