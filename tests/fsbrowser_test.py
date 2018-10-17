@@ -58,7 +58,10 @@ class FileSystemBrowserTest(unittest.TestCase):
 
         import pydicom.data
         # TODO make test stronger
-        filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
+        # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
+        # filepath = io3d.datasets.join_path("3Dircadb1.1/PATIENT_DICOM")
+        filepath = io3d.datasets.join_path("jatra_5mm")
+        # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
         dirlist = fsb.get_dir_list()
         self.assertTrue("path" in dirlist[0])
