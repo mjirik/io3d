@@ -69,7 +69,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         self.datap = None
         self.qt_app = qt_app
-        self._path_for_tests = None
+        self._skip_get_path_dialog_for_tests = False
 
         self.init_ui()
 
@@ -105,14 +105,14 @@ class DataReaderWidget(QtGui.QWidget):
         from PyQt4.QtGui import QFileDialog
         if not app:
             inner_app = QApplication(sys.argv)
-        if self._path_for_tests is None:
+        if self._skip_get_path_dialog_for_tests:
+            dcmdir = self.datapath
+        else:
             dcmdir = QFileDialog.getOpenFileName(
                 caption='Select Data File',
                 directory=directory
                 # ptions=QFileDialog.ShowDirsOnly,
             )
-        else:
-            dcmdir = self._path_for_tests
         # dcmdir = QFileDialog.getOpenFileName(
         #     caption='Select Data file',
         #     # ptions=QFileDialog.ShowDirsOnly,
@@ -158,14 +158,14 @@ class DataReaderWidget(QtGui.QWidget):
         from PyQt4.QtGui import QFileDialog
         if not app:
             app_inner = QApplication(sys.argv)
-        if self._path_for_tests is None:
+        if self._skip_get_path_dialog_for_tests:
+            dcmdir = self.datapath
+        else:
             dcmdir = QFileDialog.getExistingDirectory(
                 caption='Select DICOM Folder',
                 options=QFileDialog.ShowDirsOnly,
                 directory=directory
             )
-        else:
-            dcmdir = self._path_for_tests
             # pp.exec_()
         if not app:
             app_inner.exit(0)

@@ -107,7 +107,7 @@ class QtTest(unittest.TestCase):
 
         drw.show()
         drw.datapath = dp
-        drw._path_for_tests = dp
+        drw._skip_get_path_dialog_for_tests = True
         drw.read_data_dir_dialog()
         # drw.read_data_from_prepared_datapath()
         # print(drw.datap["data3d"].shape)
@@ -126,7 +126,7 @@ class QtTest(unittest.TestCase):
 
         drw.show()
         drw.datapath = dp
-        drw._path_for_tests = dp
+        drw._skip_get_path_dialog_for_tests = True
         drw.read_data_dir_dialog()
         # drw.read_data_from_prepared_datapath()
         # print(drw.datap["data3d"].shape)
