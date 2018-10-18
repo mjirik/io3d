@@ -37,7 +37,7 @@ requirements:
     - setuptools
     - numpy
     - scipy
-    - pydicom
+    - pydicom=1
 #    - pyyaml
     - ruamel.yaml
     # - simpleitk
@@ -47,7 +47,7 @@ requirements:
     - python
     - numpy
     - scipy
-    - pydicom
+    - pydicom=1
 #    - pyyaml
     - ruamel.yaml
     - h5py

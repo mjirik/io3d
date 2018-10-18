@@ -10,6 +10,7 @@ $ dcmreaddata -d sample_data -o head.mat
 """
 
 import logging
+logger = logging.getLogger(__name__)
 import os
 import re
 import sys
@@ -17,16 +18,19 @@ import traceback
 from optparse import OptionParser
 
 try:
-    import dicom as pydicom
-except Exception:
-# except ModuleNotFoundError:
     import pydicom
+except ImportError:
+    import warnings
+    logger.debug("dicom imported - it would be better use pydicom")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import dicom as pydicom
+# except ModuleNotFoundError:
 
 import numpy as np
 from scipy.io import savemat
 import os.path as op
 
-logger = logging.getLogger(__name__)
 from . import misc
 from . import dcmtools
 
