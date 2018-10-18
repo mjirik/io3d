@@ -23,7 +23,8 @@ from . import cachefile as cachef
 
 # you can get hash from command line with:
 #  python imtools/sample_data.py -v sliver_training_001
-local_dir = "~/data/medical/orig/"
+# local_dir = "~/data/medical/orig/"
+local_dir = "~/data/"
 # vessels.pkl nejprve vytvoří prázný adresář s názvem vessels.pkl, pak jej při rozbalování zase smaže
 __url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 __url_server = "http://147.228.240.61/queetech/"
@@ -81,13 +82,19 @@ data_urls = {
 # cachefile = "~/io3d_cache.yaml"
 
 
-def join_path(*path_to_join):
+def join_path(*path_to_join, **kwargs):
     """Join input path to sample data path (usually in ~/lisa_data)
 
     :param path_to_join: one or more paths
+    :param get_root: return dataset root path. If false, the path would be into "medical/orig"
     :return: joined path
     """
-    sdp = dataset_path()
+    if "get_root" in kwargs:
+        get_root = kwargs["get_root"]
+    else:
+        # default value
+        get_root = False
+    sdp = dataset_path(get_root=get_root)
     pth = os.path.join(sdp, *path_to_join)
     logger.debug('sample_data_path' + str(sdp))
     logger.debug('path ' + str(pth))
@@ -106,7 +113,7 @@ def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     cache.update("local_dataset_dir", path)
 
 
-def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml"):
+def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
     """Get dataset path.
 
     :param cache: CacheFile object
@@ -114,11 +121,19 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml"):
     :return: path to dataset
     """
     local_data_dir = local_dir
+
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
         # cache.update('local_dataset_dir', head)
     if cache is not None:
         local_data_dir = cache.get_or_save_default('local_dataset_dir', local_dir)
+
+    if get_root:
+        local_data_dir
+    else:
+        logger.warning("Parameter")
+        local_data_dir = op.join(local_data_dir, "medical", "orig")
+
     return op.expanduser(local_data_dir)
 
 # def get_sample_data():
@@ -178,7 +193,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     :param dry_run: runs function without downloading anything
     """
     if destination_dir is None:
-        destination_dir = dataset_path()
+        destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
 
     destination_dir = op.expanduser(destination_dir)
 
@@ -241,7 +256,7 @@ def get_old(dataset_label, data_id, destination_dir=None):
     """
     # TODO implement
     if destination_dir is None:
-        destination_dir = dataset_path()
+        destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
 
     destination_dir = op.expanduser(destination_dir)
     data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(dataset_label)
@@ -270,7 +285,7 @@ def get(dataset_label, series_number=None, *args, **kwargs):
 
     # relative path in the datasets
     relative_path_extracted_from_data_urls = ""
-    datapath = join_path(relative_path_extracted_from_data_urls)
+    datapath = join_path(relative_path_extracted_from_data_urls, "medical", "data", get_root=True)
     # read 3D data from datapath
     datap = io3d.read(datapath, series_number=series_number, dataplus_format=True, *args, **kwargs)
     return datap
@@ -703,7 +718,7 @@ def main(turn_on_logging=False):
         help='Set debug level')
     parser.add_argument(
         '-o', '--destination_dir',
-        default=dataset_path(),
+        default=op.join(dataset_path(get_root=True), "medical", "orig"),
         help='Set output directory. If not used, the standard dataset dir is used')
     parser.add_argument(
         '-sdp', '--set_dataset_path',
@@ -737,7 +752,8 @@ def main(turn_on_logging=False):
         return
 
     if args.get_dataset_path:
-        dp = dataset_path()
+        # dp = dataset_path()
+        dp=op.join(dataset_path(get_root=True), "medical", "orig"),
         print(dp)
         # logger.info("Dataset path changed")
         return

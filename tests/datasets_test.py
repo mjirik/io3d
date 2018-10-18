@@ -26,7 +26,7 @@ class DatasetsTest(unittest.TestCase):
     # @attr('actual')
     # @attr('interactive')
     def test_get_path(self):
-        path = io3d.datasets.dataset_path()
+        path = op.join(io3d.datasets.dataset_path(get_root=True), "medical", "orig")
         self.assertEqual(type(path), str)
 
     def test_download_package_dry_run(self):
@@ -63,7 +63,7 @@ class DatasetsTest(unittest.TestCase):
     def test_change_dataset_path(self):
         dp_new1 = "~/io3d_test1_dataset_dir/"
         dp_new2 = "~/io3d_test2_dataset_dir/"
-        dp_old = io3d.datasets.dataset_path()
+        dp_old = io3d.datasets.join_path(get_root=True)
 
         # change once
         io3d.datasets.set_dataset_path(dp_new1)
