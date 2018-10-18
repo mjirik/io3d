@@ -142,6 +142,16 @@ class DatasetsTest(unittest.TestCase):
         self.assertEqual(img[2, 0, 0], False, "In the corner should be False")
         self.assertEqual(img[2, 21, 17], True, "In the middle of face should be True")
 
+    def test_generate_donut(self):
+        datap = io3d.datasets.generate_donut()
+        data3d = datap["data3d"]
+        segmentation = datap["segmentation"]
+
+
+        # self.assertTrue(np.array_equal([5, 42, 34], data3d.shape))
+        self.assertEqual(segmentation[2, 0, 0], False, "In the corner should be False")
+        self.assertTrue(np.array_equal(np.unique(segmentation), [0, 1, 2]), "Three labels in output segmentation")
+
     def test_generate_synghetic_liver(self):
         data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta = io3d.datasets.generate_synthetic_liver()
 
