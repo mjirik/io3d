@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.9.0
+
+* datasets.join_path can return datasets root path
+* pydicom warnings are supressed
+
 ## 1.8.0
 
 * New function for removing files
