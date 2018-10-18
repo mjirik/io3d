@@ -69,6 +69,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         self.datap = None
         self.qt_app = qt_app
+        self._path_for_tests = None
 
         self.init_ui()
 
@@ -102,21 +103,24 @@ class DataReaderWidget(QtGui.QWidget):
             self.loadfiledir = ''
         directory = str(self.loadfiledir)
         from PyQt4.QtGui import QFileDialog
-        if app:
+        if not app:
+            inner_app = QApplication(sys.argv)
+        if self._path_for_tests is None:
             dcmdir = QFileDialog.getOpenFileName(
                 caption='Select Data File',
                 directory=directory
                 # ptions=QFileDialog.ShowDirsOnly,
             )
         else:
-            app = QApplication(sys.argv)
-            dcmdir = QFileDialog.getOpenFileName(
-                caption='Select DICOM Folder',
-                # ptions=QFileDialog.ShowDirsOnly,
-                directory=directory
-            )
-            # pp.exec_()
-            app.exit(0)
+            dcmdir = self._path_for_tests
+        # dcmdir = QFileDialog.getOpenFileName(
+        #     caption='Select Data file',
+        #     # ptions=QFileDialog.ShowDirsOnly,
+        #     directory=directory
+        # )
+        # pp.exec_()
+        if not app:
+            inner_app.exit(0)
 
         dcmdir = get_str(dcmdir)
 
@@ -152,21 +156,19 @@ class DataReaderWidget(QtGui.QWidget):
         directory = self.loaddir
 
         from PyQt4.QtGui import QFileDialog
-        if app:
+        if not app:
+            app_inner = QApplication(sys.argv)
+        if self._path_for_tests is None:
             dcmdir = QFileDialog.getExistingDirectory(
                 caption='Select DICOM Folder',
                 options=QFileDialog.ShowDirsOnly,
                 directory=directory
             )
         else:
-            app = QApplication(sys.argv)
-            dcmdir = QFileDialog.getExistingDirectory(
-                caption='Select DICOM Folder',
-                options=QFileDialog.ShowDirsOnly,
-                directory=directory
-            )
+            dcmdir = self._path_for_tests
             # pp.exec_()
-            app.exit(0)
+        if not app:
+            app_inner.exit(0)
 
         dcmdir = get_str(dcmdir)
 

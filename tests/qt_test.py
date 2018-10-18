@@ -97,6 +97,44 @@ class QtTest(unittest.TestCase):
         # app.exec_()
         self.assertEqual(error, 0)
 
+    def test_read_datareader_get_path_dialog_surround_with_inject_dirpath(self):
+        sdp = io3d.datasets.join_path("medical", "orig", "sample_data", get_root=True)
+        dp = io3d.datasets.join_path("medical/orig/sample_data/jatra_5mm/", get_root=True)
+        app = QApplication(sys.argv)
+
+        drw = io3d.datareaderqt.DataReaderWidget(loaddir=sdp, qt_app=app)
+        # (widget_label="widget label", path="~/lisa_data/sample.{}.pkl")
+
+        drw.show()
+        drw.datapath = dp
+        drw._path_for_tests = dp
+        drw.read_data_dir_dialog()
+        # drw.read_data_from_prepared_datapath()
+        # print(drw.datap["data3d"].shape)
+        error = np.sum(np.abs(np.asarray([93, 512, 512]) - np.asarray(drw.datap["data3d"].shape)))
+        # app.exec_()
+        self.assertEqual(error, 0)
+
+    def test_read_datareader_get_path_dialog_surround_with_inject_filepath(self):
+        sdp = io3d.datasets.join_path("medical", "orig", "sample_data", get_root=True)
+        # dp = io3d.datasets.join_path("medical/orig/sample_data/ct_head.rawiv", get_root=True)
+        dp = io3d.datasets.join_path("medical/orig/liver-orig001.mhd", get_root=True)
+        app = QApplication(sys.argv)
+
+        drw = io3d.datareaderqt.DataReaderWidget(loaddir=sdp, qt_app=app)
+        # (widget_label="widget label", path="~/lisa_data/sample.{}.pkl")
+
+        drw.show()
+        drw.datapath = dp
+        drw._path_for_tests = dp
+        drw.read_data_dir_dialog()
+        # drw.read_data_from_prepared_datapath()
+        # print(drw.datap["data3d"].shape)
+        data3d = drw.datap["data3d"]
+        error = np.sum(np.array_equal(np.asarray([183, 512, 512]), data3d.shape))
+        # app.exec_()
+
+
     @attr("interactive")
     def test_read_datareader_interactive(self):
         sdp = io3d.datasets.join_path("sample_data")
