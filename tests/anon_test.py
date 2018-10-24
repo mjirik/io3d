@@ -24,6 +24,10 @@ class AnonTestCase(unittest.TestCase):
         anon.file_anonymization(cesta_k_souboru_jatrer, output_file)
         self.assertTrue(op.exists(output_file))
 
+    def test_anon_dir(self):
+        # naimplemetovat test pro rekurzivní
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
