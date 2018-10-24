@@ -11,14 +11,14 @@ import os
 import io3d
 import io3d.anonym
 
-skip_on_local = True
+skip_on_local = False
 class AnonTestCase(unittest.TestCase):
 
-    @unittest.skipIf(os.environ.get("TRAVIS", default=skip_on_local), "Skip on Travis-CI")
+    @unittest.skipIf(os.environ.get("TRAVIS", skip_on_local), "Skip on Travis-CI")
     def test_anon_file(self):
-        print("get travis", os.environ.get("TRAVIS"))
-        print("get travis", os.environ.get("TRAVIS", default=skip_on_local))
-        print("get travis", skip_on_local)
+        # print("get travis", os.environ.get("TRAVIS"))
+        # print("get travis", os.environ.get("TRAVIS", default=skip_on_local))
+        # print("get travis", skip_on_local)
         output_file = "output_anon.dcm"
         if op.exists(output_file):
             os.remove(output_file)
@@ -27,6 +27,7 @@ class AnonTestCase(unittest.TestCase):
         anon.file_anonymization(cesta_k_souboru_jatrer, output_file)
         self.assertTrue(op.exists(output_file))
 
+    @unittest.skipIf(os.environ.get("TRAVIS", skip_on_local), "Skip on Travis-CI")
     def test_anon_dir(self):
         # naimplemetovat test pro rekurzivní
         pass
