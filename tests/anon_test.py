@@ -14,9 +14,9 @@ import io3d.anonym
 
 class AnonTestCase(unittest.TestCase):
 
-    @unittest.skipIf(os.environ.get("TRAVIS", True), "Skip on Travis-CI")
+   ## @unittest.skipIf(os.environ.get("TRAVIS", True), "Skip on Travis-CI")
     def test_anon_file(self):
-        output_file = 'output_anon.dcm'
+        output_file = "output_anon.dcm"
         if op.exists(output_file):
             os.remove(output_file)
         anon = io3d.anonym.Anonymizer()
