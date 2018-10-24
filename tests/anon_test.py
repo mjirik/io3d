@@ -16,6 +16,9 @@ class AnonTestCase(unittest.TestCase):
 
     @unittest.skipIf(os.environ.get("TRAVIS", default=skip_on_local), "Skip on Travis-CI")
     def test_anon_file(self):
+        print("get travis", os.environ.get("TRAVIS"))
+        print("get travis", os.environ.get("TRAVIS", default=skip_on_local))
+        print("get travis", skip_on_local)
         output_file = "output_anon.dcm"
         if op.exists(output_file):
             os.remove(output_file)
