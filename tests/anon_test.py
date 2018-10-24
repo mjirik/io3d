@@ -11,10 +11,10 @@ import os
 import io3d
 import io3d.anonym
 
-
+skip_on_local = True
 class AnonTestCase(unittest.TestCase):
 
-    @unittest.skipIf(os.environ.get("TRAVIS", True), "Skip on Travis-CI")
+    @unittest.skipIf(os.environ.get("TRAVIS", default=skip_on_local), "Skip on Travis-CI")
     def test_anon_file(self):
         output_file = "output_anon.dcm"
         if op.exists(output_file):
