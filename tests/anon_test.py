@@ -20,9 +20,18 @@ class AnonTestCase(unittest.TestCase):
         if op.exists(output_file):
             os.remove(output_file)
         anon = io3d.anonym.Anonymizer()
-        cesta_k_souboru_jatrer = io3d.datasets.join_path("medical", "orig", "jatra_5mm", "IM-0001-0001.dcm", get_root=True)
-        anon.file_anonymization(cesta_k_souboru_jatrer, output_file)
+        cesta_k_souboru_jater = io3d.datasets.join_path("medical", "orig", "jatra_5mm", "IM-0001-0001.dcm", get_root=True)
+        anon.file_anonymization(cesta_k_souboru_jater, output_file)
         self.assertTrue(op.exists(output_file))
+
+        import pydicom
+        dcm = pydicom.read_file(output_file)
+
+        logger.debug(dcm.PatientName)
+        # self.assertTrue(len(dcm.PatientName) ==  0)
+        self.assertEqual(len(str(dcm.PatientName)), 0, "Patient name should be empty")
+
+        self.assertTrue(False)
 
     def test_anon_dir(self):
         # naimplemetovat test pro rekurzivní
