@@ -5,6 +5,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import pydicom
 import unittest
 import os.path as op
 import os
@@ -27,7 +28,7 @@ class AnonTestCase(unittest.TestCase):
         anon.file_anonymization(cesta_k_souboru_jater, output_file)
         self.assertTrue(op.exists(output_file))
 
-        import pydicom
+     
         dcm = pydicom.read_file(output_file)
 
         logger.debug(dcm.PatientName)
