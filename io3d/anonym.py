@@ -1,7 +1,14 @@
 import logging
 logger = logging.getLogger(__name__)
 import glob
-import pydicom
+try:
+    import pydicom
+except ImportError:
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import dicom as pydicom
+    logger.debug("dicom imported - it would be better use pydicom")
 
 class Anonymizer():
     def __init__(self):

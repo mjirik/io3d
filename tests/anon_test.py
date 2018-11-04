@@ -5,7 +5,15 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import pydicom
+try:
+    import pydicom
+except ImportError:
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import dicom as pydicom
+    logger.debug("dicom imported - it would be better use pydicom")
+
 import unittest
 import os.path as op
 import os

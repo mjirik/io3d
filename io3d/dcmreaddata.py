@@ -21,10 +21,10 @@ try:
     import pydicom
 except ImportError:
     import warnings
-    logger.debug("dicom imported - it would be better use pydicom")
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         import dicom as pydicom
+    logger.debug("dicom imported - it would be better use pydicom")
 # except ModuleNotFoundError:
 
 import numpy as np
