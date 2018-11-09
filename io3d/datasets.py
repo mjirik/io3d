@@ -11,14 +11,10 @@ import sys
 import argparse
 import numpy as np
 import zipfile
-print("pozor")
 import glob
 import os.path as op
-print("pozor")
 import io3d
-print("pozor")
 from . import cachefile as cachef
-print("pozor")
 # if sys.version_info < (3, 0):
 #     import urllib as urllibr
 # else:
