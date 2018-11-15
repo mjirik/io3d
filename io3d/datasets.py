@@ -202,6 +202,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     logger.info("destination dir: {}".format(destination_dir))
 
     if not op.exists(destination_dir):
+        logger.debug("creating directory {}".format(destination_dir))
         os.makedirs(destination_dir)
 
     if dataset_label is None:
