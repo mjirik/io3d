@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.12.0
+
+* [new] Slice data added to datasets
+
 ## 1.11.0
 
 * datasets.join_path can return datasets root path
