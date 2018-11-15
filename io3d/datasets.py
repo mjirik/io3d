@@ -199,6 +199,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
 
     destination_dir = op.expanduser(destination_dir)
+    logger.info("destination dir: {}".format(destination_dir))
 
     if not op.exists(destination_dir):
         os.makedirs(destination_dir)
@@ -681,6 +682,7 @@ def unzip_recursive(zip_file_name):
             fnlist.extend(local_fnlist)
     return fnlist
 
+
 class ExtendAction(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -688,14 +690,18 @@ class ExtendAction(argparse.Action):
         items.extend(values)
         setattr(namespace, self.dest, items)
 
+
 def main(turn_on_logging=False):
     if turn_on_logging:
+        # logger = logging.getLogger()
+        # logger.setLevel(logging.DEBUG)
         main_logger = logging.getLogger(__file__ + "datasets commandline")
 
         main_logger.setLevel(logging.WARNING)
         ch = logging.StreamHandler()
         main_logger.addHandler(ch)
     else:
+        logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
         main_logger = logger
 
     # logger.debug('input params')
@@ -776,10 +782,11 @@ def main(turn_on_logging=False):
         return
 
     if args.labels is not None:
+        main_logger.info("Downloading labels: {}".format(args.labels))
         download(args.labels, destination_dir=args.destination_dir, dry_run=args.dry_run)
 
     # submodule_update()
 
 
 if __name__ == "__main__":
-    main(turn_on_logging=True)
+    main(turn_on_logging=False)
