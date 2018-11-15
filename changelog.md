@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.13.0 
+
+* [improve] Logging in dataset more verbatim
+
 ## 1.12.0
 
 * [new] Slice data added to datasets
