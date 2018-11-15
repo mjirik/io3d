@@ -76,8 +76,13 @@ data_urls = {
     "3Dircadb1.19": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.19.zip",
     "3Dircadb1.20": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.20.zip",
     "CMU-1": ["http://openslide.cs.cmu.edu/download/openslide-testdata/Hamamatsu/CMU-1.ndpi",
-              'd41d8cd98f00b204e9800998ecf8427e'],
-    "CMU-1-annotation": [__url_server + "sample-data/CMU-1.ndpi.ndpa", 'd41d8cd98f00b204e9800998ecf8427e'],
+              "1f9df18b8dc6403cd2434bfd3cf20c7f",
+              "CMU-1.ndpi"],
+    "CMU-1-annotation": [
+        __url_server + "sample-data/CMU-1.ndpi.ndpa",
+        "f2f70fe432bd9dc3c252540313b92df0",
+        "CMU-1.ndpi.ndpa"
+    ],
 
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
@@ -221,7 +226,9 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             hash_path = label
 
         try:
-            computed_hash = checksum(os.path.join(destination_dir, hash_path))
+            path_to_hash = os.path.join(destination_dir, hash_path)
+            logger.debug("path to hash: {}".format(path_to_hash))
+            computed_hash = checksum(path_to_hash)
         except Exception as e:
             # there is probably no checksumdir module
             logger.warning(e)
@@ -320,8 +327,9 @@ def checksum(path, hashfunc='md5'):
     for path in path_list:
         if os.path.isfile(path):
             hashvalues.append(checksumdir._filehash(path, hashfunc=hash_func))
-    logger.debug(str(hashvalues))
+    logger.debug("one hash per file: {}".format(str(hashvalues)))
     checksum_hash = checksumdir._reduce_hash(hashvalues, hashfunc=hash_func)
+    logger.debug("total hash: {}".format(str(checksum_hash)))
     return checksum_hash
 
 
