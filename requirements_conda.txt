@@ -13,5 +13,6 @@ libpng # kvuli simpleik 0.9.
 checksumdir
 pyqt=4.11.*
 pydicom
+ruamel.yaml
 scikit-image
 imma
