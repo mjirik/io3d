@@ -75,7 +75,10 @@ data_urls = {
     "3Dircadb1.18": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.18.zip",
     "3Dircadb1.19": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.19.zip",
     "3Dircadb1.20": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.20.zip",
-    
+    "CMU-1": ["http://openslide.cs.cmu.edu/download/openslide-testdata/Hamamatsu/CMU-1.ndpi",
+              'd41d8cd98f00b204e9800998ecf8427e'],
+    "CMU-1-annotation": [__url_server + "sample-data/CMU-1.ndpi.ndpa", 'd41d8cd98f00b204e9800998ecf8427e'],
+
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
@@ -616,12 +619,17 @@ def downzip(url, destination='./sample_data/'):
     logmsg = "downloading from '" + url + "' to '" + destination + "'"
     print(logmsg)
     logger.info(logmsg)
-    tmp_filename = "tmp.zip"
+    tmp_filename = url[url.rfind("/") + 1:]
+    # tmp_filename = "tmp.zip"
     # urllibr.urlretrieve(url, zip_file_name)
     from . import network
     network.download_file(url, destination, filename=tmp_filename)
     zip_file_name = os.path.join(destination, tmp_filename)
-    unzip_recursive(zip_file_name)
+    base, ext = op.splitext(tmp_filename)
+    print(ext)
+    print(tmp_filename)
+    if ext in (".zip"):
+        unzip_recursive(zip_file_name)
     # unzip_one(local_file_name)
 
 # def unzip_all(path):
@@ -770,6 +778,7 @@ def main(turn_on_logging=False):
         download(args.labels, destination_dir=args.destination_dir, dry_run=args.dry_run)
 
     # submodule_update()
+
 
 if __name__ == "__main__":
     main(turn_on_logging=True)
