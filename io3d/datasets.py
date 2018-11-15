@@ -717,7 +717,7 @@ def main(turn_on_logging=False):
         default=None,
         help='Get hash for requested path')
     parser.add_argument(
-        '-v', '--verbatim', action="store_true",
+        '-v', '--verbose', action="store_true",
         default=False,
         help='more messages')
     parser.add_argument(
@@ -748,7 +748,7 @@ def main(turn_on_logging=False):
     #        args.get_sample_data = True
     #        args.install = True
     #        args.build_gco = False
-    if args.verbatim:
+    if args.verbose:
         # logger.setLevel(logging.DEBUG)
         main_logger.setLevel(logging.INFO)
     if args.debug is not None:
@@ -761,7 +761,8 @@ def main(turn_on_logging=False):
 
     if args.get_dataset_path:
         # dp = dataset_path()
-        dp=op.join(dataset_path(get_root=True), "medical", "orig"),
+        dp = op.join(dataset_path(get_root=True), "medical", "orig"),
+        logger.info(dp)
         print(dp)
         # logger.info("Dataset path changed")
         return
