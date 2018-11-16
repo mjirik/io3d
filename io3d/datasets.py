@@ -225,9 +225,8 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         if hash_path is None:
             hash_path = label
 
+        path_to_hash = os.path.join(destination_dir, hash_path)
         try:
-            path_to_hash = os.path.join(destination_dir, hash_path)
-            logger.debug("path to hash: {}".format(path_to_hash))
             computed_hash = checksum(path_to_hash)
         except Exception as e:
             # there is probably no checksumdir module
@@ -235,7 +234,8 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             logger.warning("problem with sample_data.checksum()")
             computed_hash = None
 
-        logger.info("dataset '" + label + "'")
+        logger.info("dataset: '" + label + "'")
+        logger.info("path to hash: {}".format(path_to_hash))
         logger.info("expected hash: '" + str(expected_hash) + "'")
         logger.info("computed hash: '" + str(computed_hash) + "'")
         if (computed_hash is not None) and (expected_hash == computed_hash):
