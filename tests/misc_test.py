@@ -67,19 +67,23 @@ class MiscTest(unittest.TestCase):
         filename = "mujsoubor"
         # import ipdb; ipdb.set_trace() # BREAKPOINT
         new_filename = misc.suggest_filename(filename, exists=True)
-        self.assertTrue(new_filename == "mujsoubor2")
+        self.assertTrue(new_filename == "mujsoubor_2")
 
-        filename = "mujsoubor112"
+        filename = "mujsoubor_112"
         new_filename = misc.suggest_filename(filename, exists=True)
-        self.assertTrue(new_filename == "mujsoubor113")
+        self.assertTrue(new_filename == "mujsoubor_113")
 
-        filename = "mujsoubor-2.txt"
+        filename = "mujsoubor_2.txt"
         new_filename = misc.suggest_filename(filename, exists=True)
-        self.assertTrue(new_filename == "mujsoubor-3.txt")
+        self.assertTrue(new_filename == "mujsoubor_3.txt")
 
-        filename = "mujsoubor-a24.txt"
+        filename = "mujsoubor_a2.txt"
+        new_filename = misc.suggest_filename(filename, exists=True)
+        self.assertTrue(new_filename == "mujsoubor_a2_2.txt")
+
+        filename = "mujsoubor_24.txt"
         new_filename = misc.suggest_filename(filename, exists=False)
-        self.assertTrue(new_filename == "mujsoubor-a24.txt")
+        self.assertTrue(new_filename == "mujsoubor_24.txt")
 
     def test_obj_to_and_from_file_with_directories(self):
         import shutil

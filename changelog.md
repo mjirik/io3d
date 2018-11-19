@@ -2,13 +2,18 @@
 
 ## Unreleased
 
+## 1.15.0
+
+* [improvement] If file exists the new file name is created which does not collide
+ with Study ID
+
 ## 1.14.0
 
 * [new] Guess series number for automatic liver processing
 
 ## 1.13.0 
 
-* [improve] Logging in dataset more verbatim
+* [improvement] Logging in dataset more verbatim
 
 ## 1.12.0
 

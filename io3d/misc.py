@@ -40,15 +40,16 @@ def suggest_filename(file_path, exists=None):
     if exists:
         file_path, file_extension = os.path.splitext(file_path)
         # print(file_path)
-        m = re.search(r"\d+$", file_path)
+        m = re.search(r"_\d+$", file_path)
         if m is None:
             # cislo = 2
-            new_cislo_str = "2"
+            new_cislo_str = "_2"
         else:
             cislostr = (m.group())
-            cislo = int(cislostr) + 1
+            cislo = int(cislostr[1:]) + 1
+            # it is normal number
             file_path = file_path[:-len(cislostr)]
-            new_cislo_str = str(cislo)
+            new_cislo_str = "_" + str(cislo)
 
         file_path = file_path + new_cislo_str + file_extension  # .zfill(2)
         # trorcha rekurze
