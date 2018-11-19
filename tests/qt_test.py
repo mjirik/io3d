@@ -94,7 +94,7 @@ class QtTest(unittest.TestCase):
         drw.read_data_from_prepared_datapath()
         # print(drw.datap["data3d"].shape)
         error = np.sum(np.abs(np.asarray([93, 512, 512]) - np.asarray(drw.datap["data3d"].shape)))
-        app.exec_()
+        # app.exec_()
         self.assertEqual(error, 0)
 
     def test_read_datareader_get_path_dialog_surround_with_inject_dirpath(self):
