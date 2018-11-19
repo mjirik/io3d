@@ -149,6 +149,8 @@ class DicomReader:
                 get_series_number_callback = get_series_number_qt
             else:
                 get_series_number_callback = get_series_number_console
+        elif get_series_number_callback == "guess for liver":
+            get_series_number_callback = get_series_number_by_guess_for_liver
 
         self.get_series_number_callback = get_series_number_callback
         self.__check_series_number()
@@ -338,6 +340,14 @@ def get_one_serie_info(series_info, serie_number):
     except Exception:
         logger.debug(
             'Tag Modality, SeriesDescription or ImageComment not found in dcminfo'
+        )
+        pass
+    try:
+        strl = strl + ", " \
+               + str(series_info[serie_number]['StudyDate'])
+    except Exception:
+        logger.debug(
+            'Tag StudyDate not found in dcminfo'
         )
         pass
     strl = strl + ')'
@@ -922,6 +932,35 @@ def attr_to_dict(obj, attr, dct):
     if hasattr(obj, attr):
         dct[attr] = getattr(obj, attr)
     return dct
+
+def get_series_number_by_guess_for_liver(dcmreader, counts, bins, qt_app=None):
+    """
+    Select the venous series from CT with around 200 images
+    :param dcmreader:
+    :param counts:
+    :param bins:
+    :param qt_app:
+    :return:
+    """
+    series_info = dcmreader.dicomdirectory.get_stats_of_series_in_dir()
+    print(dcmreader.print_series_info(series_info))
+    import pandas as pd
+    df = pd.DataFrame(list(series_info.values()))
+
+    #select CT
+    df = df[df["Modality"].str.lower().str.contains("ct") == True]
+    # select just venous
+    df = df[df["SeriesDescription"].str.lower().str.contains("ven") == True]
+    # remove saggittal
+    df = df[df["SeriesDescription"].str.lower().str.contains("sag") == False]
+    # remove cor
+    df = df[df["SeriesDescription"].str.lower().str.contains("cor") == False]
+    df["dst_to_200"] = np.abs(200 - df.Count)
+    dfs = df.sort_values(by="dst_to_200", ascending=True)
+    sn = list(dfs.SeriesNumber)[0]
+
+    return sn
+
 
 
 def get_series_number_console(dcmreader, counts, bins, qt_app=None):  # pragma: no cover

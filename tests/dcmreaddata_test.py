@@ -345,7 +345,23 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(data3d.shape[2], 512)
         self.assertEqual(metadata['voxelsize_mm'][0], 5)
 
+    @attr('dataset')
+    def test_dcmread_guess_series_number(self):
+
+        dcmdir = os.path.join(sample_data_path, '../sample_data/jatra_5mm')
+        dcmdir = os.path.join(sample_data_path, '../erazmusplus/44204675/')
+        # dcmdir = '~/data/medical/orig/'
+        # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
+        # self.data3d, self.metadata = dcmr.dcm_read_from_dir(self.dcmdir)
+        # spravne cislo serie je 7
+        reader = dcmr.DicomReader(dcmdir, series_number=None, get_series_number_callback="guess for liver")
+        data3d = reader.get_3Ddata()
+        metadata = reader.get_metaData()
+        self.assertEqual(data3d.shape[2], 512)
+        self.assertEqual(metadata['SeriesNumber'], 11)
+        # self.assertEqual(metadata['voxelsize_mm'][0], 5)
     # @unittest.skipIf(not interactivetTest, 'interactiveTest')
+
     @attr('dataset')
     def test_dcmread_select_series_reasmusplus(self):
 

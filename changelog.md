@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.14.0
+
+* [new] Guess series number for automatic liver processing
+
 ## 1.13.0 
 
 * [improve] Logging in dataset more verbatim
