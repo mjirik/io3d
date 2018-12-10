@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* [new] Reading patient name, id, age and sex
+* [new] Display patient's info in qt widget
+
 ## 1.15.0
 
 * [improvement] If file exists the new file name is created which does not collide

@@ -18,6 +18,7 @@ import argparse
 from PyQt4.QtGui import QGridLayout, QLabel,\
     QPushButton, QLineEdit, QApplication
 from PyQt4 import QtGui
+from PyQt4.QtCore import Qt
 import sys
 import os.path
 import copy
@@ -85,8 +86,9 @@ class DataReaderWidget(QtGui.QWidget):
         btn_load_file.clicked.connect(self.read_data_dir_dialog)
         self.mainLayout.addWidget(btn_load_file, 0, 1)
 
-        self.text_dcm_dir = QLabel('data path:')
-        self.text_dcm_data = QLabel('data description:')
+        self.text_dcm_dir = QLabel('Data Path:')
+        self.text_dcm_data = QLabel('')  # data dimensions
+        self.text_dcm_data.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.mainLayout.addWidget(self.text_dcm_dir, 1, 0, 1, 2)
         self.mainLayout.addWidget(self.text_dcm_data, 2, 0, 1, 2)
 
@@ -246,8 +248,13 @@ class DataReaderWidget(QtGui.QWidget):
     def get_data_info(self):
         vx_size = self.datap['voxelsize_mm']
         vsize = tuple([float(ii) for ii in vx_size])
-        ret = ' %dx%dx%d,  %fx%fx%f mm' % (self.datap['data3d'].shape + vsize)
-
+        ret = 'Data Dimensions: %dx%dx%d,  %fx%fx%f mm' % (self.datap['data3d'].shape + vsize)
+        if "StudyID" in self.datap and "StudyDate" in self.datap:
+            ret += "\nStudy ID: {}, Study Date, {}".format(self.datap["StudyID"], (self.datap["StudyDate"]))
+        if "PatientName" in self.datap:
+            ret += "\nPatient Name: {}".format(self.datap["PatientName"])
+        if "PatientAge" in self.datap and "PatientSex" in self.datap:
+            ret += "\nAge: {}, Sex {}".format(self.datap["PatientAge"], self.datap["PatientSex"])
         return ret
 
     def __show_message(self, msg):
