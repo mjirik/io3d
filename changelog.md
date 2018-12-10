@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [improvement] Not-string like keys supported in hdf5
 
 ## 1.17.0 (2018-12-10)
 
