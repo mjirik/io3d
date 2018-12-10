@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+
+## 1.17.0 (2018-12-10)
+
+* [new] File format h5 supported
+
+## 1.16.0 (2018-12-10)
+
 * [new] Reading patient name, id, age and sex
 * [new] Display patient's info in qt widget
 

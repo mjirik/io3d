@@ -191,7 +191,7 @@ class DicomWriterTest(unittest.TestCase):
 
 
     # @attr('interactive')
-    @attr('interactive')
+    # @attr('interactive')
     def test_write_and_read_hdf5(self):
         filename = 'test_file.hdf5'
         data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)

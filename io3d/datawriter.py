@@ -159,44 +159,51 @@ class DataWriter:
         dicom.write_file(path, ds)
 
     def save_hdf5(self, data3d, path, metadata):
-        # TODO this is not implemented in proper way
-        import h5py
-        f = h5py.File(path, "w")
-        f.create_dataset('data3d', data=data3d, compression='gzip')
-        met = f.create_group('metadata')
-        met.create_dataset('voxelsize_mm', data=metadata['voxelsize_mm'], compression='gzip')
-        # f.create_dataset('metadata', data=metadata, compression='gzip')
-        f.flush()
-        f.close()
-
-    def __write_h5_key(self, grp, dct):
-        import h5py
-        import numpy as np
-        retval = {}
-        for key in dct.keys():
-            try:
-                data = dct[key]
-                if type(data) == np.ndarray:
-                    if data.dtype == np.dtype('O'):
-                        logger.warning("problem with dtype('O')")
-                        print("Press 'c' for continue")
-                        from PyQt4 import QtCore; QtCore.pyqtRemoveInputHook()
-                        import ipdb; ipdb.set_trace()
-                    else:
-                        grp.create_dataset(key, data=data)
-                elif type(data) == list:
-                    grp.create_dataset(key, data=data)
-                elif type(data) == dict:
-                    subgrp = grp.create_group('key')
-                    self.__write_h5_key(subgrp, data)
-                else:
-                    grp[key] = data
-            except:
-                import traceback
-                logger.warning(traceback.format_exc())
+        metadata['data3d'] = data3d
+        datap = metadata
+        from . import hdf5_io
+        hdf5_io.save_dict_to_hdf5(metadata, path)
 
 
-        return retval
+
+        # # TODO this is not implemented in proper way
+        # import h5py
+        # f = h5py.File(path, "w")
+        # f.create_dataset('data3d', data=data3d, compression='gzip')
+        # met = f.create_group('metadata')
+        # met.create_dataset('voxelsize_mm', data=metadata['voxelsize_mm'], compression='gzip')
+        # # f.create_dataset('metadata', data=metadata, compression='gzip')
+        # f.flush()
+        # f.close()
+    #
+    # def __write_h5_key(self, grp, dct):
+    #     import h5py
+    #     import numpy as np
+    #     retval = {}
+    #     for key in dct.keys():
+    #         try:
+    #             data = dct[key]
+    #             if type(data) == np.ndarray:
+    #                 if data.dtype == np.dtype('O'):
+    #                     logger.warning("problem with dtype('O')")
+    #                     print("Press 'c' for continue")
+    #                     from PyQt4 import QtCore; QtCore.pyqtRemoveInputHook()
+    #                     import ipdb; ipdb.set_trace()
+    #                 else:
+    #                     grp.create_dataset(key, data=data)
+    #             elif type(data) == list:
+    #                 grp.create_dataset(key, data=data)
+    #             elif type(data) == dict:
+    #                 subgrp = grp.create_group('key')
+    #                 self.__write_h5_key(subgrp, data)
+    #             else:
+    #                 grp[key] = data
+    #         except:
+    #             import traceback
+    #             logger.warning(traceback.format_exc())
+    #
+    #
+    #     return retval
 
     def DataCopyWithOverlay(self, dcmfilelist, out_dir, overlays):
         """

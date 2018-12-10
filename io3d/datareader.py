@@ -227,15 +227,17 @@ class DataReader:
             metadata.update(data)
 
         elif ext in ['hdf5']:
-            data = self.read_hdf5(datapath)
-            data3d = data.pop('data3d')
+            from . import hdf5_io
+            datap = hdf5_io.load_dict_from_hdf5(datapath)
+            # datap = self.read_hdf5(datapath)
+            data3d = datap.pop('data3d')
 
             # back compatibility
-            if 'metadata' in data.keys():
-                data = data['metadata']
+            if 'metadata' in datap.keys():
+                datap = datap['metadata']
             # metadata must have series_number
             metadata = _create_meta(datapath)
-            metadata.update(data)
+            metadata.update(datap)
 
         elif ext in ['idx']:
             from . import idxformat
@@ -285,39 +287,40 @@ class DataReader:
             logger.warning("Read dicom 'SpacingBetweenSlices' failed: ", e)
         return metadata
 
-    def read_hdf5(self, datapath):
-        """Warning: Method is not implemented!
-        Should read hdf5 data and return dictionary with data3d and metadata in itself.
+    # TODO remove this later
+    # def read_hdf5(self, datapath):
+    #     """Warning: Method is not implemented!
+    #     Should read hdf5 data and return dictionary with data3d and metadata in itself.
+    #
+    #     :param datapath: path to hdf5 file
+    #     :return: dict with data3d and metadata"""
+    #     # TODO: implement this better, this is not working
+    #     f = h5py.File(datapath, 'r')
+    #     # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
+    #     dd = self.__read_h5_key(f)
+    #     # datap = {}
+    #     # for item in f.attrs.keys():
+    #     #     datap[item] = f.attrs['item']
+    #     f.close()
+    #     return dd
 
-        :param datapath: path to hdf5 file
-        :return: dict with data3d and metadata"""
-        # TODO: implement this better, this is not working
-        f = h5py.File(datapath, 'r')
-        # import ipdb; ipdb.set_trace() #  noqa BREAKPOINT
-        dd = self.__read_h5_key(f)
-        # datap = {}
-        # for item in f.attrs.keys():
-        #     datap[item] = f.attrs['item']
-        f.close()
-        return dd
-
-    def __read_h5_key(self, grp):
-        """Recursive function for reading h5 key.
-        Used in "read_hdf5" method. Reads hdf5 file with h5py package and returns dictionary.
-
-        :param grp: hdf5 file to process
-        :return: dict hopefully containing data3d and metadata aquired from hdf5 file
-        """
-        retval = {}
-        for key in grp.keys():
-            data = grp.get(key)
-            if type(data) == h5py.Dataset:
-                retval[key] = np.array(data)
-            elif type(data) == h5py.Group:
-                retval[key] = self.__read_h5_key(data)
-            else:
-                retval[key] = data
-        return retval
+    # def __read_h5_key(self, grp):
+    #     """Recursive function for reading h5 key.
+    #     Used in "read_hdf5" method. Reads hdf5 file with h5py package and returns dictionary.
+    #
+    #     :param grp: hdf5 file to process
+    #     :return: dict hopefully containing data3d and metadata aquired from hdf5 file
+    #     """
+    #     retval = {}
+    #     for key in grp.keys():
+    #         data = grp.get(key)
+    #         if type(data) == h5py.Dataset:
+    #             retval[key] = np.array(data)
+    #         elif type(data) == h5py.Group:
+    #             retval[key] = self.__read_h5_key(data)
+    #         else:
+    #             retval[key] = data
+    #     return retval
 
     # noinspection PyPep8Naming
     @deprecated("Deprecated! Please, use get_overlay() function instead.")
