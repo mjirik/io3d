@@ -41,7 +41,13 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             key = json.dumps(key)
 
             reconstruction_flags[path + key + "_key_/"] = "json_key"
-        if isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes, int)):
+        if item is None:
+            import json
+            jitem = json.dumps(item)
+
+            h5file[path + key] = jitem
+            reconstruction_flags[path + key + "_typ_/"] = "json_value"
+        elif isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes, int)):
             h5file[path + key] = item
         elif isinstance(item, dict):
             rf = recursively_save_dict_contents_to_group(h5file, path + key + '/', item)
@@ -87,13 +93,17 @@ def recursively_load_dict_contents_from_group(h5file, path):
                 dest_key = json.loads(key)
                 # import pickle
                 # dest_key = pickle.loads(key.encode("ascii"))
-                logger.debug("unpickling key")
+                # logger.debug("unpickling key")
 
         if tkey in rf:
             flag = rf[tkey]
             if flag.value == "list":
                 dict_to_output = recursively_load_dict_contents_from_group(h5file, path + key + '/')
                 ans[dest_key] = list(dict_to_output.values())
+                continue
+            elif flag.value == "json_value":
+                import json
+                ans[dest_key] = json.loads(item.value)
                 continue
 
         if isinstance(item, h5py._hl.dataset.Dataset):

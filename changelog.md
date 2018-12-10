@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+
+## 1.19.0 
+
+* [improvement] Accept None type i hdf5 export
+
+## 1.18.0
+
 * [improvement] Not-string like keys supported in hdf5
 
 ## 1.17.0 (2018-12-10)

@@ -14,7 +14,10 @@ class Hdf5Test(unittest.TestCase):
         data = {'x': 'astring',
                 'y': np.arange(10),
                 'd': {'z': np.ones((2, 3)),
-                      'b': b'bytestring'}}
+                      'b': b'bytestring'},
+                "none": None,
+                1: 1,
+                }
 
         fn = "hdf5_testfile.h5"
         hp.save_dict_to_hdf5(data, fn)
@@ -26,6 +29,8 @@ class Hdf5Test(unittest.TestCase):
         self.assertTrue(np.array_equal(data["y"], data2["y"]))
         self.assertEqual(data["d"]["b"], data2["d"]["b"])
         self.assertTrue(np.array_equal(data["d"]["z"], data2["d"]["z"]))
+        self.assertEqual(data["none"], data2["none"])
+        self.assertEqual(data[1], data2[1])
 
 
 
