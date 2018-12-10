@@ -17,6 +17,8 @@ class Hdf5Test(unittest.TestCase):
                       'b': b'bytestring'},
                 "none": None,
                 1: 1,
+                "tuple": (5, 7),
+                5: None,
                 }
 
         fn = "hdf5_testfile.h5"
@@ -31,6 +33,8 @@ class Hdf5Test(unittest.TestCase):
         self.assertTrue(np.array_equal(data["d"]["z"], data2["d"]["z"]))
         self.assertEqual(data["none"], data2["none"])
         self.assertEqual(data[1], data2[1])
+        self.assertEqual(type(data2["tuple"]), tuple)
+        self.assertEqual(data[5], data2[5])
 
 
 
