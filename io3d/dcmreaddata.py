@@ -576,6 +576,10 @@ class DicomDirectory:
         metadata = attr_to_dict(data1, "StudyID", metadata)
         metadata = attr_to_dict(data1, "StudyDescription", metadata)
         metadata = attr_to_dict(data1, "RequestedProcedureDescription", metadata)
+        metadata = attr_to_dict(data1, "PatientSex", metadata)
+        metadata = attr_to_dict(data1, "PatientAge", metadata)
+        metadata = attr_to_dict(data1, "PatientID", metadata)
+        metadata = attr_to_dict(data1, "PatientName", metadata)
         # metadata = attr_to_dict(data1, "AcquisitionTime", metadata)
 
         metadata['dcmfilelist'] = dcmlist
