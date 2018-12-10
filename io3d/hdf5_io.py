@@ -60,6 +60,13 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             rf = recursively_save_dict_contents_to_group(h5file, path + key + '/', item_dict)
             reconstruction_flags.update(rf)
             # reconstruction_key_flags.update(rkf)
+        elif isinstance(item, tuple):
+            # i = iter(item)
+            item_dict = dict(zip(range(len(item)), item))
+            wholekey = path + key + "_typ_/"
+            reconstruction_flags[wholekey] = "tuple"
+            rf = recursively_save_dict_contents_to_group(h5file, path + key + '/', item_dict)
+            reconstruction_flags.update(rf)
         else:
             logger.info("Saving type {} with json".format(type(item)))
             import json
@@ -104,6 +111,10 @@ def recursively_load_dict_contents_from_group(h5file, path):
             if flag.value == "list":
                 dict_to_output = recursively_load_dict_contents_from_group(h5file, path + key + '/')
                 ans[dest_key] = list(dict_to_output.values())
+                continue
+            if flag.value == "tuple":
+                dict_to_output = recursively_load_dict_contents_from_group(h5file, path + key + '/')
+                ans[dest_key] = tuple(dict_to_output.values())
                 continue
             elif flag.value == "json_value":
                 import json
