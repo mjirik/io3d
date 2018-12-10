@@ -3,6 +3,10 @@
 ## Unreleased
 
 
+## 1.20.0
+
+* [improvement] Save all types acceptable by json to hdf5
+
 ## 1.19.0 
 
 * [improvement] Accept None type i hdf5 export

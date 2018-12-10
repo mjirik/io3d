@@ -44,7 +44,6 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
         if item is None:
             import json
             jitem = json.dumps(item)
-
             h5file[path + key] = jitem
             reconstruction_flags[path + key + "_typ_/"] = "json_value"
         elif isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes, int)):
@@ -62,7 +61,12 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             reconstruction_flags.update(rf)
             # reconstruction_key_flags.update(rkf)
         else:
-            raise ValueError('Cannot save %s type'%type(item))
+            logger.info("Saving type {} with json".format(type(item)))
+            import json
+            jitem = json.dumps(item)
+            h5file[path + key] = jitem
+            reconstruction_flags[path + key + "_typ_/"] = "json_value"
+            # raise ValueError('Cannot save %s type'%type(item))
     return reconstruction_flags# , reconstruction_key_flags
 
 def load_dict_from_hdf5(filename):
