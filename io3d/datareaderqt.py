@@ -240,7 +240,7 @@ class DataReaderWidget(QtGui.QWidget):
         self.datap = reader.Get3DData(self.datapath, dataplus_format=True, gui=True, qt_app=self.qt_app)
 
         _set_label_text(self.text_dcm_dir, _make_text_short(self.datapath), self.datapath)
-        _set_label_text(self.text_dcm_data, self.get_data_info())
+        _set_label_text(self.text_dcm_data, self.get_data_info(), replace_all=True)
         if self.after_function is not None:
             self.after_function(self)
         self.__show_message('Data read finished')
@@ -268,9 +268,26 @@ def _make_text_short(text, max_lenght=40):
     return text[:int(max_lenght/2)] + ".." + text[-int(max_lenght/2):]
 
 
-def _set_label_text(obj, text, tooltip=None):
+def _set_label_text(obj, text, tooltip=None, replace_all=False):
+    """
+    Keep text before first colon and replace the rest with new text.
+
+    If there is no colon in the
+    :param obj:
+    :param text:
+    :param tooltip:
+    :param replace_all: No colon is searched and whole text is replaced
+    :return:
+    """
     dlab = str(obj.text())
-    obj.setText(dlab[:dlab.find(':')] + ': %s' % text)
+    index_of_colon = dlab.find(': ')
+    if index_of_colon == -1:
+        index_of_colon = 0
+    else:
+        index_of_colon += 2
+    if replace_all:
+        index_of_colon = 0
+    obj.setText(dlab[:index_of_colon] + '%s' % text)
     if tooltip is not None:
         obj.setToolTip(tooltip)
 
