@@ -19,6 +19,7 @@ class Hdf5Test(unittest.TestCase):
                 1: 1,
                 "tuple": (5, 7),
                 5: None,
+                "float": 3.14,
                 }
 
         fn = "hdf5_testfile.h5"
@@ -35,6 +36,8 @@ class Hdf5Test(unittest.TestCase):
         self.assertEqual(data[1], data2[1])
         self.assertEqual(type(data2["tuple"]), tuple)
         self.assertEqual(data[5], data2[5])
+        self.assertEqual(type(data["float"]), type(data2["float"]))
+        self.assertEqual(type(data[1]), type(data2[1]))
 
 
 

@@ -46,8 +46,14 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             jitem = json.dumps(item)
             h5file[path + key] = jitem
             reconstruction_flags[path + key + "_typ_/"] = "json_value"
-        elif isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes, int)):
+        elif isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes)):
             h5file[path + key] = item
+        elif isinstance(item, (float)):
+            h5file[path + key] = item
+            reconstruction_flags[path + key + "_typ_/"] = "float"
+        elif isinstance(item, (int)):
+            h5file[path + key] = item
+            reconstruction_flags[path + key + "_typ_/"] = "int"
         elif isinstance(item, dict):
             rf = recursively_save_dict_contents_to_group(h5file, path + key + '/', item)
             reconstruction_flags.update(rf)
@@ -119,6 +125,12 @@ def recursively_load_dict_contents_from_group(h5file, path):
             elif flag.value == "json_value":
                 import json
                 ans[dest_key] = json.loads(item.value)
+                continue
+            elif flag.value == "float":
+                ans[dest_key] = float(item.value)
+                continue
+            elif flag.value == "int":
+                ans[dest_key] = int(item.value)
                 continue
 
         if isinstance(item, h5py._hl.dataset.Dataset):
