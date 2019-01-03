@@ -2,44 +2,47 @@
 
 ## Unreleased
 
+## 1.21.0
+
+* [Added] New sample data SCP003
 
 ## 1.20.0
 
-* [improvement] Save all types acceptable by json to hdf5
+* [Changed] Save all types acceptable by json to hdf5
 
 ## 1.19.0 
 
-* [improvement] Accept None type i hdf5 export
+* [Changed] Accept None type i hdf5 export
 
 ## 1.18.0
 
-* [improvement] Not-string like keys supported in hdf5
+* [Changed] Not-string like keys supported in hdf5
 
 ## 1.17.0 (2018-12-10)
 
-* [new] File format h5 supported
+* [Added] File format h5 supported
 
 ## 1.16.0 (2018-12-10)
 
-* [new] Reading patient name, id, age and sex
-* [new] Display patient's info in qt widget
+* [Added] Reading patient name, id, age and sex
+* [Added] Display patient's info in qt widget
 
 ## 1.15.0
 
-* [improvement] If file exists the new file name is created which does not collide
+* [Changed] If file exists the new file name is created which does not collide
  with Study ID
 
 ## 1.14.0
 
-* [new] Guess series number for automatic liver processing
+* [Added] Guess series number for automatic liver processing
 
 ## 1.13.0 
 
-* [improvement] Logging in dataset more verbatim
+* [Changed] Logging in dataset more verbatim
 
 ## 1.12.0
 
-* [new] Slice data added to datasets
+* [Added] Slice data added to datasets
 
 ## 1.11.0
 
