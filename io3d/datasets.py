@@ -43,7 +43,7 @@ data_urls = {
     "exp_small": [__url_server + "sample-data/exp_small.zip", "0526ba8ea363fe8b5227f5807b7aaca7"],
     "vincentka": [__url_server + "sample-data/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
-    "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152"],
+    "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP0003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip"],
