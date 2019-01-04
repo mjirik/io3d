@@ -43,7 +43,8 @@ requirements:
     # - simpleitk
     - scikit-image
 #    - imma
-    - {{ pin_subpackage('imma', max_pin='x.x') }}
+#    - {{ pin_subpackage('imma', max_pin='x.x') }}
+    - {{ pin_compatible('imma', max_pin='x.x') }}
   run:
     - python
     - numpy
@@ -56,7 +57,8 @@ requirements:
     # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
 #    - imma
-    - {{ pin_subpackage('imma', max_pin='x.x') }}
+#    - {{ pin_subpackage('imma', max_pin='x.x') }}
+    - {{ pin_compatible('imma', max_pin='x.x') }}
 
 test:
   # Python imports
