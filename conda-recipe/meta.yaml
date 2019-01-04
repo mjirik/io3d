@@ -42,7 +42,8 @@ requirements:
     - ruamel.yaml
     # - simpleitk
     - scikit-image
-    - imma
+#    - imma
+    - {{ pin_subpackage('imma', max_pin='x.x') }}
   run:
     - python
     - numpy
@@ -54,7 +55,8 @@ requirements:
     - checksumdir
     # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
-    - imma
+#    - imma
+    - {{ pin_subpackage('imma', max_pin='x.x') }}
 
 test:
   # Python imports
