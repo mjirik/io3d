@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.21.1
+
+* [Changed] Dataset SCP003 splited into image data and annotation
+
 ## 1.21.0
 
 * [Added] New sample data SCP003
