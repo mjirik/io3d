@@ -44,7 +44,7 @@ data_urls = {
     "vincentka": [__url_server + "sample-data/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
     "SCP003-ndpi": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP0003/SCP003.ndpi"],
-    "SCP003-ndpa.": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP0003/SCP003.ndpi.ndpa"],
+    "SCP003-ndpa": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP0003/SCP003.ndpi.ndpa"],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
