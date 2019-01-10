@@ -5,6 +5,7 @@ Module is used for visualization of segmentation stored in pkl, dcm and other fi
 """
 
 import logging
+
 logger = logging.getLogger(__name__)
 import os.path
 import sys
@@ -15,6 +16,7 @@ import glob
 import os.path as op
 import io3d
 from . import cachefile as cachef
+
 # if sys.version_info < (3, 0):
 #     import urllib as urllibr
 # else:
@@ -30,36 +32,112 @@ __url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 __url_server = "http://147.228.240.61/queetech/"
 __url_server = "http://home.zcu.cz/~mjirik/lisa/"
 data_urls = {
-    "head": [__url_server + "sample-data/head.zip", "89e9b60fd23257f01c4a1632ff7bb800", "matlab"],
-    "jatra_06mm_jenjatra": [__url_server + "sample-data/jatra_06mm_jenjatra.zip", None, "jatra_06mm_jenjatra/*.dcm"],
-    "jatra_5mm": [__url_server + "sample-data/jatra_5mm.zip", '1b9039ffe1ff9af9caa344341c8cec03', "jatra_5mm/*.dcm"],
-    "exp": [__url_server + "sample-data/exp.zip", '74f2c10b17b6bd31bd03662df6cf884d'],
-    "sliver_training_001": [__url_server + "sample-data/sliver_training_001.zip", "d64235727c0adafe13d24bfb311d1ed0",
-                            "liver*001.*"],
-    "volumetrie": [__url_server + "sample-data/volumetrie.zip", "6b2a2da67874ba526e2fe00a78dd19c9"],
-    "vessels.pkl": [__url_server + "sample-data/vessels.pkl.zip", "698ef2bc345bb616f8d4195048538ded"],
-    "biodur_sample": [__url_server + "sample-data/biodur_sample.zip", "d459dd5b308ca07d10414b3a3a9000ea"],
-    "gensei_slices": [__url_server + "sample-data/gensei_slices.zip", "ef93b121add8e4a133bb086e9e6491c9"],
-    "exp_small": [__url_server + "sample-data/exp_small.zip", "0526ba8ea363fe8b5227f5807b7aaca7"],
-    "vincentka": [__url_server + "sample-data/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
+    "head": [
+        __url_server + "sample-data/head.zip",
+        "89e9b60fd23257f01c4a1632ff7bb800",
+        "matlab",
+    ],
+    "jatra_06mm_jenjatra": [
+        __url_server + "sample-data/jatra_06mm_jenjatra.zip",
+        None,
+        "jatra_06mm_jenjatra/*.dcm",
+    ],
+    "jatra_5mm": [
+        __url_server + "sample-data/jatra_5mm.zip",
+        "1b9039ffe1ff9af9caa344341c8cec03",
+        "jatra_5mm/*.dcm",
+    ],
+    "exp": [__url_server + "sample-data/exp.zip", "74f2c10b17b6bd31bd03662df6cf884d"],
+    "sliver_training_001": [
+        __url_server + "sample-data/sliver_training_001.zip",
+        "d64235727c0adafe13d24bfb311d1ed0",
+        "liver*001.*",
+    ],
+    "volumetrie": [
+        __url_server + "sample-data/volumetrie.zip",
+        "6b2a2da67874ba526e2fe00a78dd19c9",
+    ],
+    "vessels.pkl": [
+        __url_server + "sample-data/vessels.pkl.zip",
+        "698ef2bc345bb616f8d4195048538ded",
+    ],
+    "biodur_sample": [
+        __url_server + "sample-data/biodur_sample.zip",
+        "d459dd5b308ca07d10414b3a3a9000ea",
+    ],
+    "gensei_slices": [
+        __url_server + "sample-data/gensei_slices.zip",
+        "ef93b121add8e4a133bb086e9e6491c9",
+    ],
+    "exp_small": [
+        __url_server + "sample-data/exp_small.zip",
+        "0526ba8ea363fe8b5227f5807b7aaca7",
+    ],
+    "vincentka": [
+        __url_server + "sample-data/vincentka.zip",
+        "a30fdabaa39c5ce032a3223ed30b88e3",
+    ],
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
-    "SCP003-ndpi": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP003.ndpi", "sample_data/SCP003"],
-    "SCP003-ndpa": [__url_server + "sample-data/SCP003/SCP003.ndpi.ndpa", None, "SCP003.ndpi.ndpa", "sample_data/SCP003"],
+    "SCP003-ndpi": [
+        __url_server + "sample-data/SCP003/SCP003.ndpi",
+        None,
+        "SCP003.ndpi",
+        "sample_data/SCP003",
+    ],
+    "SCP003-ndpa": [
+        __url_server + "sample-data/SCP003/SCP003.ndpi.ndpa",
+        None,
+        "SCP003.ndpi.ndpa",
+        "sample_data/SCP003",
+    ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip"],
-    "lisa": {"package": ["donut", "vincentka_sample", "exp_small", "gensei_slices",
-                         "biodur_sample", "vessels.pkl", "sliver_training_001", "jatra_5mm",
-                         "head", "volumetrie"]},
+    "lisa": {
+        "package": [
+            "donut",
+            "vincentka_sample",
+            "exp_small",
+            "gensei_slices",
+            "biodur_sample",
+            "vessels.pkl",
+            "sliver_training_001",
+            "jatra_5mm",
+            "head",
+            "volumetrie",
+        ]
+    },
     # "3Dircadb1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.zip", None, None, "ircad/*[!p]/*[!pfg]"],
-    "3Dircadb1" : {"package": [
-        "3Dircadb1.1", "3Dircadb1.2", "3Dircadb1.3", "3Dircadb1.4", "3Dircadb1.5", "3Dircadb1.6", "3Dircadb1.7",
-        "3Dircadb1.8", "3Dircadb1.9", "3Dircadb1.10", "3Dircadb1.11", "3Dircadb1.12", "3Dircadb1.13",
-        "3Dircadb1.14", "3Dircadb1.15", "3Dircadb1.16", "3Dircadb1.17", "3Dircadb1.18", "3Dircadb1.19", "3Dircadb1.20",
-    ]},
-    "3Dircadb1.1": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip", "8ab16d83bfb58b790b9ca18f81401cdf"],
+    "3Dircadb1": {
+        "package": [
+            "3Dircadb1.1",
+            "3Dircadb1.2",
+            "3Dircadb1.3",
+            "3Dircadb1.4",
+            "3Dircadb1.5",
+            "3Dircadb1.6",
+            "3Dircadb1.7",
+            "3Dircadb1.8",
+            "3Dircadb1.9",
+            "3Dircadb1.10",
+            "3Dircadb1.11",
+            "3Dircadb1.12",
+            "3Dircadb1.13",
+            "3Dircadb1.14",
+            "3Dircadb1.15",
+            "3Dircadb1.16",
+            "3Dircadb1.17",
+            "3Dircadb1.18",
+            "3Dircadb1.19",
+            "3Dircadb1.20",
+        ]
+    },
+    "3Dircadb1.1": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
+        "8ab16d83bfb58b790b9ca18f81401cdf",
+    ],
     "3Dircadb1.2": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
     "3Dircadb1.3": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip",
     "3Dircadb1.4": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.4.zip",
@@ -79,15 +157,16 @@ data_urls = {
     "3Dircadb1.18": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.18.zip",
     "3Dircadb1.19": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.19.zip",
     "3Dircadb1.20": "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.20.zip",
-    "CMU-1": ["http://openslide.cs.cmu.edu/download/openslide-testdata/Hamamatsu/CMU-1.ndpi",
-              "1f9df18b8dc6403cd2434bfd3cf20c7f",
-              "CMU-1.ndpi"],
+    "CMU-1": [
+        "http://openslide.cs.cmu.edu/download/openslide-testdata/Hamamatsu/CMU-1.ndpi",
+        "1f9df18b8dc6403cd2434bfd3cf20c7f",
+        "CMU-1.ndpi",
+    ],
     "CMU-1-annotation": [
         __url_server + "sample-data/CMU-1.ndpi.ndpa",
         "f2f70fe432bd9dc3c252540313b92df0",
-        "CMU-1.ndpi.ndpa"
+        "CMU-1.ndpi.ndpa",
     ],
-
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
 }
@@ -108,8 +187,8 @@ def join_path(*path_to_join, **kwargs):
         get_root = False
     sdp = dataset_path(get_root=get_root)
     pth = os.path.join(sdp, *path_to_join)
-    logger.debug('sample_data_path' + str(sdp))
-    logger.debug('path ' + str(pth))
+    logger.debug("sample_data_path" + str(sdp))
+    logger.debug("path " + str(pth))
     return pth
 
 
@@ -138,7 +217,7 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
         cache = cachef.CacheFile(cachefile)
         # cache.update('local_dataset_dir', head)
     if cache is not None:
-        local_data_dir = cache.get_or_save_default('local_dataset_dir', local_dir)
+        local_data_dir = cache.get_or_save_default("local_dataset_dir", local_dir)
 
     if get_root:
         local_data_dir
@@ -147,6 +226,7 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
         local_data_dir = op.join(local_data_dir, "medical", "orig")
 
     return op.expanduser(local_data_dir)
+
 
 # def get_sample_data():
 #     keys = imtools.sample_data.data_urls.keys()
@@ -210,7 +290,6 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     destination_dir = op.expanduser(destination_dir)
     logger.info("destination dir: {}".format(destination_dir))
 
-
     if dataset_label is None:
         dataset_label = data_urls.keys()
 
@@ -221,7 +300,9 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
 
     for label in dataset_label:
         # make all data:url have length 3
-        data_url, url, expected_hash, hash_path, relative_download_dir = get_dataset_meta(label)
+        data_url, url, expected_hash, hash_path, relative_download_dir = get_dataset_meta(
+            label
+        )
         if relative_download_dir is None:
             label_destination_dir = destination_dir
         else:
@@ -253,12 +334,20 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             if not dry_run:
                 downzip(url, destination=label_destination_dir)
                 logger.info("finished")
-                downloaded_hash = checksum(os.path.join(label_destination_dir, hash_path))
+                downloaded_hash = checksum(
+                    os.path.join(label_destination_dir, hash_path)
+                )
                 logger.info("downloaded hash: '" + str(downloaded_hash) + "'")
                 if downloaded_hash != expected_hash:
-                    logger.warning("downloaded hash is different from expected hash\n" +
-                                   "expected hash: '" + str(expected_hash) + "'\n" +
-                                   "downloaded hash: '" + str(downloaded_hash) + "'\n")
+                    logger.warning(
+                        "downloaded hash is different from expected hash\n"
+                        + "expected hash: '"
+                        + str(expected_hash)
+                        + "'\n"
+                        + "downloaded hash: '"
+                        + str(downloaded_hash)
+                        + "'\n"
+                    )
             else:
                 logger.debug("dry run")
 
@@ -279,10 +368,13 @@ def get_old(dataset_label, data_id, destination_dir=None):
         destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
 
     destination_dir = op.expanduser(destination_dir)
-    data_url, url, expected_hash, hash_path, relative_output_path = get_dataset_meta(dataset_label)
+    data_url, url, expected_hash, hash_path, relative_output_path = get_dataset_meta(
+        dataset_label
+    )
     paths = glob.glob(os.path.join(destination_dir, hash_path))
     paths.sort()
     import fnmatch
+
     print(paths)
     print(data_id)
     pathsf = fnmatch.filter(paths, data_id)
@@ -305,14 +397,18 @@ def get(dataset_label, series_number=None, *args, **kwargs):
 
     # relative path in the datasets
     relative_path_extracted_from_data_urls = ""
-    datapath = join_path(relative_path_extracted_from_data_urls, "medical", "data", get_root=True)
+    datapath = join_path(
+        relative_path_extracted_from_data_urls, "medical", "data", get_root=True
+    )
     # read 3D data from datapath
-    datap = io3d.read(datapath, series_number=series_number, dataplus_format=True, *args, **kwargs)
+    datap = io3d.read(
+        datapath, series_number=series_number, dataplus_format=True, *args, **kwargs
+    )
     return datap
 
 
 # noinspection PyProtectedMember
-def checksum(path, hashfunc='md5'):
+def checksum(path, hashfunc="md5"):
     """Return checksum of files given by path.
 
     Wildcards can be used in check sum. Function is strongly dependent on checksumdir package by 'cakepietoast'.
@@ -322,9 +418,10 @@ def checksum(path, hashfunc='md5'):
     :return: (str) hash of the file/files given by path
     """
     import checksumdir
+
     hash_func = checksumdir.HASH_FUNCS.get(hashfunc)
     if not hash_func:
-        raise NotImplementedError('{} not implemented.'.format(hashfunc))
+        raise NotImplementedError("{} not implemented.".format(hashfunc))
 
     if os.path.isdir(path):
         return checksumdir.dirhash(path, hashfunc=hashfunc)
@@ -359,16 +456,21 @@ def generate_donut():
     voxelsize_mm = [3, 2, 1]
 
     datap = {
-        'data3d': data3d,
-        'segmentation': segmentation,
-        'voxelsize_mm': voxelsize_mm
+        "data3d": data3d,
+        "segmentation": segmentation,
+        "voxelsize_mm": voxelsize_mm,
     }
     # io3d.write(datap, "donut.pklz")
     return datap
 
 
-def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal_vein_intensity=130,
-                       spleen_intensity=90):
+def generate_abdominal(
+    size=100,
+    liver_intensity=100,
+    noise_intensity=20,
+    portal_vein_intensity=130,
+    spleen_intensity=90,
+):
     """Create scaleable artificial abdominal like data. Outputs a cube.
 
     {0: nothing, 1: liver, 2: portal_vein, 17: spleen}
@@ -382,22 +484,24 @@ def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal
     """
     boundary = int(size / 4)
     voxelsize_mm = [1.0, 1.5, 1.5]
-    slab = {
-        'liver': 1,
-        'porta': 2,
-        'spleen': 17
-    }
+    slab = {"liver": 1, "porta": 2, "spleen": 17}
 
     segmentation = np.zeros([size, size, size], dtype=np.uint8)
-    segmentation[boundary:-boundary, boundary:-2*boundary, 2*boundary:-boundary] = slab["liver"]
-    segmentation[:, boundary*2:boundary*2+5, boundary*2:boundary*2+5] = slab["porta"]
-    segmentation[:, boundary*2:boundary*2+5, boundary*2:boundary*2+5] = slab["porta"]
+    segmentation[
+        boundary:-boundary, boundary : -2 * boundary, 2 * boundary : -boundary
+    ] = slab["liver"]
+    segmentation[
+        :, boundary * 2 : boundary * 2 + 5, boundary * 2 : boundary * 2 + 5
+    ] = slab["porta"]
+    segmentation[
+        :, boundary * 2 : boundary * 2 + 5, boundary * 2 : boundary * 2 + 5
+    ] = slab["porta"]
     segmentation[:, -5:, -boundary:] = 17
     seeds = np.zeros([size, size, size], dtype=np.uint8)
     seeds[
-        boundary + 1: boundary + 4,
-        boundary + 1: boundary + 4,
-        2 * boundary + 1: 2 * boundary + 4
+        boundary + 1 : boundary + 4,
+        boundary + 1 : boundary + 4,
+        2 * boundary + 1 : 2 * boundary + 4,
     ] = 1
 
     noise = (np.random.random(segmentation.shape) * noise_intensity).astype(np.int)
@@ -407,16 +511,18 @@ def generate_abdominal(size=100, liver_intensity=100, noise_intensity=20, portal
     data3d[segmentation == 17] = spleen_intensity
     data3d += noise
     datap = {
-        'data3d': data3d,
-        'segmentation': segmentation,
-        'voxelsize_mm': voxelsize_mm,
-        'seeds': seeds,
-        'slab': slab
+        "data3d": data3d,
+        "segmentation": segmentation,
+        "voxelsize_mm": voxelsize_mm,
+        "seeds": seeds,
+        "slab": slab,
     }
     return datap
 
 
-def generate_round_data(sz=32, offset=0, radius=7, seedsz=3, add_object_without_seeds=False):
+def generate_round_data(
+    sz=32, offset=0, radius=7, seedsz=3, add_object_without_seeds=False
+):
     """
     Generate data with two sphere objects.
     :param sz: output data shape is [sz, sz+1, sz+2]
@@ -428,24 +534,22 @@ def generate_round_data(sz=32, offset=0, radius=7, seedsz=3, add_object_without_
     """
 
     import scipy.ndimage
-    #seedsz= int(sz/10)
-    space=2
-    seeds = np.zeros([sz, sz+1, sz+2], dtype=np.int8)
+
+    # seedsz= int(sz/10)
+    space = 2
+    seeds = np.zeros([sz, sz + 1, sz + 2], dtype=np.int8)
     xmin = radius + seedsz + offset + 2
     ymin = radius + seedsz + offset + 6
-    seeds[offset + 12, xmin + 3:xmin + 7 + seedsz, ymin:ymin+2] = 1
-    seeds[offset + 20, xmin + 7:xmin + 12 + seedsz, ymin+5:ymin+7] = 1
+    seeds[offset + 12, xmin + 3 : xmin + 7 + seedsz, ymin : ymin + 2] = 1
+    seeds[offset + 20, xmin + 7 : xmin + 12 + seedsz, ymin + 5 : ymin + 7] = 1
 
     # add temp seed
     if add_object_without_seeds:
         seeds[-3, -3, -3] = 1
-    img = np.ones([sz, sz+1, sz+2])
+    img = np.ones([sz, sz + 1, sz + 2])
     img = img - seeds
 
-    seeds[
-    2:10 + seedsz,
-    2:9+ seedsz,
-    2:3+ seedsz] = 2
+    seeds[2 : 10 + seedsz, 2 : 9 + seedsz, 2 : 3 + seedsz] = 2
 
     # remove temo seed
     if add_object_without_seeds:
@@ -463,30 +567,33 @@ def generate_synthetic_liver(return_dataplus=False):
     :return data3d, segmentation, voxelsize_mm, slab, seeds_liver, seeds_porta:
     """
     # data
-    slab = {'none': 0, 'liver': 1, 'porta': 2}
+    slab = {"none": 0, "liver": 1, "porta": 2}
     voxelsize_mm = np.array([1.0, 1.0, 1.2])
 
     segm = np.zeros([80, 256, 250], dtype=np.int16)
 
     # liver
-    segm[30:60, 70:180, 40:190] = slab['liver']
+    segm[30:60, 70:180, 40:190] = slab["liver"]
 
     # porta
-    segm[40:45, 120:130, 70:190] = slab['porta']
-    segm[41:44, 122:127, 68:70] = slab['porta'] # hack to fix stability of skeleton algorithm
+    segm[40:45, 120:130, 70:190] = slab["porta"]
+    segm[41:44, 122:127, 68:70] = slab[
+        "porta"
+    ]  # hack to fix stability of skeleton algorithm
     #
-    segm[40:45, 80:130, 100:110] = slab['porta']
-    segm[42:44, 77:80, 103:106] = slab['porta'] # hack to fix stability of skeleton algorithm
+    segm[40:45, 80:130, 100:110] = slab["porta"]
+    segm[42:44, 77:80, 103:106] = slab[
+        "porta"
+    ]  # hack to fix stability of skeleton algorithm
     # segm[41:44, 78:80, 101:109] = slab['porta']
     # vertical branch under main branch
-    segm[40:44, 120:170, 130:135] = slab['porta']
+    segm[40:44, 120:170, 130:135] = slab["porta"]
 
     data3d = np.zeros(segm.shape)
-    data3d[segm == slab['liver']] = 146
-    data3d[segm == slab['porta']] = 206
-    noise = (np.random.normal(0, 10, segm.shape))  # .astype(np.int16)
+    data3d[segm == slab["liver"]] = 146
+    data3d[segm == slab["porta"]] = 206
+    noise = np.random.normal(0, 10, segm.shape)  # .astype(np.int16)
     data3d = (data3d + noise).astype(np.int16)
-
 
     seeds_liver = np.zeros(data3d.shape, np.int8)
     seeds_liver[40:55, 90:120, 70:110] = 1
@@ -502,8 +609,7 @@ def generate_synthetic_liver(return_dataplus=False):
             "slab": slab,
             "seeds_liver": seeds_liver,
             "seeds_porta": seeds_porta,
-            "segmentation": segm
-
+            "segmentation": segm,
         }
         return datap
     else:
@@ -525,7 +631,7 @@ def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
     if shape is None:
         shape = [32, 32]
 
-    center = ((np.asarray(shape) - 1) / 2.0)
+    center = (np.asarray(shape) - 1) / 2.0
     r = np.min(center) * face_r
 
     # np.min(np.asarray(shape) / 2.0)
@@ -535,8 +641,11 @@ def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
 
     head = (x - center[0]) ** 2 + (y - center[1]) ** 2 < r ** 2
 
-    smile = ((x - center[0]) ** 2 + (y - center[1]) ** 2 < (r * smile_r2) ** 2) & (y > (center[1] + 0.3 * r)) & (
-                (x - center[0]) ** 2 + (y - center[1]) ** 2 >= (r * smile_r1) ** 2)
+    smile = (
+        ((x - center[0]) ** 2 + (y - center[1]) ** 2 < (r * smile_r2) ** 2)
+        & (y > (center[1] + 0.3 * r))
+        & ((x - center[0]) ** 2 + (y - center[1]) ** 2 >= (r * smile_r1) ** 2)
+    )
     smile
     e1c = center + r * np.array([-0.35, -0.2])
     e2c = center + r * np.array([0.35, -0.2])
@@ -567,7 +676,9 @@ def generate_face(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2)
         sh2 = shape
     else:
         sh2 = shape[1:]
-    fc2 = _get_face2(sh2, face_r=face_r, smile_r1=smile_r1, smile_r2=smile_r2, eye_r=eye_r)
+    fc2 = _get_face2(
+        sh2, face_r=face_r, smile_r1=smile_r1, smile_r2=smile_r2, eye_r=eye_r
+    )
 
     if nd == 2:
         return fc2
@@ -577,8 +688,13 @@ def generate_face(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2)
             fc3[i, :, :] = fc2
         return fc3
 
-def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/medical/orig/sliver07/training/",
-                  read_orig=True, read_seg=False):
+
+def sliver_reader(
+    filename_end_mask="*[0-9].mhd",
+    sliver_reference_dir="~/data/medical/orig/sliver07/training/",
+    read_orig=True,
+    read_seg=False,
+):
     """Generator for reading sliver data from directory structure.
 
     :param filename_end_mask: file selection can be controlled with this parameter
@@ -601,13 +717,14 @@ def sliver_reader(filename_end_mask="*[0-9].mhd", sliver_reference_dir="~/data/m
         orig_data = None
         if read_orig:
             orig_data, metadata = io3d.datareader.read(oname, dataplus_format=False)
-            vs_mm = metadata['voxelsize_mm']
+            vs_mm = metadata["voxelsize_mm"]
         if read_seg:
             ref_data, metadata = io3d.datareader.read(rname, dataplus_format=False)
-            vs_mm = metadata['voxelsize_mm']
+            vs_mm = metadata["voxelsize_mm"]
 
         import re
-        numeric_label = re.search(r'.*g(\d+)', oname).group(1)
+
+        numeric_label = re.search(r".*g(\d+)", oname).group(1)
         out = (numeric_label, vs_mm, oname, orig_data, rname, ref_data)
         yield out
 
@@ -620,11 +737,13 @@ def remove(local_file_name):
     try:
         os.remove(local_file_name)
     except Exception as e:
-        print("Cannot remove file '" + local_file_name + "'. Please remove it manually.")
+        print(
+            "Cannot remove file '" + local_file_name + "'. Please remove it manually."
+        )
         print(e)
 
 
-def downzip(url, destination='./sample_data/'):
+def downzip(url, destination="./sample_data/"):
     """Download, unzip and delete. Warning: function with strong side effects!
 
     Returns downloaded data.
@@ -637,10 +756,11 @@ def downzip(url, destination='./sample_data/'):
     logmsg = "downloading from '" + url + "' to '" + destination + "'"
     print(logmsg)
     logger.info(logmsg)
-    tmp_filename = url[url.rfind("/") + 1:]
+    tmp_filename = url[url.rfind("/") + 1 :]
     # tmp_filename = "tmp.zip"
     # urllibr.urlretrieve(url, zip_file_name)
     from . import network
+
     network.download_file(url, destination, filename=tmp_filename)
     zip_file_name = os.path.join(destination, tmp_filename)
     base, ext = op.splitext(tmp_filename)
@@ -649,6 +769,7 @@ def downzip(url, destination='./sample_data/'):
     if ext in (".zip"):
         unzip_recursive(zip_file_name)
     # unzip_one(local_file_name)
+
 
 # def unzip_all(path):
 #     """ Unzip all .zip files packed in other .zip in path recusively.
@@ -701,7 +822,6 @@ def unzip_recursive(zip_file_name):
 
 
 class ExtendAction(argparse.Action):
-
     def __call__(self, parser, namespace, values, option_string=None):
         items = getattr(namespace, self.dest) or []
         items.extend(values)
@@ -718,51 +838,61 @@ def main(turn_on_logging=False):
         ch = logging.StreamHandler()
         main_logger.addHandler(ch)
     else:
-        logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+        logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
         main_logger = logger
 
     # logger.debug('input params')
 
     # input parser
-    parser = argparse.ArgumentParser(
-        description="Work on dataset")
-    parser.register('action', 'extend', ExtendAction)
+    parser = argparse.ArgumentParser(description="Work on dataset")
+    parser.register("action", "extend", ExtendAction)
     parser.add_argument(
-        "-l", "--labels", metavar="N", nargs="+", action="extend",
+        "-l",
+        "--labels",
+        metavar="N",
+        nargs="+",
+        action="extend",
         default=None,
-        help='Get sample data')
+        help="Get sample data",
+    )
     parser.add_argument(
-        '-L', '--print_labels', action="store_true",
+        "-L",
+        "--print_labels",
+        action="store_true",
         default=False,
-        help='print all available labels')
+        help="print all available labels",
+    )
     parser.add_argument(
-        '-c', '--checksum',  # action="store_true",
+        "-c",
+        "--checksum",  # action="store_true",
         default=None,
-        help='Get hash for requested path')
+        help="Get hash for requested path",
+    )
     parser.add_argument(
-        '-v', '--verbose', action="store_true",
-        default=False,
-        help='more messages')
+        "-v", "--verbose", action="store_true", default=False, help="more messages"
+    )
     parser.add_argument(
-        '-d', '--debug',  # action="store_true",
-        default=None,
-        help='Set debug level')
+        "-d", "--debug", default=None, help="Set debug level"  # action="store_true",
+    )
     parser.add_argument(
-        '-o', '--destination_dir',
+        "-o",
+        "--destination_dir",
         default=op.join(dataset_path(get_root=True), "medical", "orig"),
-        help='Set output directory. If not used, the standard dataset dir is used')
+        help="Set output directory. If not used, the standard dataset dir is used",
+    )
     parser.add_argument(
-        '-sdp', '--set_dataset_path',
-        default=None,
-        help='Set standard dataset path')
+        "-sdp", "--set_dataset_path", default=None, help="Set standard dataset path"
+    )
     parser.add_argument(
-        '-gdp', '--get_dataset_path',
-        default=False, action="store_true",
-        help='Get standard dataset path')
-    parser.add_argument(
-        '--dry_run', action="store_true",
+        "-gdp",
+        "--get_dataset_path",
         default=False,
-        help='Do not download')
+        action="store_true",
+        help="Get standard dataset path",
+    )
+    parser.add_argument(
+        "--dry_run", action="store_true", default=False, help="Do not download"
+    )
 
     args = parser.parse_args()
 
@@ -784,7 +914,7 @@ def main(turn_on_logging=False):
 
     if args.get_dataset_path:
         # dp = dataset_path()
-        dp = op.join(dataset_path(get_root=True), "medical", "orig"),
+        dp = (op.join(dataset_path(get_root=True), "medical", "orig"),)
         logger.info(dp)
         print(dp)
         # logger.info("Dataset path changed")
@@ -800,7 +930,9 @@ def main(turn_on_logging=False):
 
     if args.labels is not None:
         main_logger.info("Downloading labels: {}".format(args.labels))
-        download(args.labels, destination_dir=args.destination_dir, dry_run=args.dry_run)
+        download(
+            args.labels, destination_dir=args.destination_dir, dry_run=args.dry_run
+        )
 
     # submodule_update()
 
