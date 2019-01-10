@@ -43,8 +43,8 @@ data_urls = {
     "exp_small": [__url_server + "sample-data/exp_small.zip", "0526ba8ea363fe8b5227f5807b7aaca7"],
     "vincentka": [__url_server + "sample-data/vincentka.zip", "a30fdabaa39c5ce032a3223ed30b88e3"],
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
-    "SCP003-ndpi": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP0003/SCP003.ndpi"],
-    "SCP003-ndpa": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP0003/SCP003.ndpi.ndpa"],
+    "SCP003-ndpi": [__url_server + "sample-data/SCP003/SCP003.ndpi", None, "SCP003.ndpi", "sample_data/SCP003"],
+    "SCP003-ndpa": [__url_server + "sample-data/SCP003/SCP003.ndpi.ndpa", None, "SCP003.ndpi.ndpa", "sample_data/SCP003"],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
@@ -158,22 +158,22 @@ def get_dataset_meta(label):
     """Gives you metadata for dataset chosen via 'label' param
 
     :param label: label = key in data_url dict (that big dict containing all possible datasets)
-    :return: tuple (data_url, url, expected_hash, hash_path, fnpattern)
+    :return: tuple (data_url, url, expected_hash, hash_path, relative_download_dir)
+    relative_download_dir says where will be downloaded the file from url and eventually unzipped
+
     """
     data_url = data_urls[label]
     if type(data_url) == str:
         # back compatibility
         data_url = [data_url]
     if type(data_url) == list:
-        data_url.extend([None, None, None])
+        data_url.extend([None, None, None, None])
         data_url = data_url[:4]
-        url, expected_hash, hash_path, fnpattern = data_url
+        url, expected_hash, hash_path, relative_donwload_dir = data_url
         if hash_path is None:
             hash_path = label
-        if fnpattern is None and hash_path is not None:
-            fnpattern = hash_path
     # elif type(data_url) == dict:
-    return data_url, url, expected_hash, hash_path, fnpattern
+    return data_url, url, expected_hash, hash_path, relative_donwload_dir
 
 
 # noinspection PyTypeChecker
@@ -210,9 +210,6 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     destination_dir = op.expanduser(destination_dir)
     logger.info("destination dir: {}".format(destination_dir))
 
-    if not op.exists(destination_dir):
-        logger.debug("creating directory {}".format(destination_dir))
-        os.makedirs(destination_dir)
 
     if dataset_label is None:
         dataset_label = data_urls.keys()
@@ -224,12 +221,19 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
 
     for label in dataset_label:
         # make all data:url have length 3
-        data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(label)
+        data_url, url, expected_hash, hash_path, relative_download_dir = get_dataset_meta(label)
+        if relative_download_dir is None:
+            label_destination_dir = destination_dir
+        else:
+            label_destination_dir = op.join(destination_dir, relative_download_dir)
+        if not op.exists(label_destination_dir):
+            logger.debug("creating directory {}".format(label_destination_dir))
+            os.makedirs(label_destination_dir)
 
         if hash_path is None:
             hash_path = label
 
-        path_to_hash = os.path.join(destination_dir, hash_path)
+        path_to_hash = os.path.join(label_destination_dir, hash_path)
         try:
             computed_hash = checksum(path_to_hash)
         except Exception as e:
@@ -247,9 +251,9 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         else:
             logger.info("downloading")
             if not dry_run:
-                downzip(url, destination=destination_dir)
+                downzip(url, destination=label_destination_dir)
                 logger.info("finished")
-                downloaded_hash = checksum(os.path.join(destination_dir, hash_path))
+                downloaded_hash = checksum(os.path.join(label_destination_dir, hash_path))
                 logger.info("downloaded hash: '" + str(downloaded_hash) + "'")
                 if downloaded_hash != expected_hash:
                     logger.warning("downloaded hash is different from expected hash\n" +
@@ -275,8 +279,8 @@ def get_old(dataset_label, data_id, destination_dir=None):
         destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
 
     destination_dir = op.expanduser(destination_dir)
-    data_url, url, expected_hash, hash_path, fnpattern = get_dataset_meta(dataset_label)
-    paths = glob.glob(os.path.join(destination_dir, fnpattern))
+    data_url, url, expected_hash, hash_path, relative_output_path = get_dataset_meta(dataset_label)
+    paths = glob.glob(os.path.join(destination_dir, hash_path))
     paths.sort()
     import fnmatch
     print(paths)

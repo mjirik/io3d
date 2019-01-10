@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.22.0
+
+* [Added] Control over relative download directory for every dataset
+
 ## 1.21.1
 
 * [Changed] Dataset SCP003 splited into image data and annotation

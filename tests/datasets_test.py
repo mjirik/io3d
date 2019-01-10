@@ -18,6 +18,7 @@ import shutil
 import sys
 import numpy as np
 import io3d
+import glob
 
 from nose.plugins.attrib import attr
 
@@ -82,6 +83,14 @@ class DatasetsTest(unittest.TestCase):
     def test_getold(self):
         io3d.datasets.download("3Dircadb1.1")
         io3d.datasets.get_old("3Dircadb1", "*1/P*")
+
+    def test_getold(self):
+        pth = io3d.datasets.join_path("medical", "orig", "sample_data", "SCP003", "SCP003.ndpi.ndpa", get_root=True)
+        if op.exists(pth):
+            import os
+            os.remove(pth)
+        io3d.datasets.download("SCP003-ndpa")
+        self.assertTrue(op.exists(pth))
 
     @unittest.skip("waiting for implementation of get() function")
     def test_get_no_series_number(self):
