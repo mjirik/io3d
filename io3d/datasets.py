@@ -93,6 +93,7 @@ data_urls = {
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
+    "nrn4": [__url_server + "sample-data/nrn4.pklz", None, "nrn4.pklz", "sample-data/"],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip"],
     "lisa": {
