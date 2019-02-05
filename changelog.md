@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.24.0
+
+* [Changed] Compact checksumlog. Added hash for ircad.
+
 ## 1.22.0
 
 * [Added] Control over relative download directory for every dataset
