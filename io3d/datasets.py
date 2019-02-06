@@ -431,11 +431,16 @@ def checksum(path, hashfunc="md5"):
 
     hashvalues = []
     path_list = glob.glob(path)
-    logger.debug("path_list: len: %i, first ... last: %s ... %s", len(path_list),  str(path_list[0]), str(path_list[-1]))
+    logger.debug("path_list: len: %i", len(path_list))
+    if len(path_list) > 0:
+        logger.debug("first ... last: %s ... %s", str(path_list[0]), str(path_list[-1]))
+
     for path in path_list:
         if os.path.isfile(path):
             hashvalues.append(checksumdir._filehash(path, hashfunc=hash_func))
-    logger.debug("one hash per file: len: %i,  first ... last: %s ... %s", len(hashvalues), str(hashvalues[0]), str(hashvalues[-1]))
+    logger.debug("one hash per file: len: %i", len(hashvalues))
+    if len(path_list) > 0:
+        logger.debug("first ... last: %s ... %s", str(hashvalues[0]), str(hashvalues[-1]))
     checksum_hash = checksumdir._reduce_hash(hashvalues, hashfunc=hash_func)
     logger.debug("total hash: {}".format(str(checksum_hash)))
     return checksum_hash
