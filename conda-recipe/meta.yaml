@@ -44,7 +44,7 @@ requirements:
     - scikit-image
 #    - imma
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
-    - {{ pin_compatible('imma', max_pin='x.x') }}
+    - {{ pin_compatible('imma', max_pin='x') }}
   run:
     - python
     - numpy
@@ -58,7 +58,7 @@ requirements:
     - scikit-image
 #    - imma
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
-    - {{ pin_compatible('imma', max_pin='x.x') }}
+    - {{ pin_compatible('imma', max_pin='x') }}
 
 test:
   # Python imports
