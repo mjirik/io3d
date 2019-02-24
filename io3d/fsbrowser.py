@@ -25,6 +25,7 @@ def img_show(im, h=5, **kwargs):#h = sz. scale
     plt.figure(figsize=(w,h))
     plt.imshow(im, interpolation="none", **kwargs)
 
+
 class FileSystemBrowser():
     def __init__(self, path=None):
         self.path = path
@@ -75,6 +76,7 @@ class FileSystemBrowser():
                 ending = os.path.basename(os.path.normpath(path_sl + x))
                 preview_path = path_sl + ending
             # add required endings..
+        # TODO what if there is no jpg or png file?
         im = plt.imread(preview_path)
         im.shape
         img_show(im)
