@@ -29,8 +29,10 @@ class FileSystemBrowser():
         self.preview_size = [100, 100]
         pass
 
-    def get_path_info(path): #(self, path)?
-        
+    # Tady skutečně musí být (self, path). Self je odkaz na mateřský objekt, následují pak další parametry.
+    # def get_path_info(path): #(self, path)?
+    def get_path_info(self, path):
+
         path_sl = path + "/"
         #name
         name = os.path.basename(os.path.normpath(path))
