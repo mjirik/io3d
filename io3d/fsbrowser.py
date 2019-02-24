@@ -79,6 +79,7 @@ class FileSystemBrowser():
         # TODO what if there is no jpg or png file?
         im = plt.imread(preview_path)
         im.shape
+        # TODO this function should not be interactive - no imshow, no windows, iteractivity can be i.e. in test.
         img_show(im)
         
         #path
