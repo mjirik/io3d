@@ -140,6 +140,7 @@ data_urls = {
         "2f29b5a66946c4d76cbea38fd643e7d2", "3Dircadb1.1/**/image_*"
         # "6408942626845de25a36ece2e32600e8", "3Dircadb1.1/**/image_*"
 # '2f29b5a66946c4d76cbea38fd643e7d2'
+#     "1b9039ffe1ff9af9caa344341c8cec03"
     ],
     "3Dircadb1.2": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip", "eff7ff35b7ebc87ce55488549bfc5ee4", "3Dircadb1.2/**/image_*"],
     "3Dircadb1.3": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip", "e5de3e88e062c4c2ee26e53b029aac6d", "3Dircadb1.3/**/image_*"],
@@ -430,7 +431,7 @@ def checksum(path, hashfunc="md5"):
         return checksumdir.dirhash(path, hashfunc=hashfunc)
 
     hashvalues = []
-    path_list = glob.glob(path)
+    path_list = list(sorted(glob.glob(path)))
     logger.debug("path_list: len: %i", len(path_list))
     if len(path_list) > 0:
         logger.debug("first ... last: %s ... %s", str(path_list[0]), str(path_list[-1]))
