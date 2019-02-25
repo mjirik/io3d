@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.25.0
+
+* [Changed] Checkum is computed on oreder directory (is less system dependent).
+
 ## 1.24.0
 
 * [Changed] Compact checksumlog. Added hash for ircad.
