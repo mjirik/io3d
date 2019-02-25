@@ -66,21 +66,32 @@ class FileSystemBrowser():
         text = ("Studie: " + str(study_counter) + " Serie: " + str(serie_counter) +" Files: " + str(filescounter))
         
         #preview - forced path,some pic. from serie?
-        preview = ("Preview of files in dir: " + name)
-        only_files = [f for f in listdir(path) if isfile(join(path, f))]
-        for x in only_files:
-            if ".jpg" in x:
-                ending = os.path.basename(os.path.normpath(path_sl + x))
-                preview_path = path_sl + ending
-            if ".png" in x:
-                ending = os.path.basename(os.path.normpath(path_sl + x))
-                preview_path = path_sl + ending
-            # add required endings..
-        # TODO what if there is no jpg or png file?
-        im = plt.imread(preview_path)
-        im.shape
-        # TODO this function should not be interactive - no imshow, no windows, iteractivity can be i.e. in test.
-        img_show(im)
+        
+        #preview - forced path,some pic. from serie?
+        if ".jpg" in path:
+            preview = ("Used path leads to current image.")
+            im = plt.imread(path)
+            im.shape
+            img_show(im)
+        elif ".png" in path:
+            preview = ("Used path leads to current image.")
+            im = plt.imread(path)
+            im.shape
+            img_show(im)
+        else:
+            preview = ("Preview of files in dir: " + name)
+            only_files = [f for f in listdir(path) if isfile(join(path, f))]
+            for x in only_files:
+                if ".jpg" in x:
+                    ending = os.path.basename(os.path.normpath(path_sl + x))
+                    preview_path = path_sl + ending
+                if ".png" in x:
+                    ending = os.path.basename(os.path.normpath(path_sl + x))
+                    preview_path = path_sl + ending
+                # add required endings..
+            im = plt.imread(preview_path)
+            im.shape
+            img_show(im)
         
         #path
         text_path = ("Path: " + path)
