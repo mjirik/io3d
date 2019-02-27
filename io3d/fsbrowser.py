@@ -66,8 +66,6 @@ class FileSystemBrowser():
         text = ("Studie: " + str(study_counter) + " Serie: " + str(serie_counter) +" Files: " + str(filescounter))
         
         #preview - forced path,some pic. from serie?
-        
-        #preview - forced path,some pic. from serie?
         if ".jpg" in path:
             preview = ("Used path leads to current image.")
             im = plt.imread(path)
