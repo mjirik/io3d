@@ -26,10 +26,13 @@ def img_show(im, h=5, **kwargs):#h = sz. scale
     plt.imshow(im, interpolation="none", **kwargs)
 
 
+# FileSystemBrowser("c:/jkdfaldkfj/asdfasjfh")
+
 class FileSystemBrowser():
     def __init__(self, path=None):
         self.path = path
         self.preview_size = [100, 100]
+        self.nova_promenna = 5
         pass
 
     # Tady skutečně musí být (self, path). Self je odkaz na mateřský objekt, následují pak další parametry.
@@ -39,7 +42,7 @@ class FileSystemBrowser():
         path_sl = path + "/"
         #name
         name = os.path.basename(os.path.normpath(path))
-        
+
         #type
         type_ = os.path.isdir(path)
         if type_ == 1:
@@ -86,9 +89,17 @@ class FileSystemBrowser():
                 if ".png" in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
                     preview_path = path_sl + ending
+                # TODO další formáty třeba .DCM
+                # import io3d.datareader
+                # io3d.datareader.read(file_path)
+
                 # add required endings..
+                # TODO co když žádný obrázek skutečně není? Vracet None
+
+
             im = plt.imread(preview_path)
             im.shape
+            # TODO odstranit interaktivní imshow
             img_show(im)
         
         #path

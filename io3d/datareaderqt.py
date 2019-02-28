@@ -41,7 +41,7 @@ class DataReaderWidget(QtGui.QWidget):
             cachefile=None,
             qt_app=None,
 
-    ) :
+    ):
         """
 
         :param datapath: is also output var. Describes path to selected data
