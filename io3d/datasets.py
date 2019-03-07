@@ -847,7 +847,7 @@ def main(turn_on_logging=False):
         ch = logging.StreamHandler()
         main_logger.addHandler(ch)
     else:
-        logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
+        logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
         main_logger = logger
 
     # logger.debug('input params')
