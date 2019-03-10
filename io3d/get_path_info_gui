@@ -1,0 +1,30 @@
+import sys
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtCore import QSize 
+    
+class get_path_info_gui(QMainWindow):#(temp) probly change class name?
+    
+    def __init__(self):
+        QMainWindow.__init__(self)
+
+        self.setMinimumSize(QSize(500, 500))    
+        self.setWindowTitle("PRJ_X: pathinfo gui") 
+
+        pybutton = QPushButton('Refresh data', self)
+        pybutton.clicked.connect(self.button1_action)
+        pybutton.resize(128,128)
+        pybutton.move(300, 150)        
+
+    def button1_action(self):
+        print('Refreshed!')
+
+        #TODO data info and imageshow
+        
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    mainWin = get_path_info_gui()
+    mainWin.show()
+    sys.exit(app.exec_())
+    
