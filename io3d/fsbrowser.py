@@ -38,11 +38,10 @@ class FileSystemBrowser():
     # Tady skutečně musí být (self, path). Self je odkaz na mateřský objekt, následují pak další parametry.
     # def get_path_info(path): #(self, path)?
     def get_path_info(self, path):
-
         path_sl = path + "/"
         #name
         name = os.path.basename(os.path.normpath(path))
-
+        
         #type
         type_ = os.path.isdir(path)
         if type_ == 1:
@@ -56,52 +55,61 @@ class FileSystemBrowser():
         all_names = []
         for root, dirs, files in os.walk(path):
             for d in dirs:
-                all_names.append(d)
-                #if contains ,,name of picture,, display_path - preview of pics. in study_x, serie_y..
+                all_names.append(d.lower())
                 for f in files:
-                    all_names.append(f)
+                    all_names.append(f.lower())
+        #lowercase - should be able to count all series,studies..
         for i in all_names:
             if "serie" in i: 
                 serie_counter += 1
             if "study" in i:
                 study_counter += 1
         filescounter = sum([len(files) for r, d, files in os.walk(path)])
-        text = ("Studie: " + str(study_counter) + " Serie: " + str(serie_counter) +" Files: " + str(filescounter))
+        text = ("Study: " + str(study_counter) + " Series: " + str(serie_counter) +" Files: " + str(filescounter))
         
-        #preview - forced path,some pic. from serie?
-        if ".jpg" in path:
+        path_lower = path.lower()
+        
+        if ".jpg" in path_lower:
             preview = ("Used path leads to current image.")
             im = plt.imread(path)
             im.shape
             img_show(im)
-        elif ".png" in path:
+            #or ".Png" or ".PNG" in path:
+            # or "Jpg" or "JPG" in path:
+        elif ".png" in path_lower:
             preview = ("Used path leads to current image.")
             im = plt.imread(path)
             im.shape
             img_show(im)
         else:
-            preview = ("Preview of files in dir: " + name)
+            preview = ("Preview of files in dir: " + name) 
             only_files = [f for f in listdir(path) if isfile(join(path, f))]
+            
             for x in only_files:
-                if ".jpg" in x:
+                if ".jpg" or "Jpg" or "JPG" in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
                     preview_path = path_sl + ending
-                if ".png" in x:
+                    im = plt.imread(preview_path)
+                    im.shape
+                    img_show(im)
+                    break
+                elif ".png" or "Png" or "PNG" in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
-                    preview_path = path_sl + ending
+                    im = plt.imread(preview_path)
+                    im.shape
+                    img_show(im)
+                    break
                 # TODO další formáty třeba .DCM
                 # import io3d.datareader
                 # io3d.datareader.read(file_path)
 
                 # add required endings..
                 # TODO co když žádný obrázek skutečně není? Vracet None
+                else:
+                    noimage = 0
+                    break
+                #add required endings..
 
-
-            im = plt.imread(preview_path)
-            im.shape
-            # TODO odstranit interaktivní imshow
-            img_show(im)
-        
         #path
         text_path = ("Path: " + path)
         
@@ -126,7 +134,7 @@ class FileSystemBrowser():
         retval = [name, type_res, text, preview, text_path]
         #"acquisition_date": ["2015-02-16", "2015-02-16"],
         #"modality": "MRI",
-        print(retval)
+        #print(retval)
         return retval
 
     def get_dir_list(self):
