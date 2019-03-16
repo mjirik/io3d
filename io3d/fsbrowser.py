@@ -5,10 +5,10 @@ logger = logging.getLogger(__name__)
 import glob
 import numpy as np
 import os
-
+import cv2
+import matplotlib.pyplot as plt
 from fnmatch import fnmatch
-import numpy as np
-import matplotlib.pylab as plt
+import pydicom as pdicom
 from os import listdir
 from os.path import isfile, join
 
@@ -17,15 +17,7 @@ from .import datareader
 def remove_if_exists(filename):
     if os.path.exists(filename):
         os.remove(filename)
-
-def img_show(im, h=5, **kwargs):#h = sz. scale
-    y = im.shape[0]
-    x = im.shape[1]
-    w = (y/x) * h
-    plt.figure(figsize=(w,h))
-    plt.imshow(im, interpolation="none", **kwargs)
-
-
+        
 # FileSystemBrowser("c:/jkdfaldkfj/asdfasjfh")
 
 class FileSystemBrowser():
@@ -69,36 +61,55 @@ class FileSystemBrowser():
         
         path_lower = path.lower()
         
+        #preview - forced path,some pic. from serie?
         if ".jpg" in path_lower:
             preview = ("Used path leads to current image.")
-            im = plt.imread(path)
-            im.shape
-            img_show(im)
-            #or ".Png" or ".PNG" in path:
-            # or "Jpg" or "JPG" in path:
+            img = cv2.imread(path)
+            plt.imshow(img)
+            plt.show()
+            
         elif ".png" in path_lower:
             preview = ("Used path leads to current image.")
-            im = plt.imread(path)
-            im.shape
-            img_show(im)
+            img = cv2.imread(path)
+            plt.imshow(img)
+            plt.show()
+            
+        elif ".dcm" in path_lower:
+            preview = ("Used path leads to current image.")
+            ds = pdicom.dcmread(path)
+            plt.imshow(ds.pixel_array, cmap=plt.cm.bone)
+            
         else:
             preview = ("Preview of files in dir: " + name) 
             only_files = [f for f in listdir(path) if isfile(join(path, f))]
             
             for x in only_files:
-                if ".jpg" or "Jpg" or "JPG" in x:
+                if (".dcm" or ".Dcm" or ".DCM") in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
                     preview_path = path_sl + ending
-                    im = plt.imread(preview_path)
-                    im.shape
-                    img_show(im)
+                    ds = pdicom.dcmread(preview_path)
+                    plt.imshow(ds.pixel_array, cmap=plt.cm.bone)
                     break
-                elif ".png" or "Png" or "PNG" in x:
+                elif (".jpg" or ".Jpg" or ".JPG") in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
-                    im = plt.imread(preview_path)
-                    im.shape
-                    img_show(im)
+                    preview_path = path_sl + ending
+                    img = cv2.imread(preview_path)
+                    plt.imshow(img)
+                    plt.show()  
                     break
+                    
+                elif (".png" or ".Png" or ".PNG") in x:
+                    ending = os.path.basename(os.path.normpath(path_sl + x))
+                    preview_path = path_sl + ending
+                    img = cv2.imread(preview_path)
+                    plt.imshow(img)
+                    plt.show()
+                    break
+                    
+                else:
+                    noimage = 0
+                    break
+                #add required endings..
                 # TODO další formáty třeba .DCM
                 # import io3d.datareader
                 # io3d.datareader.read(file_path)
@@ -134,7 +145,11 @@ class FileSystemBrowser():
         retval = [name, type_res, text, preview, text_path]
         #"acquisition_date": ["2015-02-16", "2015-02-16"],
         #"modality": "MRI",
-        #print(retval)
+        #print(retval[0])
+        #print(retval[1])
+        #print(retval[2])
+        #print(retval[3])
+        #print(retval[4])
         return retval
 
     def get_dir_list(self):
