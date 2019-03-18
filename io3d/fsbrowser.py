@@ -116,9 +116,9 @@ class FileSystemBrowser():
 
                 # add required endings..
                 # TODO co když žádný obrázek skutečně není? Vracet None
-                else:
-                    noimage = 0
-                    break
+                # else:
+                #     noimage = 0
+                #     break
                 #add required endings..
 
         #path
