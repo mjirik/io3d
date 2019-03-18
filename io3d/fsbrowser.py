@@ -32,6 +32,11 @@ class FileSystemBrowser():
     # def get_path_info(path): #(self, path)?
     def get_path_info(self, path):
         path_sl = path + "/"
+        res_last = path[-1]
+        if res_last == "/":
+            path_sl = path
+        else:
+            path_sl = path + "/"
         #name
         name = os.path.basename(os.path.normpath(path))
         
