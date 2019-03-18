@@ -5,7 +5,8 @@ logger = logging.getLogger(__name__)
 import glob
 import numpy as np
 import os
-import cv2
+# TODO remove cv2 dependency
+# import cv2
 import matplotlib.pyplot as plt
 from fnmatch import fnmatch
 import pydicom as pdicom
