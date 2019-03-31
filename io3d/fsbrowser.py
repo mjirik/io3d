@@ -150,7 +150,7 @@ class FileSystemBrowser():
             path = text_path
             name = name_final
         
-            retval = [path, name]
+            retval = [name, type_res, preview, text, acquid, modality, path]
             #"acquisition_date": ["2015-02-16", "2015-02-16"],
             #"modality": "MRI",
             #print(retval)
