@@ -147,8 +147,10 @@ class FileSystemBrowser():
             #TODO
             acquid = 0
             modality = 0
+            path = text_path
+            name = name_final
         
-            retval = [text_path, name_final]
+            retval = [path, name]
             #"acquisition_date": ["2015-02-16", "2015-02-16"],
             #"modality": "MRI",
             #print(retval)
