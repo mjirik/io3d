@@ -15,7 +15,6 @@ from .import datareader
 from skimage import io
 import io3d
 import io3d.dcmreaddata
-import sed3
 
 
 def remove_if_exists(filename):
