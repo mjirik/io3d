@@ -148,7 +148,7 @@ class FileSystemBrowser():
             acquid = 0
             modality = 0
         
-            retval = [name_final, type_res, preview, text, acquid, modality, text_path]
+            retval = [text_path, name_final]
             #"acquisition_date": ["2015-02-16", "2015-02-16"],
             #"modality": "MRI",
             #print(retval)
