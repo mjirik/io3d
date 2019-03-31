@@ -42,13 +42,13 @@ class FileSystemBrowser():
                 path_sl = path + "/"
         #name
             name = os.path.basename(os.path.normpath(path))
-        
+            name_final = ("name: " + name)
         #type
             type_ = os.path.isdir(path)
             if type_ == 1:
                 type_res = "Dir"
             if type_ == 0:
-                type_res = ("Type: " + name)
+                type_res = ("type: " + name)
             
         #text - files, series, files
             serie_counter = 0
@@ -124,7 +124,7 @@ class FileSystemBrowser():
                 #add required endings..
 
         #path
-            text_path = ("Path: " + path)
+            text_path = ("path: " + path)
         
         # Fallowing function can be used for directory analysis
         # import io3d.dcmreaddata
@@ -148,7 +148,7 @@ class FileSystemBrowser():
             acquid = 0
             modality = 0
         
-            retval = [name, type_res, preview, text, acquid, modality, text_path]
+            retval = [name_final, type_res, preview, text, acquid, modality, text_path]
             #"acquisition_date": ["2015-02-16", "2015-02-16"],
             #"modality": "MRI",
             #print(retval)
