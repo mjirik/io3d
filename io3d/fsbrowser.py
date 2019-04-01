@@ -30,6 +30,62 @@ class FileSystemBrowser():
         self.nova_promenna = 5
         pass
 
+    #metoda pouze na zobrazeni obrazku - volala by se v pripade ze tam nejaky bude
+    def get_path_info_preview(self, path):
+        path_lower = path.lower()
+        #name
+        name = os.path.basename(os.path.normpath(path))
+        name_final = ("name: " + name)
+        path_sl = path + "/"
+        
+        if ".jpg" in path_lower:
+            preview = ("Used path leads to current image.")
+            img = io.imread(path)
+            io.imshow(img)
+            io.show()
+            
+        elif ".png" in path_lower:
+            preview = ("Used path leads to current image.")
+            img = io.imread(path)
+            io.imshow(img)
+            io.show()
+            
+        elif ".dcm" in path_lower:
+            preview = ("Used path leads to current image.")
+            ds = pdicom.dcmread(path)
+            plt.imshow(ds.pixel_array, cmap=plt.cm.bone)
+            
+        else:
+            preview = ("Preview of files in dir: " + name) 
+            only_files = [f for f in listdir(path) if isfile(join(path, f))]
+            
+            for x in only_files:
+                if (".dcm" or ".Dcm" or ".DCM") in x:
+                    ending = os.path.basename(os.path.normpath(path_sl + x))
+                    preview_path = path_sl + ending
+                    ds = pdicom.dcmread(preview_path)
+                    plt.imshow(ds.pixel_array, cmap=plt.cm.bone)
+                    break
+                elif (".jpg" or ".Jpg" or ".JPG") in x:
+                    ending = os.path.basename(os.path.normpath(path_sl + x))
+                    preview_path = path_sl + ending
+                    img = io.imread(preview_path)
+                    io.imshow(img)
+                    io.show()
+                    break
+                    
+                elif (".png" or ".Png" or ".PNG") in x:
+                    ending = os.path.basename(os.path.normpath(path_sl + x))
+                    preview_path = path_sl + ending
+                    img = io.imread(preview_path)
+                    io.imshow(img)
+                    io.show()
+                    break
+                    
+                else:
+                    None
+                    break
+        
     # Tady skutečně musí být (self, path). Self je odkaz na mateřský objekt, následují pak další parametry.
     # def get_path_info(path): #(self, path)?
     def get_path_info(self, path):
@@ -46,7 +102,7 @@ class FileSystemBrowser():
         #type
             type_ = os.path.isdir(path)
             if type_ == 1:
-                type_res = "Dir"
+                type_res = "type: .dir"
             if type_ == 0:
                 type_res = ("type: " + name)
             
@@ -73,20 +129,12 @@ class FileSystemBrowser():
         #preview - forced path,some pic. from serie?
             if ".jpg" in path_lower:
                 preview = ("Used path leads to current image.")
-                img = io.imread(path)
-                io.imshow(img)
-                io.show()
             
             elif ".png" in path_lower:
                 preview = ("Used path leads to current image.")
-                img = io.imread(path)
-                io.imshow(img)
-                io.show()
             
             elif ".dcm" in path_lower:
                 preview = ("Used path leads to current image.")
-                ds = pdicom.dcmread(path)
-                plt.imshow(ds.pixel_array, cmap=plt.cm.bone)
             
             else:
                 preview = ("Preview of files in dir: " + name) 
@@ -94,25 +142,14 @@ class FileSystemBrowser():
             
                 for x in only_files:
                     if (".dcm" or ".Dcm" or ".DCM") in x:
-                        ending = os.path.basename(os.path.normpath(path_sl + x))
-                        preview_path = path_sl + ending
-                        ds = pdicom.dcmread(preview_path)
-                        plt.imshow(ds.pixel_array, cmap=plt.cm.bone)
+                        print("dcm files")
                         break
                     elif (".jpg" or ".Jpg" or ".JPG") in x:
-                        ending = os.path.basename(os.path.normpath(path_sl + x))
-                        preview_path = path_sl + ending
-                        img = io.imread(path)
-                        io.imshow(img)
-                        io.show()
+                        print("jpf files")
                         break
                     
                     elif (".png" or ".Png" or ".PNG") in x:
-                        ending = os.path.basename(os.path.normpath(path_sl + x))
-                        preview_path = path_sl + ending
-                        img = io.imread(path)
-                        io.imshow(img)
-                        io.show()
+                        print("png files")
                         break
                     
                     else:
@@ -149,7 +186,7 @@ class FileSystemBrowser():
             modality = 0
             path = text_path
             name = name_final
-        
+            
             retval = [name, type_res, preview, text, acquid, modality, path]
             #"acquisition_date": ["2015-02-16", "2015-02-16"],
             #"modality": "MRI",
