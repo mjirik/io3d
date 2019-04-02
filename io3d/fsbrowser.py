@@ -5,8 +5,7 @@ logger = logging.getLogger(__name__)
 import glob
 import numpy as np
 import os
-# TODO remove cv2 dependency
-# import cv2
+# TODO remove cv2 - done
 import matplotlib.pyplot as plt
 from fnmatch import fnmatch
 
@@ -21,8 +20,11 @@ except ImportError:
 
 from os import listdir
 from os.path import isfile, join
-
 from .import datareader
+from skimage import io
+import io3d
+import io3d.dcmreaddata
+
 
 def remove_if_exists(filename):
     if os.path.exists(filename):
@@ -37,57 +39,25 @@ class FileSystemBrowser():
         self.nova_promenna = 5
         pass
 
-    # Tady skutečně musí být (self, path). Self je odkaz na mateřský objekt, následují pak další parametry.
-    # def get_path_info(path): #(self, path)?
-    def get_path_info(self, path):
-        path_sl = path + "/"
-        res_last = path[-1]
-        if res_last == "/":
-            path_sl = path
-        else:
-            path_sl = path + "/"
+    #metoda pouze na zobrazeni obrazku - volala by se v pripade ze tam nejaky bude
+    def get_path_info_preview(self, path):
+        path_lower = path.lower()
         #name
         name = os.path.basename(os.path.normpath(path))
+        name_final = ("name: " + name)
+        path_sl = path + "/"
         
-        #type
-        type_ = os.path.isdir(path)
-        if type_ == 1:
-            type_res = "Dir"
-        if type_ == 0:
-            type_res = ("Type: " + name)
-            
-        #text - files, series, files
-        serie_counter = 0
-        study_counter = 0
-        all_names = []
-        for root, dirs, files in os.walk(path):
-            for d in dirs:
-                all_names.append(d.lower())
-                for f in files:
-                    all_names.append(f.lower())
-        #lowercase - should be able to count all series,studies..
-        for i in all_names:
-            if "serie" in i: 
-                serie_counter += 1
-            if "study" in i:
-                study_counter += 1
-        filescounter = sum([len(files) for r, d, files in os.walk(path)])
-        text = ("Study: " + str(study_counter) + " Series: " + str(serie_counter) +" Files: " + str(filescounter))
-        
-        path_lower = path.lower()
-        
-        #preview - forced path,some pic. from serie?
         if ".jpg" in path_lower:
             preview = ("Used path leads to current image.")
-            img = cv2.imread(path)
-            plt.imshow(img)
-            plt.show()
+            img = io.imread(path)
+            io.imshow(img)
+            io.show()
             
         elif ".png" in path_lower:
             preview = ("Used path leads to current image.")
-            img = cv2.imread(path)
-            plt.imshow(img)
-            plt.show()
+            img = io.imread(path)
+            io.imshow(img)
+            io.show()
             
         elif ".dcm" in path_lower:
             preview = ("Used path leads to current image.")
@@ -108,36 +78,99 @@ class FileSystemBrowser():
                 elif (".jpg" or ".Jpg" or ".JPG") in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
                     preview_path = path_sl + ending
-                    img = cv2.imread(preview_path)
-                    plt.imshow(img)
-                    plt.show()  
+                    img = io.imread(preview_path)
+                    io.imshow(img)
+                    io.show()
                     break
                     
                 elif (".png" or ".Png" or ".PNG") in x:
                     ending = os.path.basename(os.path.normpath(path_sl + x))
                     preview_path = path_sl + ending
-                    img = cv2.imread(preview_path)
-                    plt.imshow(img)
-                    plt.show()
+                    img = io.imread(preview_path)
+                    io.imshow(img)
+                    io.show()
                     break
                     
                 else:
-                    noimage = 0
+                    None
                     break
+        
+    # Tady skutečně musí být (self, path). Self je odkaz na mateřský objekt, následují pak další parametry.
+    # def get_path_info(path): #(self, path)?
+    def get_path_info(self, path):
+        try:
+            path_sl = path + "/"
+            res_last = path[-1]
+            if res_last == "/":
+                path_sl = path
+            else:
+                path_sl = path + "/"
+        #name
+            name = os.path.basename(os.path.normpath(path))
+            name_final = ("name: " + name)
+        #type
+            type_ = os.path.isdir(path)
+            if type_ == 1:
+                type_res = "type: .dir"
+            if type_ == 0:
+                type_res = ("type: " + name)
+            
+        #text - files, series, files
+            serie_counter = 0
+            study_counter = 0
+            all_names = []
+            for root, dirs, files in os.walk(path):
+                for d in dirs:
+                    all_names.append(d.lower())
+                    for f in files:
+                        all_names.append(f.lower())
+        #lowercase - should be able to count all series,studies..
+            for i in all_names:
+                if "serie" in i: 
+                    serie_counter += 1
+                if "study" in i:
+                    study_counter += 1
+            filescounter = sum([len(files) for r, d, files in os.walk(path)])
+            text = ("Study: " + str(study_counter) + " Series: " + str(serie_counter) +" Files: " + str(filescounter))
+        
+            path_lower = path.lower()
+        
+        #preview - forced path,some pic. from serie?
+            if ".jpg" in path_lower:
+                preview = ("Used path leads to current image.")
+            
+            elif ".png" in path_lower:
+                preview = ("Used path leads to current image.")
+            
+            elif ".dcm" in path_lower:
+                preview = ("Used path leads to current image.")
+            
+            else:
+                preview = ("Preview of files in dir: " + name) 
+                only_files = [f for f in listdir(path) if isfile(join(path, f))]
+            
+                for x in only_files:
+                    if (".dcm" or ".Dcm" or ".DCM") in x:
+                        print("dcm files")
+                        break
+                    elif (".jpg" or ".Jpg" or ".JPG") in x:
+                        print("jpf files")
+                        break
+                    
+                    elif (".png" or ".Png" or ".PNG") in x:
+                        print("png files")
+                        break
+                    
+                    else:
+                        None
+                        break
                 #add required endings..
-                # TODO další formáty třeba .DCM
                 # import io3d.datareader
                 # io3d.datareader.read(file_path)
-
-                # add required endings..
-                # TODO co když žádný obrázek skutečně není? Vracet None
-                # else:
-                #     noimage = 0
-                #     break
                 #add required endings..
 
         #path
-        text_path = ("Path: " + path)
+            text_path = ("path: " + path)
         
         # Fallowing function can be used for directory analysis
         # import io3d.dcmreaddata
@@ -157,14 +190,28 @@ class FileSystemBrowser():
         # image = Sitk.ReadImage(datapath)
         # data3d = dcmtools.get_pixel_array_from_sitk(image)
         
-        retval = [name, type_res, text, preview, text_path]
-        #"acquisition_date": ["2015-02-16", "2015-02-16"],
-        #"modality": "MRI",
-        #print(retval[0])
-        #print(retval[1])
-        #print(retval[2])
-        #print(retval[3])
-        #print(retval[4])
+            #TODO
+            acquid = 0
+            modality = 0
+            path = text_path
+            name = name_final
+            
+            retval = [name, type_res, preview, text, acquid, modality, path]
+            #"acquisition_date": ["2015-02-16", "2015-02-16"],
+            #"modality": "MRI",
+            #print(retval)
+            #print(retval[0])
+            #print(retval[1])
+            #print(retval[2])
+            #print(retval[3])
+            #print(retval[4])
+            #print(retval[5])
+            #print(retval[6])
+        
+        except:
+            print("$Error$")
+            return None
+        
         return retval
 
     def get_dir_list(self):

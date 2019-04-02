@@ -49,8 +49,11 @@ class FileSystemBrowserTest(unittest.TestCase):
         filepath = op.join(pydicom.data.DATA_ROOT, 'test_files/dicomdirtests/98892001/CT2N')
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
         dirlist = fsb.get_path_info(filepath)
-        self.assertTrue("path" in dirlist)
-        self.assertTrue("name" in dirlist)
+        #weak test - TODO..
+        self.assertTrue("name: CT2N" in dirlist[0])
+        self.assertTrue("type: .dir" in dirlist[1])
+        self.assertTrue("Preview of files in dir: CT2N" in dirlist[2])
+        self.assertTrue("test_files/dicomdirtests/98892001/CT2N" in dirlist[6])
 
     #  comment next line if you want to run the test
     # @unittest.skip('waiting for implementation')
