@@ -9,7 +9,16 @@ import os
 # import cv2
 import matplotlib.pyplot as plt
 from fnmatch import fnmatch
-import pydicom as pdicom
+
+try:
+    import pydicom as pdicom
+except ImportError:
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import dicom as pdicom
+    logger.debug("dicom imported - it would be better use pydicom")
+
 from os import listdir
 from os.path import isfile, join
 
