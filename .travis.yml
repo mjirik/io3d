@@ -57,9 +57,9 @@ before_script:
     # GUI
     - "export DISPLAY=:99.0"
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        sleep 3; # give xvfb sume time to start
       fi
 #        sh -e /etc/init.d/xvfb start ;
-#        sleep 3; # give xvfb sume time to start
 #        export DISPLAY=:99.0;
 #    - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
 
