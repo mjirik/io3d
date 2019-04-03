@@ -57,7 +57,6 @@ before_script:
     # GUI
     - "export DISPLAY=:99.0"
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-
         sleep 3 ;
       fi
     # give xvfb sume time to start
