@@ -33,7 +33,7 @@ install:
     - conda config --add channels conda-forge
     - conda config --add channels SimpleITK
     - conda config --add channels mjirik
-    - sudo apt-get install -qq $(< apt_requirements.txt)
+#    - sudo apt-get install -qq $(< apt_requirements.txt)
 # download training data
 #    - mkdir -p ~/data/medical/orig
 #    - wget http://home.zcu.cz/~mjirik/lisa/sample-data/io3d_sample_data.zip
