@@ -751,6 +751,9 @@ def remove(local_file_name):
         )
         print(e)
 
+def get_labels():
+    return list(sorted(data_urls.keys()))
+
 
 def downzip(url, destination="./sample_data/"):
     """Download, unzip and delete. Warning: function with strong side effects!
@@ -934,7 +937,7 @@ def main(turn_on_logging=False):
         if args.labels is None:
             return
     if args.print_labels:
-        print(sorted(data_urls.keys()))
+        print(get_labels())
         return
 
     if args.labels is not None:
