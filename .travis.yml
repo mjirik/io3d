@@ -1,4 +1,4 @@
-language: sh
+language: bash
 #language: python
 #virtualenv:
 #    system_site_packages: false
