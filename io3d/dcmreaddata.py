@@ -952,15 +952,33 @@ def get_series_number_by_guess_for_liver(dcmreader, counts, bins, qt_app=None):
     df = pd.DataFrame(list(series_info.values()))
 
     #select CT
-    df = df[df["Modality"].str.lower().str.contains("ct") == True]
-    # select just venous
-    df = df[df["SeriesDescription"].str.lower().str.contains("ven") == True]
-    # remove saggittal
-    df = df[df["SeriesDescription"].str.lower().str.contains("sag") == False]
-    # remove cor
-    df = df[df["SeriesDescription"].str.lower().str.contains("cor") == False]
+    df["SeriesSelectionScore"] = 0
+    df.loc[df["Modality"].str.lower().str.contains("ct") == True, "SeriesSelectionScore"] += 1000
+    # print(df["Modality"].str.lower())
+    # print(df["Modality"].str.lower().str.contains("ct"))
+    selection = df["Modality"].str.lower().str.contains("ct")
+    # print(df[["SeriesNumber", "Modality", "SeriesSelectionScore", "SeriesDescription"]])
+    # # select just venous
+    df.loc[df["SeriesDescription"].str.lower().str.contains("ven") == True, "SeriesSelectionScore"] += 100
+    df.loc[df["SeriesDescription"].str.lower().str.contains("sag") == True, "SeriesSelectionScore"] -= 100
+    df.loc[df["SeriesDescription"].str.lower().str.contains("cor") == True, "SeriesSelectionScore"] -= 100
+
+    df.loc[df["SeriesDescription"].str.lower().str.contains("body") == True, "SeriesSelectionScore"] += 30
+    df.loc[df["SeriesDescription"].str.lower().str.contains("lung") == True, "SeriesSelectionScore"] -= 10
+    # print(df[["SeriesNumber", "Modality", "SeriesSelectionScore", "SeriesDescription"]])
     df["dst_to_200"] = np.abs(200 - df.Count)
-    dfs = df.sort_values(by="dst_to_200", ascending=True)
+    df["SeriesSelectionScore"] -= df["dst_to_200"]
+    dfs = df.sort_values(by="SeriesSelectionScore", ascending=False)
+    # print(dfs[["SeriesNumber", "Modality", "SeriesSelectionScore", "SeriesDescription", "Count"]])
+    # df = df[df["Modality"].str.lower().str.contains("ct") == True]
+    # # select just venous
+    # df = df[df["SeriesDescription"].str.lower().str.contains("ven") == True]
+    # # remove saggittal
+    # df = df[df["SeriesDescription"].str.lower().str.contains("sag") == False]
+    # # remove cor
+    # df = df[df["SeriesDescription"].str.lower().str.contains("cor") == False]
+    # df["dst_to_200"] = np.abs(200 - df.Count)
+    # dfs = df.sort_values(by="dst_to_200", ascending=True)
     sn = list(dfs.SeriesNumber)[0]
 
     return sn
