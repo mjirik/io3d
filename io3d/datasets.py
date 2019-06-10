@@ -31,6 +31,8 @@ local_dir = "~/data/"
 __url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 __url_server = "http://147.228.240.61/queetech/"
 __url_server = "http://home.zcu.cz/~mjirik/lisa/"
+
+# Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
     "head": [
         __url_server + "sample-data/head.zip",
@@ -86,7 +88,8 @@ data_urls = {
     ],
     "SCP003-ndpa": [
         __url_server + "sample-data/SCP003/SCP003.ndpi.ndpa",
-        'd41d8cd98f00b204e9800998ecf8427e',
+        # 'd41d8cd98f00b204e9800998ecf8427e',
+        None,
         "SCP003.ndpi.ndpa",
         "sample_data/SCP003",
     ],
