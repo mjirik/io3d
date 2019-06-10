@@ -80,19 +80,20 @@ data_urls = {
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
     "SCP003-ndpi": [
         __url_server + "sample-data/SCP003/SCP003.ndpi",
-        None,
+        'c7e74c1487bcaa9061aea1ce5c9b8bc9',
         "SCP003.ndpi",
         "sample_data/SCP003",
     ],
     "SCP003-ndpa": [
         __url_server + "sample-data/SCP003/SCP003.ndpi.ndpa",
-        None,
+        'd41d8cd98f00b204e9800998ecf8427e',
         "SCP003.ndpi.ndpa",
         "sample_data/SCP003",
     ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
+    # alternative linux hash nrn4 'd41d8cd98f00b204e9800998ecf8427e'
     "nrn4": [__url_server + "sample-data/nrn4.pklz", 'ec470d016c31b8d17d09475fa93ad7d2', "nrn4.pklz", "sample-data/"],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip"],
