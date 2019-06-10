@@ -331,10 +331,15 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             logger.warning("problem with sample_data.checksum()")
             computed_hash = None
 
+        None,
+        if expected_hash == 'd41d8cd98f00b204e9800998ecf8427e':
+            logger.warning("Expected hash is equal to hash of empty file list.")
+        if computed_hash == 'd41d8cd98f00b204e9800998ecf8427e':
+            logger.warning("Computed hash is equal to hash of empty file list.")
         logger.info("dataset: '" + label + "'")
         logger.info("path to hash: {}".format(path_to_hash))
-        logger.info("expected hash: '" + str(expected_hash) + "'")
-        logger.info("computed hash: '" + str(computed_hash) + "'")
+        logger.info("expected hash:   '" + str(expected_hash) + "'")
+        logger.info("initial hash:    '" + str(computed_hash) + "'")
         if (computed_hash is not None) and (expected_hash == computed_hash):
             logger.info("match ok - no download needed")
         else:
