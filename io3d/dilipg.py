@@ -11,15 +11,15 @@ def params_and_values(p:pyqtgraph.parametertree.Parameter, pth="", dct={}, separ
     """
     for name in p.getValues():
         # print(f"name: {name}, type {type(name)}")
-        pth = pth + separator + name
+        pth_local = pth + separator + name
         # print(pth)
         ch = p.child(name)
         # print(f"name: {name}, type {type(ch)}")
         if type(ch) is pyqtgraph.parametertree.parameterTypes.SimpleParameter:
-            dct[pth] = ch.value()
+            dct[pth_local] = ch.value()
             # print(pth)
         else:
-            params_and_values(ch, pth)
+            params_and_values(ch, pth_local)
 
     return dct
 
