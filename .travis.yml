@@ -10,8 +10,9 @@ os:
     - osx
 #    - windows # on bash there does not work linux X server
 env:
-    - CONDA_PYTHON_VERSION=2.7
+#    - CONDA_PYTHON_VERSION=2.7
     - CONDA_PYTHON_VERSION=3.6
+    - CONDA_PYTHON_VERSION=3.7
 
 before_install:
     # We do this conditionally because it saves us some downloading if the
@@ -45,13 +46,13 @@ install:
 #    - wget http://home.zcu.cz/~mjirik/lisa/sample-data/io3d_sample_data.zip
 #    - unzip -d ~/data/medical/orig/ io3d_sample_data.zip
 # command to install dependencies
-    - conda create --yes -n travis pip nose python=$CONDA_PYTHON_VERSION
+    - conda create --yes -n travis pip nose pytest coveralls pytest-cov python=$CONDA_PYTHON_VERSION
     - source activate travis
 #    - Install dependencies
-    - pip install python-coveralls
+#    - pip install python-coveralls
     - conda install --yes --file requirements_conda.txt python=$CONDA_PYTHON_VERSION
 #    - pip install checksumdir
-    - pip install pathlib # install pathlib for python 2.7, useless on python 3.*
+#    - pip install pathlib # install pathlib for python 2.7, useless on python 3.*
     - conda list
 
     - python -m io3d.datasets -l 3Dircadb1.1 jatra_5mm exp_small sliver_training_001 io3d_sample_data head volumetrie
