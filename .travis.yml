@@ -14,6 +14,8 @@ env:
     - CONDA_PYTHON_VERSION=3.6
     - CONDA_PYTHON_VERSION=3.7
 
+services:
+  - xvfb
 before_install:
     # We do this conditionally because it saves us some downloading if the
     # version is the same.
@@ -63,13 +65,13 @@ install:
 before_script:
     # GUI
     - "export DISPLAY=:99.0"
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        export DISPLAY=:99.0;
-        sh -e /etc/init.d/xvfb start ;
-        sleep 3 ;
-      fi
-    # give xvfb sume time to start
-    - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
+#    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+#        export DISPLAY=:99.0;
+#        sh -e /etc/init.d/xvfb start ;
+#        sleep 3 ;
+#      fi
+#    # give xvfb sume time to start
+#    - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
 
 script: nosetests -v --with-coverage --cover-package=io3d
 after_success:
