@@ -19,11 +19,14 @@ import os.path as op
 import os
 import io3d
 import io3d.anonym
+import pytest
 
 skip_on_local = False
 
 
 class AnonTestCase(unittest.TestCase):
+
+    @pytest.mark.xfail
     @unittest.skipIf(os.environ.get("TRAVIS", skip_on_local), "Skip on Travis-CI")
     def test_anon_file(self):
         # print("get travis", os.environ.get("TRAVIS"))
