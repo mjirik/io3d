@@ -14,6 +14,7 @@ import shutil
 import numpy as np
 
 from loguru import logger
+import pytest
 
 
 # from imtools import qmisc
