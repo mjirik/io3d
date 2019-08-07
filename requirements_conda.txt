@@ -16,3 +16,4 @@ pydicom
 ruamel.yaml
 scikit-image
 imma
+loguru
