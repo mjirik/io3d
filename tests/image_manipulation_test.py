@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from loguru import logger
+
 # import funkcí z jiného adresáře
 import os.path
 
@@ -14,10 +15,10 @@ import io3d
 import io3d.datasets
 import imma.image_manipulation as ima
 
+
 class ImageManipulationTest(unittest.TestCase):
     interactivetTest = False
     # interactivetTest = True
-
 
     def test_resize_to_shape(self):
 
@@ -76,9 +77,15 @@ class ImageManipulationTest(unittest.TestCase):
         datap = io3d.datasets.generate_abdominal()
         data3d = datap["data3d"]
         segmentation = datap["segmentation"]
-        crinfo_auto1 = io3d.image_manipulation.crinfo_from_specific_data(segmentation, [5])
-        crinfo_auto2 = io3d.image_manipulation.crinfo_from_specific_data(segmentation, 5)
-        crinfo_auto3 = io3d.image_manipulation.crinfo_from_specific_data(segmentation, [5,5, 5])
+        crinfo_auto1 = io3d.image_manipulation.crinfo_from_specific_data(
+            segmentation, [5]
+        )
+        crinfo_auto2 = io3d.image_manipulation.crinfo_from_specific_data(
+            segmentation, 5
+        )
+        crinfo_auto3 = io3d.image_manipulation.crinfo_from_specific_data(
+            segmentation, [5, 5, 5]
+        )
 
         # import sed3
         # ed = sed3.sed3(data3d, contour=segmentation)
@@ -124,12 +131,12 @@ class ImageManipulationTest(unittest.TestCase):
         crinfo1 = [
             sorted(np.random.randint(0, shape[0], 2)),
             sorted(np.random.randint(0, shape[1], 2)),
-            sorted(np.random.randint(0, shape[2], 2))
+            sorted(np.random.randint(0, shape[2], 2)),
         ]
         crinfo2 = [
             sorted(np.random.randint(0, shape[0], 2)),
             sorted(np.random.randint(0, shape[1], 2)),
-            sorted(np.random.randint(0, shape[2], 2))
+            sorted(np.random.randint(0, shape[2], 2)),
         ]
 
         img_cropped = ima.crop(img_in, crinfo1)
@@ -143,18 +150,19 @@ class ImageManipulationTest(unittest.TestCase):
         logger.debug("img_cropped.shape" + str(img_cropped.shape))
         logger.debug("img_uncropped.shape" + str(img_uncropped.shape))
 
-
         self.assertEquals(img_in.shape, img_uncropped.shape)
         # sonda indexes inside cropped area
         # cr_com = np.asarray(crinfo_combined)
         # if np.all((cr_com[:, 1] - cr_com[:, 0]) > 1):
         if np.all(img_cropped.shape > 1):
             # sometimes the combination of crinfo has zero size in one dimension
-            sonda = np.array([
-                np.random.randint(crinfo_combined[0][0], crinfo_combined[0][1] - 1),
-                np.random.randint(crinfo_combined[1][0], crinfo_combined[1][1] - 1),
-                np.random.randint(crinfo_combined[2][0], crinfo_combined[2][1] - 1),
-            ])
+            sonda = np.array(
+                [
+                    np.random.randint(crinfo_combined[0][0], crinfo_combined[0][1] - 1),
+                    np.random.randint(crinfo_combined[1][0], crinfo_combined[1][1] - 1),
+                    np.random.randint(crinfo_combined[2][0], crinfo_combined[2][1] - 1),
+                ]
+            )
             sonda_intensity_uncropped = img_uncropped[sonda[0], sonda[1], sonda[2]]
             sonda_intensity_in = img_in[sonda[0], sonda[1], sonda[2]]
             self.assertEquals(sonda_intensity_in, sonda_intensity_uncropped)
@@ -213,48 +221,48 @@ class ImageManipulationTest(unittest.TestCase):
         # self.assertCountEqual(expected_shape, data_out.shape)
 
     def test_simple_get_nlabel(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabel(slab, 2)
         self.assertEqual(val, 2)
         self.assertEqual(len(slab), 2)
 
     def test_simple_string_get_nlabel(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabel(slab, "porta")
         self.assertEqual(val, 2)
         self.assertEqual(len(slab), 2)
 
     def test_simple_new_numeric_get_nlabel(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabel(slab, 7)
         self.assertNotEqual(val, 1)
         self.assertNotEqual(val, 2)
         self.assertEqual(val, 7)
 
     def test_simple_new_string_get_nlabel(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabel(slab, "cava")
         self.assertNotEqual(val, 1)
         self.assertNotEqual(val, 2)
 
     def test_simple_string_get_nlabel_return_string(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabel(slab, "porta", return_mode="str")
         self.assertEqual(val, "porta")
 
     def test_simple_numeric_get_nlabel_return_string(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabel(slab, 2, return_mode="str")
         self.assertEqual(val, "porta")
 
     def test_get_nlabels_single_label(self):
-        slab={"liver": 1, "kindey": 15, "none":0}
+        slab = {"liver": 1, "kindey": 15, "none": 0}
         labels = 1
         val = ima.get_nlabels(slab, labels)
         self.assertEqual(val, 1)
 
     def test_get_nlabels_multiple(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
         val = ima.get_nlabels(slab, [2, "porta", "new", 7], return_mode="str")
         self.assertEqual(val[0], "porta")
         self.assertEqual(val[1], "porta")
@@ -262,13 +270,13 @@ class ImageManipulationTest(unittest.TestCase):
         self.assertEqual(val[3], "7")
 
     def test_get_nlabels_single(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
 
         val = ima.get_nlabels(slab, "porta", return_mode="int")
         self.assertEqual(val, 2)
 
     def test_get_nlabels_single_both(self):
-        slab={"liver": 1, "porta": 2}
+        slab = {"liver": 1, "porta": 2}
 
         val = ima.get_nlabels(slab, "porta", return_mode="both")
         self.assertEqual(val[0], 2)
@@ -337,13 +345,31 @@ class ImageManipulationTest(unittest.TestCase):
         # ed.show()
         self.assertTrue(img_uncropped[4, 4, 3] == img_in[4, 4, 3])
 
-        self.assertTrue(img_uncropped[crinfo1[0][0], 5, 3] == img_uncropped[0, 5, 3], msg="pixels under crop")
-        self.assertTrue(img_uncropped[5, crinfo1[1][0], 3] == img_uncropped[5, 0, 3], msg="pixels under crop")
-        self.assertTrue(img_uncropped[7, 3, crinfo1[2][0]] == img_uncropped[7, 3, 0], msg="pixels under crop")
+        self.assertTrue(
+            img_uncropped[crinfo1[0][0], 5, 3] == img_uncropped[0, 5, 3],
+            msg="pixels under crop",
+        )
+        self.assertTrue(
+            img_uncropped[5, crinfo1[1][0], 3] == img_uncropped[5, 0, 3],
+            msg="pixels under crop",
+        )
+        self.assertTrue(
+            img_uncropped[7, 3, crinfo1[2][0]] == img_uncropped[7, 3, 0],
+            msg="pixels under crop",
+        )
 
-        self.assertTrue(img_uncropped[crinfo1[0][1] - 1, 5, 3] == img_uncropped[-1, 5, 3], msg="pixels over crop")
-        self.assertTrue(img_uncropped[5, crinfo1[1][1] - 1, 3] == img_uncropped[5, -1, 3], msg="pixels over crop")
-        self.assertTrue(img_uncropped[7, 3, crinfo1[2][1] - 1] == img_uncropped[7, 3, -1], msg="pixels over crop")
+        self.assertTrue(
+            img_uncropped[crinfo1[0][1] - 1, 5, 3] == img_uncropped[-1, 5, 3],
+            msg="pixels over crop",
+        )
+        self.assertTrue(
+            img_uncropped[5, crinfo1[1][1] - 1, 3] == img_uncropped[5, -1, 3],
+            msg="pixels over crop",
+        )
+        self.assertTrue(
+            img_uncropped[7, 3, crinfo1[2][1] - 1] == img_uncropped[7, 3, -1],
+            msg="pixels over crop",
+        )
 
         # self.assertTrue(img_uncropped[crinfo1[0][1], 5 , 3] == img_uncropped[0, 5, 3], msg="pixels over crop")
         # self.assertTrue(img_uncropped[crinfo1[1][1], 5 , 3] == img_uncropped[1, 5, 3], msg="pixels over crop")
@@ -360,7 +386,6 @@ class ImageManipulationTest(unittest.TestCase):
         self.assertTrue(img_uncropped[-1, -1, -1] == 0)
         self.assertTrue(img_uncropped[4, 4, 3] == img_in[4, 4, 3])
 
-
     def test_uncrop_with_start_point_crinfo(self):
         shape = [10, 10, 5]
         orig_shape = [15, 13, 7]
@@ -370,7 +395,7 @@ class ImageManipulationTest(unittest.TestCase):
         img_uncropped = ima.uncrop(img_in, crinfo=crinfo, orig_shape=orig_shape)
 
         self.assertTrue(img_uncropped[-1, -1, -1] == 0)
-        self.assertTrue(img_uncropped[4 + 5, 4 + 2, 3 + 1] == img_in[4 , 4, 3])
+        self.assertTrue(img_uncropped[4 + 5, 4 + 2, 3 + 1] == img_in[4, 4, 3])
 
     def test_squeeze_labels(self):
         seeds = np.zeros([50, 60, 70])
@@ -395,6 +420,7 @@ class ImageManipulationTest(unittest.TestCase):
         seeds[2, 0] = 3
 
         import matplotlib.pyplot as plt
+
         # plt.imshow(seeds, interpolation="nearest")
         # plt.show()
 

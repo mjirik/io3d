@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import ( division, absolute_import, print_function, unicode_literals )
+from __future__ import division, absolute_import, print_function, unicode_literals
 
 import sys, os, tempfile, logging
 
@@ -26,13 +26,13 @@ def download_file(url, dest=None, filename=None):
     if filename is None:
         filename = os.path.basename(path)
     if not filename:
-        filename = 'downloaded.file'
+        filename = "downloaded.file"
     if dest:
         filename = os.path.join(dest, filename)
 
-    with open(filename, 'wb') as f:
+    with open(filename, "wb") as f:
         meta = u.info()
-        meta_func = meta.getheaders if hasattr(meta, 'getheaders') else meta.get_all
+        meta_func = meta.getheaders if hasattr(meta, "getheaders") else meta.get_all
         meta_length = meta_func("Content-Length")
         file_size = None
         if meta_length:

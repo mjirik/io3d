@@ -24,20 +24,20 @@ class RawIOTest(unittest.TestCase):
     # @attr('interactive')
     def test_rawiv_read(self):
         # import sed3
-        data3d, metadata = io3d.rawN.read(io3d.datasets.join_path('sample_data/ct_head.rawiv'))
+        data3d, metadata = io3d.rawN.read(
+            io3d.datasets.join_path("sample_data/ct_head.rawiv")
+        )
         # ed = sed3.sed3(data3d)
         # ed.show()
         # on this index sould be number 119
         self.assertEqual(data3d[29, 13, 27], 119)
         pass
 
-    @attr('actual')
+    @attr("actual")
     def test_rawiv_write(self):
         data3d = (np.random.rand(6, 5, 4) * 10).astype(np.uint8)
-        metadata = {
-            'voxelsize_mm': [1, 1, 1]
-        }
-        filename = 'test_rawiv.rawiv'
+        metadata = {"voxelsize_mm": [1, 1, 1]}
+        filename = "test_rawiv.rawiv"
         io3d.rawN.write(filename, data3d, metadata)
 
         # import sed3
@@ -51,6 +51,7 @@ class RawIOTest(unittest.TestCase):
         # ed.show()
         # on this index sould be number 119
         # self.assertEqual(data3d[29, 13, 27], 119)
+
 
 if __name__ == "__main__":
     unittest.main()

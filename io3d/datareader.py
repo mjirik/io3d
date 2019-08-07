@@ -13,9 +13,11 @@ import sys
 
 try:
     import dicom
+
     dicom.debug(False)
 except ImportError:
     import pydicom as dicom
+
     dicom.config.debug(False)
 
 # NOTE(mareklovci - 2018_05_13): Absolute imports are prefered in Python, so eg. "from io3d import tgz" should be used.
@@ -29,13 +31,35 @@ from . import dcmtools
 from io3d.deprecation import deprecated
 
 
-def read(datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1, convert_to_gray=True,
-         series_number=None, dicom_expected=None, **kwargs):
+def read(
+    datapath,
+    qt_app=None,
+    dataplus_format=True,
+    gui=False,
+    start=0,
+    stop=None,
+    step=1,
+    convert_to_gray=True,
+    series_number=None,
+    dicom_expected=None,
+    **kwargs
+):
     """Simple read function. Internally calls DataReader.Get3DData()"""
     dr = DataReader()
-    return dr.Get3DData(datapath=datapath, qt_app=qt_app, dataplus_format=dataplus_format, gui=gui, start=start,
-                        stop=stop, step=step, convert_to_gray=convert_to_gray, series_number=series_number,
-                        use_economic_dtype=True, dicom_expected=dicom_expected  , **kwargs)
+    return dr.Get3DData(
+        datapath=datapath,
+        qt_app=qt_app,
+        dataplus_format=dataplus_format,
+        gui=gui,
+        start=start,
+        stop=stop,
+        step=step,
+        convert_to_gray=convert_to_gray,
+        series_number=series_number,
+        use_economic_dtype=True,
+        dicom_expected=dicom_expected,
+        **kwargs
+    )
 
 
 # NOTE(mareklovci): The same code was used in two functions, so according to DRY principle I cleaned it up.
@@ -46,24 +70,32 @@ def _metadata(image, datapath):
     :param datapath: path to data
     :return: {'series_number': '', 'datadir': '', 'voxelsize_mm': ''}
     """
-    metadata = {'series_number': 0, 'datadir': datapath}
+    metadata = {"series_number": 0, "datadir": datapath}
     spacing = image.GetSpacing()
-    metadata['voxelsize_mm'] = [
-        spacing[2],
-        spacing[0],
-        spacing[1],
-    ]
+    metadata["voxelsize_mm"] = [spacing[2], spacing[0], spacing[1]]
     return metadata
 
 
 class DataReader:
-
     def __init__(self):
         self.overlay_fcn = None
 
     # noinspection PyAttributeOutsideInit,PyUnboundLocalVariable,PyPep8Naming
-    def Get3DData(self, datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1,
-                  convert_to_gray=True, series_number=None, use_economic_dtype=True, dicom_expected=None, **kwargs):
+    def Get3DData(
+        self,
+        datapath,
+        qt_app=None,
+        dataplus_format=True,
+        gui=False,
+        start=0,
+        stop=None,
+        step=1,
+        convert_to_gray=True,
+        series_number=None,
+        use_economic_dtype=True,
+        dicom_expected=None,
+        **kwargs
+    ):
         """Returns 3D data and its metadata.
 
         # NOTE(:param qt_app:) If it is set to None (as default) all dialogs for series selection are performed in
@@ -94,6 +126,7 @@ class DataReader:
             return
         if qt_app is None and gui is True:
             from PyQt5.QtWidgets import QApplication
+
             qt_app = QApplication(sys.argv)
 
         if type(datapath) is not str:
@@ -110,15 +143,17 @@ class DataReader:
         self.gui = gui
 
         if os.path.isfile(datapath):
-            logger.debug('file read recognized')
+            logger.debug("file read recognized")
             data3d, metadata = self.__ReadFromFile(datapath)
 
         elif os.path.exists(datapath):
-            logger.debug('directory read recognized')
-            data3d, metadata = self.__ReadFromDirectory(datapath=datapath, dicom_expected=dicom_expected)
+            logger.debug("directory read recognized")
+            data3d, metadata = self.__ReadFromDirectory(
+                datapath=datapath, dicom_expected=dicom_expected
+            )
             # datapath, start, stop, step, gui=gui, **kwargs)
         else:
-            logger.error('Data path {} not found'.format(datapath))
+            logger.error("Data path {} not found".format(datapath))
 
         if convert_to_gray:
             if len(data3d.shape) > 3:
@@ -128,11 +163,11 @@ class DataReader:
             data3d = self.__use_economic_dtype(data3d)
 
         if dataplus_format:
-            logger.debug('dataplus format')
+            logger.debug("dataplus format")
             # metadata = {'voxelsize_mm': [1, 1, 1]}
             datap = metadata
-            datap['data3d'] = data3d
-            logger.debug('datap keys () : ' + str(datap.keys()))
+            datap["data3d"] = data3d
+            logger.debug("datap keys () : " + str(datap.keys()))
             return datap
         else:
             return data3d, metadata
@@ -150,26 +185,26 @@ class DataReader:
         kwargs = self.kwargs
         gui = self.gui
 
-        if (dicom_expected is not False) and (dcmr.is_dicom_dir(datapath)):  # reading dicom
-            logger.debug('Dir - DICOM')
+        if (dicom_expected is not False) and (
+            dcmr.is_dicom_dir(datapath)
+        ):  # reading dicom
+            logger.debug("Dir - DICOM")
             logger.debug("dicom_expected " + str(dicom_expected))
-            reader = dcmr.DicomReader(datapath,
-                                      series_number=self.series_number,
-                                      gui=gui,
-                                      **kwargs)  # qt_app=None, gui=True)
+            reader = dcmr.DicomReader(
+                datapath, series_number=self.series_number, gui=gui, **kwargs
+            )  # qt_app=None, gui=True)
             data3d = reader.get_3Ddata(start, stop, step)
             metadata = reader.get_metaData()
-            metadata['series_number'] = reader.series_number
-            metadata['datadir'] = datapath
+            metadata["series_number"] = reader.series_number
+            metadata["datadir"] = datapath
             self.overlay_fcn = reader.get_overlay
         else:  # reading image sequence
-            logger.debug('Dir - Image sequence')
+            logger.debug("Dir - Image sequence")
 
-            logger.debug('Getting list of readable files...')
+            logger.debug("Getting list of readable files...")
             flist = []
             try:
                 import SimpleITK as Sitk
-
 
             except ImportError as e:
                 logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
@@ -183,9 +218,9 @@ class DataReader:
                 flist.append(os.path.join(datapath, f))
             flist.sort()
 
-            logger.debug('Reading image data...')
+            logger.debug("Reading image data...")
             image = Sitk.ReadImage(flist)
-            logger.debug('Getting numpy array from image data...')
+            logger.debug("Getting numpy array from image data...")
             data3d = Sitk.GetArrayFromImage(image)
             metadata = _metadata(image, datapath)
         return data3d, metadata
@@ -207,49 +242,44 @@ class DataReader:
         :param datapath: path to file to read
         :return: tuple (data3d, metadata)
         """
+
         def _create_meta(_datapath):
             """Just simply returns some dict. This functions exists in order to keep DRY"""
-            meta = {
-                'series_number': 0,
-                'datadir': _datapath
-            }
+            meta = {"series_number": 0, "datadir": _datapath}
             return meta
 
         path, ext = os.path.splitext(datapath)
         ext = ext[1:]
-        if ext in ('pklz', 'pkl'):
-            logger.debug('pklz format detected')
+        if ext in ("pklz", "pkl"):
+            logger.debug("pklz format detected")
             from . import misc
 
-
-            data = misc.obj_from_file(datapath, filetype='pkl')
-            data3d = data.pop('data3d')
+            data = misc.obj_from_file(datapath, filetype="pkl")
+            data3d = data.pop("data3d")
             # metadata must have series_number
             metadata = _create_meta(datapath)
             metadata.update(data)
 
-        elif ext in ['hdf5']:
+        elif ext in ["hdf5"]:
             from . import hdf5_io
-
 
             datap = hdf5_io.load_dict_from_hdf5(datapath)
             # datap = self.read_hdf5(datapath)
-            data3d = datap.pop('data3d')
+            data3d = datap.pop("data3d")
 
             # back compatibility
-            if 'metadata' in datap.keys():
-                datap = datap['metadata']
+            if "metadata" in datap.keys():
+                datap = datap["metadata"]
             # metadata must have series_number
             metadata = _create_meta(datapath)
             metadata.update(datap)
 
-        elif ext in ['idx']:
+        elif ext in ["idx"]:
             from . import idxformat
-
 
             idxreader = idxformat.IDXReader()
             data3d, metadata = idxreader.read(datapath)
-        elif ext in ['dcm', 'DCM', 'dicom']:
+        elif ext in ["dcm", "DCM", "dicom"]:
             data3d, metadata = self._read_with_sitk(datapath)
             metadata = self._fix_sitk_bug(datapath, metadata)
         elif ext in ["bz2"]:
@@ -270,7 +300,6 @@ class DataReader:
         """
         try:
             import SimpleITK as Sitk
-
 
         except ImportError as e:
             logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
@@ -366,26 +395,20 @@ def main():
 
     # input parser
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-i', '--inputfile',
-                        default=None,
-                        required=True,
-                        help='input file')
-    parser.add_argument('-sn', '--seriesnumber',
-                        default=None,
-                        help='seriesnumber')
-    parser.add_argument('-d', '--debug',
-                        action='store_true',
-                        help='Debug mode')
+    parser.add_argument(
+        "-i", "--inputfile", default=None, required=True, help="input file"
+    )
+    parser.add_argument("-sn", "--seriesnumber", default=None, help="seriesnumber")
+    parser.add_argument("-d", "--debug", action="store_true", help="Debug mode")
     args = parser.parse_args()
 
     if args.debug:
         ch.setLevel(logging.DEBUG)
 
-    data3d, metadata = read(args.inputfile,
-                            series_number=args.seriesnumber,
-                            dataplus_format=False)
+    data3d, metadata = read(
+        args.inputfile, series_number=args.seriesnumber, dataplus_format=False
+    )
     import sed3
-
 
     ed = sed3.sed3(data3d)
     ed.show()

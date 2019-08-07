@@ -11,21 +11,25 @@ from loguru import logger
 import os.path
 
 import re
+
 try:
     import dicom
+
     dicom.debug(False)
 except:
     import pydicom as dicom
+
     dicom.config.debug(False)
 
 import os.path as op
 from . import rawN
 from . import misc
+
 # from sys import argv
 from . import dcmtools
 
 
-def write(data3d, path, filetype='auto', metadata=None):
+def write(data3d, path, filetype="auto", metadata=None):
     """
 
     :param data3d: input ndarray
@@ -54,8 +58,15 @@ class DataWriter:
         segmentation_path = startpath + "_segmentation" + ext
         return segmentation_path
 
-
-    def Write3DData(self, data3d, path, filetype='auto', metadata=None, progress_callback=None, sfin=True):
+    def Write3DData(
+        self,
+        data3d,
+        path,
+        filetype="auto",
+        metadata=None,
+        progress_callback=None,
+        sfin=True,
+    ):
         """
         :param data3d: input ndarray data
         :param path: output path, to specify slice number advanced formatting options (like {:06d}) can be used
@@ -72,7 +83,7 @@ class DataWriter:
         path = os.path.expanduser(path)
 
         try:
-            d3d = data3d.pop('data3d')
+            d3d = data3d.pop("data3d")
             metadata = data3d
             data3d = d3d
         except:
@@ -81,7 +92,7 @@ class DataWriter:
         if progress_callback is not None:
             self.progress_callback = progress_callback
 
-        if filetype == 'auto':
+        if filetype == "auto":
             startpath, ext = os.path.splitext(path)
             filetype = ext[1:].lower()
 
@@ -90,43 +101,42 @@ class DataWriter:
             segmentation_path = self.__get_segmentation_path(path)
             segmentation = metadata["segmentation"]
 
-
-
-        mtd = {'voxelsize_mm': [1, 1, 1]}
+        mtd = {"voxelsize_mm": [1, 1, 1]}
         if metadata is not None:
             mtd.update(metadata)
-        metadata=mtd
+        metadata = mtd
 
-        if path.find('{') >= 0:
-            filetype = 'image_stack'
+        if path.find("{") >= 0:
+            filetype = "image_stack"
             # one_file_per_slice = True
 
-    #     if one_file_per_slice:
-    #         self._one_file_per_slice(self, data3d, path, filetype, metadata)
-    #     else:
-    #         self._all_in_one_file(self, data3d, path, filetype, metadata)
-    #
-    # def _all_in_one_file(self, data3d, path, filetype, metadata):
+        #     if one_file_per_slice:
+        #         self._one_file_per_slice(self, data3d, path, filetype, metadata)
+        #     else:
+        #         self._all_in_one_file(self, data3d, path, filetype, metadata)
+        #
+        # def _all_in_one_file(self, data3d, path, filetype, metadata):
 
-        if filetype in ['vtk', 'tiff', 'tif', "mhd", "nii", "raw"]:
+        if filetype in ["vtk", "tiff", "tif", "mhd", "nii", "raw"]:
             self._write_with_sitk(path, data3d, metadata)
             if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, metadata)
-        elif filetype in ['dcm', 'DCM', 'dicom']:
+        elif filetype in ["dcm", "DCM", "dicom"]:
             self._write_with_sitk(path, data3d, metadata)
             self._fix_sitk_bug(path, metadata)
             if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, metadata)
                 self._fix_sitk_bug(segmentation_path, metadata)
-        elif filetype in ['rawiv']:
+        elif filetype in ["rawiv"]:
             rawN.write(path, data3d, metadata)
-        elif filetype in ['image_stack']:
+        elif filetype in ["image_stack"]:
             self.save_image_stack(data3d, path, metadata)
-        elif filetype in ['hdf5', 'hdf', 'h5', 'he5']:
+        elif filetype in ["hdf5", "hdf", "h5", "he5"]:
             self.save_hdf5(data3d, path, metadata)
-        elif filetype in ['pkl', 'pklz']:
+        elif filetype in ["pkl", "pklz"]:
             from . import misc
-            metadata['data3d'] = data3d
+
+            metadata["data3d"] = data3d
             datap = metadata
 
             misc.obj_to_file(datap, path)
@@ -142,7 +152,7 @@ class DataWriter:
         import SimpleITK as sitk
 
         dim = dcmtools.get_sitk_image_from_ndarray(data3d)
-        vsz = metadata['voxelsize_mm']
+        vsz = metadata["voxelsize_mm"]
         dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
         sitk.WriteImage(dim, path)
 
@@ -158,12 +168,11 @@ class DataWriter:
         dicom.write_file(path, ds)
 
     def save_hdf5(self, data3d, path, metadata):
-        metadata['data3d'] = data3d
+        metadata["data3d"] = data3d
         datap = metadata
         from . import hdf5_io
+
         hdf5_io.save_dict_to_hdf5(metadata, path)
-
-
 
         # # TODO this is not implemented in proper way
         # import h5py
@@ -174,6 +183,7 @@ class DataWriter:
         # # f.create_dataset('metadata', data=metadata, compression='gzip')
         # f.flush()
         # f.close()
+
     #
     # def __write_h5_key(self, grp, dct):
     #     import h5py
@@ -224,24 +234,20 @@ class DataWriter:
 
             for i_overlay in overlays.keys():
                 overlay3d = overlays[i_overlay]
-                data = self.encode_overlay_slice(data,
-                                                 overlay3d[-1 - i, :, :],
-                                                 i_overlay)
+                data = self.encode_overlay_slice(
+                    data, overlay3d[-1 - i, :, :], i_overlay
+                )
 
             # construct output path
             head, tail = os.path.split(os.path.normpath(onefile))
             filename_out = os.path.join(out_dir, tail)
 
-# save
+            # save
             data.save_as(filename_out)
             # import pdb; pdb.set_trace()
 
     def add_overlay_to_slice_file(
-        self,
-        filename,
-        overlay,
-        i_overlay,
-        filename_out=None
+        self, filename, overlay, i_overlay, filename_out=None
     ):
         """ Function adds overlay to existing file.
         """
@@ -269,29 +275,24 @@ class DataWriter:
 
         # On (60xx,0010) and (60xx,0011) is stored overlay size
         row_el = dicom.dataelem.DataElement(
-            (dicom_tag1, 0x0010),
-            'US',
-            int(overlay.shape[0])
+            (dicom_tag1, 0x0010), "US", int(overlay.shape[0])
         )
         data[row_el.tag] = row_el
 
         col_el = dicom.dataelem.DataElement(
-            (dicom_tag1, 0x0011),
-            'US',
-            int(overlay.shape[1])
+            (dicom_tag1, 0x0011), "US", int(overlay.shape[1])
         )
         data[col_el.tag] = col_el
 
-# arrange values to bit array
+        # arrange values to bit array
         overlay_linear = np.reshape(overlay, np.prod(overlay.shape))
 
-    # allocation of dataspace
+        # allocation of dataspace
         encoded_linear = np.zeros(
-            (np.prod(overlay.shape) / n_bits).astype(np.int),
-            dtype=np.uint8
+            (np.prod(overlay.shape) / n_bits).astype(np.int), dtype=np.uint8
         )
 
-# encoded data
+        # encoded data
         for i in range(0, len(overlay_linear)):
             if overlay_linear[i] > 0:
                 bit = 1
@@ -303,19 +304,15 @@ class DataWriter:
         overlay_raw = encoded_linear.tostring()
 
         # Decoding data. Each bit is stored as array element
-# TODO neni tady ta jednička blbě?
-#        for i in range(1,len(overlay_raw)):
-#            for k in range (0,n_bits):
-#                byte_as_int = ord(overlay_raw[i])
-#                decoded_linear[i*n_bits + k] = (byte_as_int >> k) & 0b1
-#
+        # TODO neni tady ta jednička blbě?
+        #        for i in range(1,len(overlay_raw)):
+        #            for k in range (0,n_bits):
+        #                byte_as_int = ord(overlay_raw[i])
+        #                decoded_linear[i*n_bits + k] = (byte_as_int >> k) & 0b1
+        #
         # overlay = np.array(pol)
 
-        overlay_el = dicom.dataelem.DataElement(
-            (dicom_tag1, 0x3000),
-            'OW',
-            overlay_raw
-        )
+        overlay_el = dicom.dataelem.DataElement((dicom_tag1, 0x3000), "OW", overlay_raw)
         data[overlay_el.tag] = overlay_el
 
         return data
@@ -338,20 +335,16 @@ class DataWriter:
         datadir, dataname = os.path.split(filepattern)
         databasename, dataext = os.path.splitext(dataname)
 
-
-        if filepattern.find('{') < 0:
+        if filepattern.find("{") < 0:
             # filepattern does not contain place for integer
-            filepattern = os.path.join(
-                datadir,
-                databasename + "{:05d}" + dataext)
+            filepattern = os.path.join(datadir, databasename + "{:05d}" + dataext)
         # print(filepattern)
         if (metadata is not None) and "voxelsize_mm" in metadata.keys():
-            z_position = 0.0 # metadata["voxelsize_mm"][0]
+            z_position = 0.0  # metadata["voxelsize_mm"][0]
             z_vs = metadata["voxelsize_mm"][0]
         else:
             z_position = 0.0
             z_vs = 1.0
-
 
         total_number = data3d.shape[0]
         for i in range(total_number):
@@ -359,17 +352,23 @@ class DataWriter:
                 self.progress_callback(value=i, minimum=0, maximum=total_number)
             if self.stop_writing:
                 break
-            newfilename = filename_format(filepattern, slice_number=i, slice_position=z_position, series_number=series_number)
+            newfilename = filename_format(
+                filepattern,
+                slice_number=i,
+                slice_position=z_position,
+                series_number=series_number,
+            )
             # newfilename = filepattern.format(i)
             logger.debug(newfilename)
             data2d = data3d[i, :, :]
             import SimpleITK as sitk
+
             # pixelType = itk.UC
             # imageType = itk.Image[pixelType, 2]
             dim = sitk.GetImageFromArray(data2d)
 
             if metadata is not None:
-                vsz = np.asarray(metadata['voxelsize_mm']).astype('double')
+                vsz = np.asarray(metadata["voxelsize_mm"]).astype("double")
                 dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
@@ -378,11 +377,13 @@ class DataWriter:
     def stop(self):
         self.stop_writing = True
 
+
 def get_first_filename(filepattern, series_number=None):
     filepattern = os.path.expanduser(filepattern)
     if series_number is None:
         series_number = get_unoccupied_series_number(filepattern)
     return filename_format(filepattern, series_number=series_number)
+
 
 def get_unoccupied_series_number(filepattern, series_number=1):
     filepattern = os.path.expanduser(filepattern)
@@ -393,10 +394,11 @@ def get_unoccupied_series_number(filepattern, series_number=1):
         fn = filename_format(filepattern, series_number=series_number)
         if fn == filename:
             # no series number is used in filepattern
-            return series_number -1
+            return series_number - 1
         filename = fn
 
     return series_number
+
 
 # def _fill_filepattern_based_on_rexp(rexp1, filepattern, something_to_fill):
 #     if type(something_to_fill) is str:
@@ -416,6 +418,7 @@ def get_unoccupied_series_number(filepattern, series_number=1):
 #     for single_pattern in sub2:
 #         pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
 #         filepattern = re.sub(rexp2, pattern, filepattern)
+
 
 def filepattern_fill_slice_number_or_position(filepattern, slice_description):
     # for string like series number there should be ignored (removed) the formating part
@@ -447,29 +450,60 @@ def filepattern_fill_slice_number_or_position(filepattern, slice_description):
     sub6 = re.findall(rexp5, filepattern)
 
     for single_pattern in sub1:
-        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        pattern = single_pattern.format(
+            slice_number=slice_description,
+            slicen=slice_description,
+            slice_position=slice_description,
+            slicep=slice_description,
+        )
         filepattern = re.sub(rexp1, pattern, filepattern)
 
     for single_pattern in sub2:
-        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        pattern = single_pattern.format(
+            slice_number=slice_description,
+            slicen=slice_description,
+            slice_position=slice_description,
+            slicep=slice_description,
+        )
         filepattern = re.sub(rexp2, pattern, filepattern)
 
     for single_pattern in sub3:
-        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        pattern = single_pattern.format(
+            slice_number=slice_description,
+            slicen=slice_description,
+            slice_position=slice_description,
+            slicep=slice_description,
+        )
         filepattern = re.sub(rexp3, pattern, filepattern)
 
     for single_pattern in sub4:
-        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        pattern = single_pattern.format(
+            slice_number=slice_description,
+            slicen=slice_description,
+            slice_position=slice_description,
+            slicep=slice_description,
+        )
         filepattern = re.sub(rexp4, pattern, filepattern)
 
     for single_pattern in sub5:
-        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        pattern = single_pattern.format(
+            slice_number=slice_description,
+            slicen=slice_description,
+            slice_position=slice_description,
+            slicep=slice_description,
+        )
         filepattern = re.sub(rexp5, pattern, filepattern)
 
     for single_pattern in sub6:
-        pattern = single_pattern.format(slice_number=slice_description, slicen=slice_description, slice_position=slice_description, slicep=slice_description)
+        pattern = single_pattern.format(
+            slice_number=slice_description,
+            slicen=slice_description,
+            slice_position=slice_description,
+            slicep=slice_description,
+        )
         filepattern = re.sub(rexp6, pattern, filepattern)
     return filepattern
+
 
 def filepattern_fill_series_number(filepattern, series_number):
 
@@ -488,14 +522,19 @@ def filepattern_fill_series_number(filepattern, series_number):
     sub2 = re.findall(rexp2, filepattern)
 
     for single_pattern in sub1:
-        pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+        pattern = single_pattern.format(
+            series_number=series_number, seriesn=series_number
+        )
         filepattern = re.sub(rexp1, pattern, filepattern)
 
     for single_pattern in sub2:
-        pattern = single_pattern.format(series_number=series_number, seriesn=series_number)
+        pattern = single_pattern.format(
+            series_number=series_number, seriesn=series_number
+        )
         filepattern = re.sub(rexp2, pattern, filepattern)
 
     return filepattern
+
 
 def filename_format(filepattern, series_number=1, slice_number=0, slice_position=0.0):
     """
@@ -511,7 +550,6 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
     """
     filepattern = misc.old_str_format_to_new(filepattern)
 
-
     filename = filepattern.format(
         slice_number,
         slice_number=slice_number,
@@ -519,12 +557,14 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
         series_number=series_number,
         slicen=slice_number,
         slicep=slice_position,
-        seriesn=series_number)
+        seriesn=series_number,
+    )
     return filename
 
 
-def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
-                           crinfo, orig_shape):
+def saveOverlayToDicomCopy(
+    input_dcmfilelist, output_dicom_dir, overlays, crinfo, orig_shape
+):
     """ Save overlay to dicom. """
     from . import datawriter as dwriter
 
@@ -533,9 +573,12 @@ def saveOverlayToDicomCopy(input_dcmfilelist, output_dicom_dir, overlays,
         os.makedirs(output_dicom_dir)
 
     import imtools.image_manipulation
+
     # uncrop all overlays
     for key in overlays:
-        overlays[key] = imtools.image_manipulation.uncrop(overlays[key], crinfo, orig_shape)
+        overlays[key] = imtools.image_manipulation.uncrop(
+            overlays[key], crinfo, orig_shape
+        )
 
     dw = dwriter.DataWriter()
     dw.DataCopyWithOverlay(input_dcmfilelist, output_dicom_dir, overlays)

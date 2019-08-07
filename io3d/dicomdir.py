@@ -20,6 +20,7 @@ try:
     import pydicom
 except ImportError:
     import warnings
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         import dicom as pydicom
@@ -29,7 +30,8 @@ except ImportError:
 import numpy as np
 from pathlib import Path
 
-class Dicomdir():
+
+class Dicomdir:
     def __init__(self, dirpath):
         """
 

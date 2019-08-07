@@ -3,14 +3,17 @@
 
 
 from loguru import logger
+
 # import funkcí z jiného adresáře
 # import sys
 import os.path
 import os.path as op
+
 # import copy
 
 import unittest
 from nose.plugins.attrib import attr
+
 # sample_data_path = os.path.dirname(os.path.abspath(__file__))
 # sample_data_path
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
@@ -24,31 +27,41 @@ import numpy as np
 
 try:
     import dicom as pydicom
+
     pydicom.debug(False)
 except:
     import pydicom
+
     pydicom.config.debug(False)
 
 from distutils.version import LooseVersion
+
 #
 import io3d
 import io3d.dcmreaddata as dcmr
 import io3d.fsbrowser
+
 sample_data_path = "~/data/medical/orig/sample_data/"
 sample_data_path = op.expanduser(sample_data_path)
+
 
 class FileSystemBrowserTest(unittest.TestCase):
 
     # @unittest.skip('waiting for implementation')
-    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"), "Data from pydicom >= 1.0.0 required")
+    @unittest.skipIf(
+        LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"),
+        "Data from pydicom >= 1.0.0 required",
+    )
     def test_fsbrowser_path_info(self):
         import pydicom.data
 
         # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
-        filepath = op.join(pydicom.data.DATA_ROOT, 'test_files/dicomdirtests/98892001/CT2N')
+        filepath = op.join(
+            pydicom.data.DATA_ROOT, "test_files/dicomdirtests/98892001/CT2N"
+        )
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
         dirlist = fsb.get_path_info(filepath)
-        #weak test - TODO..
+        # weak test - TODO..
         self.assertTrue("name: CT2N" in dirlist[0])
         self.assertTrue("type: .dir" in dirlist[1])
         self.assertTrue("Preview of files in dir: CT2N" in dirlist[2])
@@ -56,13 +69,19 @@ class FileSystemBrowserTest(unittest.TestCase):
 
     #  comment next line if you want to run the test
     # @unittest.skip('waiting for implementation')
-    @unittest.skipIf(LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"), "Data from pydicom >= 1.0.0 required")
+    @unittest.skipIf(
+        LooseVersion(pydicom.__version__) < LooseVersion("1.0.0"),
+        "Data from pydicom >= 1.0.0 required",
+    )
     def test_fsbrowser_dir_list(self):
 
         import pydicom.data
+
         # TODO make test stronger
         # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
-        filepath = op.join(pydicom.data.DATA_ROOT, 'test_files/dicomdirtests/98892001/CT2N')
+        filepath = op.join(
+            pydicom.data.DATA_ROOT, "test_files/dicomdirtests/98892001/CT2N"
+        )
         # filepath = io3d.datasets.join_path("3Dircadb1.1/PATIENT_DICOM")
         # filepath = io3d.datasets.join_path("jatra_5mm")
         fsb = io3d.fsbrowser.FileSystemBrowser(filepath)
@@ -70,10 +89,16 @@ class FileSystemBrowserTest(unittest.TestCase):
         self.assertTrue("path" in dirlist[0])
         self.assertTrue("name" in dirlist[0])
 
-    @unittest.skip('technology test')
+    @unittest.skip("technology test")
     def test_devel_qt_dialog_fsbrowser(self):
         import sys
-        from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QPushButton, QLabel
+        from PyQt5.QtWidgets import (
+            QApplication,
+            QWidget,
+            QLineEdit,
+            QPushButton,
+            QLabel,
+        )
         from PyQt5.QtGui import QImage, QPixmap
         import matplotlib.pyplot as plt
 
@@ -97,18 +122,17 @@ class FileSystemBrowserTest(unittest.TestCase):
 
         lineedit = QLineEdit(qfd)
         # Create a button in the window
-        button = QPushButton('Click me', qfd)
-
+        button = QPushButton("Click me", qfd)
 
         # Image
         image = io3d.datasets.generate_face([1, 100, 100]).squeeze()
 
-        cmap = np.uint8(np.round(255 * plt.get_cmap('magma')(np.arange(256))))
+        cmap = np.uint8(np.round(255 * plt.get_cmap("magma")(np.arange(256))))
         image /= image.max()
         image = np.minimum(image, 1.0)
-        image = np.round(255 * image).astype('uint8')
+        image = np.round(255 * image).astype("uint8")
         Y, X = image.shape
-        self._bgra = np.zeros((Y, X, 4), dtype=np.uint8, order='C')
+        self._bgra = np.zeros((Y, X, 4), dtype=np.uint8, order="C")
         self._bgra[..., 0] = cmap[:, 2][image]
         self._bgra[..., 1] = cmap[:, 1][image]
         self._bgra[..., 2] = cmap[:, 0][image]

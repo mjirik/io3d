@@ -42,22 +42,36 @@ def __iv_read_header(f):
 
     # print(dimX * dimY * dimZ, '   ', numVerts)
     if dimX * dimY * dimZ != numVerts:
-        logger.error('numVerts is not consistent with dimX, dimY, dimZ')
+        logger.error("numVerts is not consistent with dimX, dimY, dimZ")
         print("error")
 
-    spanX  = (maxX - minX)/(dimX -1)
-    spanY  = (maxY - minY)/(dimY -1)
-    spanZ  = (maxZ - minZ)/(dimZ -1)
+    spanX = (maxX - minX) / (dimX - 1)
+    spanY = (maxY - minY) / (dimY - 1)
+    spanZ = (maxZ - minZ) / (dimZ - 1)
 
-    if spanX != spanXorig or \
-            spanY != spanYorig or\
-            spanZ != spanZorig:
-        logger.warning('span in rawiv header is not consistent')
-        print('error span')
+    if spanX != spanXorig or spanY != spanYorig or spanZ != spanZorig:
+        logger.warning("span in rawiv header is not consistent")
+        print("error span")
 
-    return minX , minY , minZ , maxX , maxY , maxZ , numVerts , numCells , dimX\
-     , dimY , dimZ , originX , originY , originZ , spanX, spanY, \
-     spanZ
+    return (
+        minX,
+        minY,
+        minZ,
+        maxX,
+        maxY,
+        maxZ,
+        numVerts,
+        numCells,
+        dimX,
+        dimY,
+        dimZ,
+        originX,
+        originY,
+        originZ,
+        spanX,
+        spanY,
+        spanZ,
+    )
 
 
 def read_iv(filename):
@@ -65,86 +79,83 @@ def read_iv(filename):
     with open(filename, "rb") as f:
         head = __iv_read_header(f)
 
-        minX, minY, minZ, maxX, maxY, maxZ, numVerts, numCells, dimX,\
-            dimY, dimZ, originX, originY, originZ, spanX,\
-            spanY, spanZ = head
+        minX, minY, minZ, maxX, maxY, maxZ, numVerts, numCells, dimX, dimY, dimZ, originX, originY, originZ, spanX, spanY, spanZ = (
+            head
+        )
         # check
-
-
 
         data = f.read()
         i = 0
 
         print(len(data))
         print(numVerts)
-        bytes_per_vertex = len(data)//numVerts
+        bytes_per_vertex = len(data) // numVerts
 
         if bytes_per_vertex == 1:
-            nptype = 'uint8'
-            pctype = '>B'
+            nptype = "uint8"
+            pctype = ">B"
         elif bytes_per_vertex == 2:
-            nptype = 'uint16'
-            pctype = '>H'
+            nptype = "uint16"
+            pctype = ">H"
         elif bytes_per_vertex == 4:
-            nptype = 'float'
-            pctype = '>f'
+            nptype = "float"
+            pctype = ">f"
 
         data3d = np.zeros([dimX, dimY, dimZ], dtype=nptype)
-
 
         for z in range(0, dimZ):
             for y in range(0, dimY):
                 for x in range(0, dimX):
-                    dataraw = data[i:(i+bytes_per_vertex)]
-                    data3d[x,y,z] = struct.unpack(pctype, dataraw)[0]
+                    dataraw = data[i : (i + bytes_per_vertex)]
+                    data3d[x, y, z] = struct.unpack(pctype, dataraw)[0]
                     i = i + 1
 
         metadata = {
-            'minX':      minX,
-            'minY':      minY,
-            'minZ':      minZ,
-            'maxX':      maxX,
-            'maxY':      maxY,
-            'maxZ':      maxZ,
-            'numVerts':  numVerts,
-            'numCells':  numCells,
-            'dimX':      dimX,
-            'dimY':      dimY,
-            'dimZ':      dimZ,
-            'originX':   originX,
-            'originY':   originY,
-            'originZ':   originZ,
-            'spanX':     spanX,
-            'spanY':     spanY,
-            'spanZ':     spanZ,
-            'voxelsize_mm': [spanX, spanY, spanZ]
+            "minX": minX,
+            "minY": minY,
+            "minZ": minZ,
+            "maxX": maxX,
+            "maxY": maxY,
+            "maxZ": maxZ,
+            "numVerts": numVerts,
+            "numCells": numCells,
+            "dimX": dimX,
+            "dimY": dimY,
+            "dimZ": dimZ,
+            "originX": originX,
+            "originY": originY,
+            "originZ": originZ,
+            "spanX": spanX,
+            "spanY": spanY,
+            "spanZ": spanZ,
+            "voxelsize_mm": [spanX, spanY, spanZ],
         }
-
 
     return data3d, metadata
 
+
 def __read_float(f):
-        data = f.read(4)
-        number = struct.unpack('>f', data)
-        number = number[0]
-        return number
+    data = f.read(4)
+    number = struct.unpack(">f", data)
+    number = number[0]
+    return number
 
 
 def __read_uint(f):
-        data = f.read(4)
-        number = struct.unpack('>I', data)
-        number = number[0]
-        return number
+    data = f.read(4)
+    number = struct.unpack(">I", data)
+    number = number[0]
+    return number
 
 
 def __write_float(f, number):
-        data = struct.pack('>f', number)
-        f.write(data)
+    data = struct.pack(">f", number)
+    f.write(data)
 
 
 def __write_uint(f, number):
-        data = struct.pack('>I', number)
-        f.write(data)
+    data = struct.pack(">I", number)
+    f.write(data)
 
 
 def write(filename, data3d, metadata):
@@ -153,9 +164,9 @@ def write(filename, data3d, metadata):
     minX = 0
     minY = 0
     minZ = 0
-    spanX = metadata['voxelsize_mm'][0]
-    spanY = metadata['voxelsize_mm'][1]
-    spanZ = metadata['voxelsize_mm'][2]
+    spanX = metadata["voxelsize_mm"][0]
+    spanY = metadata["voxelsize_mm"][1]
+    spanZ = metadata["voxelsize_mm"][2]
     dimX = data3d.shape[0]
     dimY = data3d.shape[1]
     dimZ = data3d.shape[2]
@@ -188,13 +199,14 @@ def write(filename, data3d, metadata):
         __write_float(f, spanZ)
 
         bytes_per_vertex = 1
-        pctype = '>B'
+        pctype = ">B"
 
         for z in range(0, dimZ):
             for y in range(0, dimY):
                 for x in range(0, dimX):
-                    dataraw = struct.pack(pctype, data3d[x,y,z])
+                    dataraw = struct.pack(pctype, data3d[x, y, z])
                     f.write(dataraw)
+
 
 def main():
     logger = logging.getLogger()
@@ -213,23 +225,15 @@ def main():
     # logger.debug('start')
 
     # input parser
-    parser = argparse.ArgumentParser(
-        description=__doc__
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-i', '--inputfile',
-        default=None,
-        required=True,
-        help='input file'
+        "-i", "--inputfile", default=None, required=True, help="input file"
     )
-    parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='Debug mode')
+    parser.add_argument("-d", "--debug", action="store_true", help="Debug mode")
     args = parser.parse_args()
 
     if args.debug:
         ch.setLevel(logging.DEBUG)
-
 
 
 if __name__ == "__main__":

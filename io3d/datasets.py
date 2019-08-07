@@ -82,7 +82,7 @@ data_urls = {
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
     "SCP003-ndpi": [
         __url_server + "sample-data/SCP003/SCP003.ndpi",
-        'c7e74c1487bcaa9061aea1ce5c9b8bc9',
+        "c7e74c1487bcaa9061aea1ce5c9b8bc9",
         "SCP003.ndpi",
         "sample_data/SCP003",
     ],
@@ -97,7 +97,12 @@ data_urls = {
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
     "donut": __url_server + "sample-data/donut.zip",
     # alternative linux hash nrn4 'd41d8cd98f00b204e9800998ecf8427e'
-    "nrn4": [__url_server + "sample-data/nrn4.pklz", 'ec470d016c31b8d17d09475fa93ad7d2', "nrn4.pklz", "sample-data/"],
+    "nrn4": [
+        __url_server + "sample-data/nrn4.pklz",
+        "ec470d016c31b8d17d09475fa93ad7d2",
+        "nrn4.pklz",
+        "sample-data/",
+    ],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip"],
     "lisa": {
@@ -141,30 +146,107 @@ data_urls = {
     },
     "3Dircadb1.1": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
-        "2f29b5a66946c4d76cbea38fd643e7d2", "3Dircadb1.1/**/image_*"
+        "2f29b5a66946c4d76cbea38fd643e7d2",
+        "3Dircadb1.1/**/image_*"
         # "6408942626845de25a36ece2e32600e8", "3Dircadb1.1/**/image_*"
-# '2f29b5a66946c4d76cbea38fd643e7d2'
-#     "1b9039ffe1ff9af9caa344341c8cec03"
+        # '2f29b5a66946c4d76cbea38fd643e7d2'
+        #     "1b9039ffe1ff9af9caa344341c8cec03"
     ],
-    "3Dircadb1.2": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip", "eff7ff35b7ebc87ce55488549bfc5ee4", "3Dircadb1.2/**/image_*"],
-    "3Dircadb1.3": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip", "e5de3e88e062c4c2ee26e53b029aac6d", "3Dircadb1.3/**/image_*"],
-    "3Dircadb1.4": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.4.zip", '71b9108d25f257e6b295323ec129aafc', "3Dircadb1.4/**/image_*"],
-    "3Dircadb1.5": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.5.zip", 'e3ac71113dc1dd1cb6b0418f98b2e02d', "3Dircadb1.5/**/image_*"],
-    "3Dircadb1.6": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.6.zip", '79825fd27c3261976ecb2f0f2a7e43f7', "3Dircadb1.6/**/image_*"],
-    "3Dircadb1.7": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.7.zip", 'f74267454be34a8fd6ce9f446528044f', "3Dircadb1.7/**/image_*"],
-    "3Dircadb1.8": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.8.zip", 'b05978969d4e5b4e9169eac2ec6d912c', "3Dircadb1.8/**/image_*"],
-    "3Dircadb1.9": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.9.zip", 'c8c57d9a37e5b6951f7c63fa2cec1e4c', "3Dircadb1.9/**/image_*"],
-    "3Dircadb1.10": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.10.zip", '3ab9c809148993efa879cbaa60c20a25', "3Dircadb1.10/**/image_*"],
-    "3Dircadb1.11": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.11.zip", 'e0fb55fd031f526a7e77539d709fbff1', "3Dircadb1.11/**/image_*"],
-    "3Dircadb1.12": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.12.zip", '867b014422550205306477dad3c8725e', "3Dircadb1.12/**/image_*"],
-    "3Dircadb1.13": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.13.zip", '2f476b9fa26bfb3f28df84288adaf78a', "3Dircadb1.13/**/image_*"],
-    "3Dircadb1.14": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.14.zip", '7c1035538d2506fb49bdb28942a6900a', "3Dircadb1.14/**/image_*"],
-    "3Dircadb1.15": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.15.zip", '63dc46d980d5c7b6ef91c7b85afbbb5b', "3Dircadb1.15/**/image_*"],
-    "3Dircadb1.16": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.16.zip", 'ba7dd7f899f9c9a63f5dcb1a2165fb16', "3Dircadb1.16/**/image_*"],
-    "3Dircadb1.17": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.17.zip", 'c6b59e9ea625b2b72348fdbd9cdc4ca3', "3Dircadb1.17/**/image_*"],
-    "3Dircadb1.18": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.18.zip", '92e63cd6c268efe6f285a8779ddfa437', "3Dircadb1.18/**/image_*"],
-    "3Dircadb1.19": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.19.zip", '30555382d82ee5057997a48987b0f47b', "3Dircadb1.19/**/image_*"],
-    "3Dircadb1.20": ["http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.20.zip", '89790e5e2060a642365ebf8bb1bfa14b', "3Dircadb1.20/**/image_*"],
+    "3Dircadb1.2": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
+        "eff7ff35b7ebc87ce55488549bfc5ee4",
+        "3Dircadb1.2/**/image_*",
+    ],
+    "3Dircadb1.3": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip",
+        "e5de3e88e062c4c2ee26e53b029aac6d",
+        "3Dircadb1.3/**/image_*",
+    ],
+    "3Dircadb1.4": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.4.zip",
+        "71b9108d25f257e6b295323ec129aafc",
+        "3Dircadb1.4/**/image_*",
+    ],
+    "3Dircadb1.5": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.5.zip",
+        "e3ac71113dc1dd1cb6b0418f98b2e02d",
+        "3Dircadb1.5/**/image_*",
+    ],
+    "3Dircadb1.6": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.6.zip",
+        "79825fd27c3261976ecb2f0f2a7e43f7",
+        "3Dircadb1.6/**/image_*",
+    ],
+    "3Dircadb1.7": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.7.zip",
+        "f74267454be34a8fd6ce9f446528044f",
+        "3Dircadb1.7/**/image_*",
+    ],
+    "3Dircadb1.8": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.8.zip",
+        "b05978969d4e5b4e9169eac2ec6d912c",
+        "3Dircadb1.8/**/image_*",
+    ],
+    "3Dircadb1.9": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.9.zip",
+        "c8c57d9a37e5b6951f7c63fa2cec1e4c",
+        "3Dircadb1.9/**/image_*",
+    ],
+    "3Dircadb1.10": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.10.zip",
+        "3ab9c809148993efa879cbaa60c20a25",
+        "3Dircadb1.10/**/image_*",
+    ],
+    "3Dircadb1.11": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.11.zip",
+        "e0fb55fd031f526a7e77539d709fbff1",
+        "3Dircadb1.11/**/image_*",
+    ],
+    "3Dircadb1.12": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.12.zip",
+        "867b014422550205306477dad3c8725e",
+        "3Dircadb1.12/**/image_*",
+    ],
+    "3Dircadb1.13": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.13.zip",
+        "2f476b9fa26bfb3f28df84288adaf78a",
+        "3Dircadb1.13/**/image_*",
+    ],
+    "3Dircadb1.14": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.14.zip",
+        "7c1035538d2506fb49bdb28942a6900a",
+        "3Dircadb1.14/**/image_*",
+    ],
+    "3Dircadb1.15": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.15.zip",
+        "63dc46d980d5c7b6ef91c7b85afbbb5b",
+        "3Dircadb1.15/**/image_*",
+    ],
+    "3Dircadb1.16": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.16.zip",
+        "ba7dd7f899f9c9a63f5dcb1a2165fb16",
+        "3Dircadb1.16/**/image_*",
+    ],
+    "3Dircadb1.17": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.17.zip",
+        "c6b59e9ea625b2b72348fdbd9cdc4ca3",
+        "3Dircadb1.17/**/image_*",
+    ],
+    "3Dircadb1.18": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.18.zip",
+        "92e63cd6c268efe6f285a8779ddfa437",
+        "3Dircadb1.18/**/image_*",
+    ],
+    "3Dircadb1.19": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.19.zip",
+        "30555382d82ee5057997a48987b0f47b",
+        "3Dircadb1.19/**/image_*",
+    ],
+    "3Dircadb1.20": [
+        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.20.zip",
+        "89790e5e2060a642365ebf8bb1bfa14b",
+        "3Dircadb1.20/**/image_*",
+    ],
     "CMU-1": [
         "http://openslide.cs.cmu.edu/download/openslide-testdata/Hamamatsu/CMU-1.ndpi",
         "1f9df18b8dc6403cd2434bfd3cf20c7f",
@@ -332,9 +414,9 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             computed_hash = None
 
         None,
-        if expected_hash == 'd41d8cd98f00b204e9800998ecf8427e':
+        if expected_hash == "d41d8cd98f00b204e9800998ecf8427e":
             logger.warning("Expected hash is equal to hash of empty file list.")
-        if computed_hash == 'd41d8cd98f00b204e9800998ecf8427e':
+        if computed_hash == "d41d8cd98f00b204e9800998ecf8427e":
             logger.warning("Computed hash is equal to hash of empty file list.")
         logger.info("dataset: '" + label + "'")
         logger.info("path to hash: {}".format(path_to_hash))
@@ -450,7 +532,9 @@ def checksum(path, hashfunc="md5"):
             hashvalues.append(checksumdir._filehash(path, hashfunc=hash_func))
     logger.debug("one hash per file: len: %i", len(hashvalues))
     if len(path_list) > 0:
-        logger.debug("first ... last: %s ... %s", str(hashvalues[0]), str(hashvalues[-1]))
+        logger.debug(
+            "first ... last: %s ... %s", str(hashvalues[0]), str(hashvalues[-1])
+        )
     checksum_hash = checksumdir._reduce_hash(hashvalues, hashfunc=hash_func)
     logger.debug("total hash: {}".format(str(checksum_hash)))
     return checksum_hash
@@ -759,6 +843,7 @@ def remove(local_file_name):
             "Cannot remove file '" + local_file_name + "'. Please remove it manually."
         )
         print(e)
+
 
 def get_labels():
     return list(sorted(data_urls.keys()))

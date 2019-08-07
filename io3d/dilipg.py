@@ -1,6 +1,9 @@
 import pyqtgraph
 
-def params_and_values(p:pyqtgraph.parametertree.Parameter, pth=None, dct={}, separator=";"):
+
+def params_and_values(
+    p: pyqtgraph.parametertree.Parameter, pth=None, dct={}, separator=";"
+):
     """
     Get dict of all parameters. Key is the path to the parameter, value is value of the parameter.
     :param p:

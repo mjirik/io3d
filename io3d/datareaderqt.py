@@ -23,10 +23,7 @@ logger = logging.getLogger(__name__)
 import argparse
 
 
-
-from PyQt5.QtWidgets import (QGridLayout, QLabel,
-    QPushButton, QLineEdit,
-                         QApplication)
+from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton, QLineEdit, QApplication
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
@@ -40,29 +37,23 @@ import os.path
 import copy
 
 
-
-
 from . import datareader
 
 
 from . import cachefile as cachef
 
 
-
-
 class DataReaderWidget(QtWidgets.QWidget):
-
     def __init__(
-            self,
-            datapath=None,
-            loadfiledir='',
-            loaddir='',
-            show_message_function=None,
-            after_function=None,
-            before_function=None,
-            cachefile=None,
-            qt_app=None,
-
+        self,
+        datapath=None,
+        loadfiledir="",
+        loaddir="",
+        show_message_function=None,
+        after_function=None,
+        before_function=None,
+        cachefile=None,
+        qt_app=None,
     ):
         """
 
@@ -108,8 +99,8 @@ class DataReaderWidget(QtWidgets.QWidget):
         btn_load_file.clicked.connect(self.read_data_dir_dialog)
         self.mainLayout.addWidget(btn_load_file, 0, 1)
 
-        self.text_dcm_dir = QLabel('Data Path:')
-        self.text_dcm_data = QLabel('')  # data dimensions
+        self.text_dcm_dir = QLabel("Data Path:")
+        self.text_dcm_data = QLabel("")  # data dimensions
         self.text_dcm_data.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.mainLayout.addWidget(self.text_dcm_dir, 1, 0, 1, 2)
         self.mainLayout.addWidget(self.text_dcm_data, 2, 0, 1, 2)
@@ -120,20 +111,21 @@ class DataReaderWidget(QtWidgets.QWidget):
         """
 
         if self.cache is not None:
-            cache_loadfiledir = self.cache.get_or_none('loadfiledir')
+            cache_loadfiledir = self.cache.get_or_none("loadfiledir")
             self.loadfiledir = str(cache_loadfiledir)
 
         if self.loadfiledir is None:
-            self.loadfiledir = ''
+            self.loadfiledir = ""
         directory = str(self.loadfiledir)
         from PyQt5.QtWidgets import QFileDialog
+
         if not app:
             inner_app = QApplication(sys.argv)
         if self._skip_get_path_dialog_for_tests:
             dcmdir = self.datapath
         else:
             dcmdir = QFileDialog.getOpenFileName(
-                caption='Select Data File',
+                caption="Select Data File",
                 directory=directory
                 # ptions=QFileDialog.ShowDirsOnly,
             )[0]
@@ -149,17 +141,16 @@ class DataReaderWidget(QtWidgets.QWidget):
         dcmdir = get_str(dcmdir)
 
         if len(dcmdir) > 0:
-        #
-        #     dcmdir = "%s" % (dcmdir)
-        #     dcmdir = dcmdir.encode("utf8")
+            #
+            #     dcmdir = "%s" % (dcmdir)
+            #     dcmdir = dcmdir.encode("utf8")
             pass
         else:
             dcmdir = None
 
-
         head, teil = os.path.split(dcmdir)
         if self.cache is not None:
-            self.cache.update('loadfiledir', head)
+            self.cache.update("loadfiledir", head)
         return dcmdir
 
     def __get_datadir(self, app=False):
@@ -170,25 +161,26 @@ class DataReaderWidget(QtWidgets.QWidget):
         # if :
         #     directory = self.oseg.input_datapath_start
         if self.cache is not None:
-            cache_loaddir = self.cache.get_or_none('loaddir')
+            cache_loaddir = self.cache.get_or_none("loaddir")
             self.loaddir = str(cache_loaddir)
             # self.loaddir = str(self.cache.get_or_none('loaddir'))
 
         if self.loaddir is None:
-            self.loaddir = ''
+            self.loaddir = ""
 
         directory = self.loaddir
 
         from PyQt5.QtWidgets import QFileDialog
+
         if not app:
             app_inner = QApplication(sys.argv)
         if self._skip_get_path_dialog_for_tests:
             dcmdir = self.datapath
         else:
             dcmdir = QFileDialog.getExistingDirectory(
-                caption='Select DICOM Folder',
+                caption="Select DICOM Folder",
                 options=QFileDialog.ShowDirsOnly,
-                directory=directory
+                directory=directory,
             )
             # pp.exec_()
         if not app:
@@ -198,7 +190,6 @@ class DataReaderWidget(QtWidgets.QWidget):
 
         if len(dcmdir) > 0:
 
-
             # dcmdir = "%s" % (dcmdir)
             # dcmdir = dcmdir.encode("utf8")
             pass
@@ -206,24 +197,21 @@ class DataReaderWidget(QtWidgets.QWidget):
             dcmdir = None
 
         if self.cache is not None:
-            self.cache.update('loaddir', dcmdir)
+            self.cache.update("loaddir", dcmdir)
         return str(dcmdir)
 
     def read_data_file_dialog(self):
 
-
-        self.__show_message('Reading data file...')
+        self.__show_message("Reading data file...")
         QApplication.processEvents()
 
         if self.before_function is not None:
             self.before_function(self)
 
-        self.datapath = self.__get_datafile(
-            app=True,
-            )
+        self.datapath = self.__get_datafile(app=True)
 
         if self.datapath is None:
-            self.__show_message('No data path specified!')
+            self.__show_message("No data path specified!")
             return
         head, teil = os.path.split(self.datapath)
         self.loadfiledir = head
@@ -231,18 +219,16 @@ class DataReaderWidget(QtWidgets.QWidget):
         self.read_data_from_prepared_datapath()
 
     def read_data_dir_dialog(self):
-        self.__show_message('Reading data file...')
+        self.__show_message("Reading data file...")
         QApplication.processEvents()
 
         if self.before_function is not None:
             self.before_function(self)
 
-        self.datapath = self.__get_datadir(
-            app=True
-        )
+        self.datapath = self.__get_datadir(app=True)
 
         if self.datapath is None:
-            self.__show_message('No DICOM directory specified!')
+            self.__show_message("No DICOM directory specified!")
             return
         # head, teil = os.path.split(oseg.datapath)
         self.loaddir = copy.copy(self.datapath)
@@ -259,24 +245,34 @@ class DataReaderWidget(QtWidgets.QWidget):
 
         reader = datareader.DataReader()
 
-        self.datap = reader.Get3DData(self.datapath, dataplus_format=True, gui=True, qt_app=self.qt_app)
+        self.datap = reader.Get3DData(
+            self.datapath, dataplus_format=True, gui=True, qt_app=self.qt_app
+        )
 
-        _set_label_text(self.text_dcm_dir, _make_text_short(self.datapath), self.datapath)
+        _set_label_text(
+            self.text_dcm_dir, _make_text_short(self.datapath), self.datapath
+        )
         _set_label_text(self.text_dcm_data, self.get_data_info(), replace_all=True)
         if self.after_function is not None:
             self.after_function(self)
-        self.__show_message('Data read finished')
+        self.__show_message("Data read finished")
 
     def get_data_info(self):
-        vx_size = self.datap['voxelsize_mm']
+        vx_size = self.datap["voxelsize_mm"]
         vsize = tuple([float(ii) for ii in vx_size])
-        ret = 'Data Dimensions: %dx%dx%d,  %fx%fx%f mm' % (self.datap['data3d'].shape + vsize)
+        ret = "Data Dimensions: %dx%dx%d,  %fx%fx%f mm" % (
+            self.datap["data3d"].shape + vsize
+        )
         if "StudyID" in self.datap and "StudyDate" in self.datap:
-            ret += "\nStudy ID: {}, Study Date, {}".format(self.datap["StudyID"], (self.datap["StudyDate"]))
+            ret += "\nStudy ID: {}, Study Date, {}".format(
+                self.datap["StudyID"], (self.datap["StudyDate"])
+            )
         if "PatientName" in self.datap:
             ret += "\nPatient Name: {}".format(self.datap["PatientName"])
         if "PatientAge" in self.datap and "PatientSex" in self.datap:
-            ret += "\nAge: {}, Sex {}".format(self.datap["PatientAge"], self.datap["PatientSex"])
+            ret += "\nAge: {}, Sex {}".format(
+                self.datap["PatientAge"], self.datap["PatientSex"]
+            )
         return ret
 
     def __show_message(self, msg):
@@ -287,7 +283,7 @@ class DataReaderWidget(QtWidgets.QWidget):
 
 
 def _make_text_short(text, max_lenght=40):
-    return text[:int(max_lenght/2)] + ".." + text[-int(max_lenght/2):]
+    return text[: int(max_lenght / 2)] + ".." + text[-int(max_lenght / 2) :]
 
 
 def _set_label_text(obj, text, tooltip=None, replace_all=False):
@@ -302,14 +298,14 @@ def _set_label_text(obj, text, tooltip=None, replace_all=False):
     :return:
     """
     dlab = str(obj.text())
-    index_of_colon = dlab.find(': ')
+    index_of_colon = dlab.find(": ")
     if index_of_colon == -1:
         index_of_colon = 0
     else:
         index_of_colon += 2
     if replace_all:
         index_of_colon = 0
-    obj.setText(dlab[:index_of_colon] + '%s' % text)
+    obj.setText(dlab[:index_of_colon] + "%s" % text)
     if tooltip is not None:
         obj.setToolTip(tooltip)
 
@@ -323,15 +319,16 @@ def my_after_fcn(arg):
     print(arg.loaddir)
     print(arg.loadfiledir)
 
+
 def get_str(text):
     if sys.version_info.major == 2:
         import PyQt5.QtCore
-
 
         if type(text) is QString:
             text = str(text)
 
     return text
+
 
 def main():
     logger = logging.getLogger()
@@ -350,9 +347,7 @@ def main():
     # logger.debug('start')
 
     # input parser
-    parser = argparse.ArgumentParser(
-        description=__doc__
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     # parser.add_argument(
     #     '-i', '--inputfile',
     #     default=None,
@@ -360,25 +355,26 @@ def main():
     #     help='input file'
     # )
     parser.add_argument(
-        '-ld', '--loaddir',
+        "-ld",
+        "--loaddir",
         default="",
         # required=True,
-        help='init dir for dir dialog'
+        help="init dir for dir dialog",
     )
     parser.add_argument(
-        '-lf', '--loadfiledir',
+        "-lf",
+        "--loadfiledir",
         default="",
         # required=True,
-        help='init dir for file dialog'
+        help="init dir for file dialog",
     )
+    parser.add_argument("-d", "--debug", action="store_true", help="Debug mode")
     parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='Debug mode')
-    parser.add_argument(
-        '-cf', '--cachefile',
+        "-cf",
+        "--cachefile",
         default=None,
         # required=True,
-        help='cache file for last load dir path info'
+        help="cache file for last load dir path info",
     )
     args = parser.parse_args()
 
@@ -390,17 +386,20 @@ def main():
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})
     w = DataReaderWidget(
-        loaddir=args.loaddir, loadfiledir=args.loadfiledir,
+        loaddir=args.loaddir,
+        loadfiledir=args.loadfiledir,
         cachefile=args.cachefile,
-        after_function=my_after_fcn, before_function=my_before_fcn,
-        qt_app=app
+        after_function=my_after_fcn,
+        before_function=my_before_fcn,
+        qt_app=app,
     )
     w.resize(250, 150)
     w.move(300, 300)
-    w.setWindowTitle('io3dQtWidget')
+    w.setWindowTitle("io3dQtWidget")
     w.show()
 
     sys.exit(app.exec_())
+
 
 # def something_to_str(path):
 #     outpath = None
