@@ -21,9 +21,9 @@ class Anonymizer:
     def file_anonymization(self, filename, output_filename=None):
         self.filename = filename
         self.output_filename = output_filename
-        if self.output_filename == None:
+        if self.output_filename is None:
             self.output_filename = "D:\jatra_test"
-        if self.whitelist == None:
+        if self.whitelist is None:
             self.setWhitelistDefault()
 
         dcmobj = pydicom.read_file(self.filename)
