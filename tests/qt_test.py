@@ -11,7 +11,7 @@ import os.path as op
 # import copy
 
 import unittest
-from nose.plugins.attrib import attr
+import pytest
 
 # sample_data_path = os.path.dirname(os.path.abspath(__file__))
 # sample_data_path
@@ -150,7 +150,7 @@ class QtTest(unittest.TestCase):
         error = np.sum(np.array_equal(np.asarray([183, 512, 512]), data3d.shape))
         # app.exec_()
 
-    @attr("interactive")
+    @pytest.mark.interactive
     def test_read_datareader_interactive(self):
         sdp = io3d.datasets.join_path("sample_data")
         dp = io3d.datasets.join_path("sample_data/jatra_5mm/")

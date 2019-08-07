@@ -17,10 +17,8 @@ import shutil
 import sys
 import numpy as np
 import io3d
-import glob
 
-from nose.plugins.attrib import attr
-
+import pytest
 
 class DatasetsTest(unittest.TestCase):
 
@@ -79,7 +77,7 @@ class DatasetsTest(unittest.TestCase):
         # return path back
         io3d.datasets.set_dataset_path(dp_old)
 
-    @attr("slow")
+    @pytest.mark.slow
     def test_getold1(self):
         io3d.datasets.download("3Dircadb1.1")
         io3d.datasets.get_old("3Dircadb1", "*1/P*")

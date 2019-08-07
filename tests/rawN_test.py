@@ -33,7 +33,7 @@ class RawIOTest(unittest.TestCase):
         self.assertEqual(data3d[29, 13, 27], 119)
         pass
 
-    @attr("actual")
+    # @pytest.mark.actual
     def test_rawiv_write(self):
         data3d = (np.random.rand(6, 5, 4) * 10).astype(np.uint8)
         metadata = {"voxelsize_mm": [1, 1, 1]}

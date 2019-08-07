@@ -34,6 +34,7 @@ except:
 import io3d
 import io3d.datawriter as dwriter
 import io3d.datareader as dreader
+import pytest
 
 # import sed3 as pyed
 SAMPLE_DATA_DIR = io3d.datasets.join_path("sample_data")
@@ -68,7 +69,7 @@ class DicomWriterTest(unittest.TestCase):
     #     self.assertEqual(data3d[10, 11, 12], data3d_n[10, 11, 12])
     #     os.remove(filename)
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_write_dicom_from_scratch(self):
         """
         Reads dicom data and from slices and stores into one Dicom file. This
@@ -165,7 +166,7 @@ class DicomWriterTest(unittest.TestCase):
         # os.removedirs()
         shutil.rmtree(datadir)
 
-    @attr("slow")
+    @pytest.mark.slow
     def test_read_mhd_and_write_pklz(self):
         """
         test data on sliver dataset
@@ -328,7 +329,7 @@ class DicomWriterTest(unittest.TestCase):
             data3d[i, 0:x, y:-1] = value
         return data3d
 
-    @attr("actual")
+    # @pytest.mark.actual
     def test_save_image_stack_based_on_filename(self):
         testdatadir = "test_svimstack2"
         if os.path.exists(testdatadir):
@@ -449,7 +450,7 @@ class DicomWriterTest(unittest.TestCase):
         )
         self.assertEqual(out, "015/{slicen:06d}")
 
-    @attr("interactive")
+    @pytest.mark.interactive
     def test_read_data_without_slice_thickness(self):
         """ data without SliceThickness
         :return:

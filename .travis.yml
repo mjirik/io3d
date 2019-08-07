@@ -73,6 +73,8 @@ before_script:
 #    # give xvfb sume time to start
 #    - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
 
-script: nosetests -v --with-coverage --cover-package=io3d
+#script: nosetests -v --with-coverage --cover-package=io3d
+script:
+  - python -m pytest --cov=io3d/
 after_success:
     - coveralls

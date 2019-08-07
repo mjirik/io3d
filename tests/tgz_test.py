@@ -12,7 +12,7 @@ import os.path as op
 # import copy
 
 import unittest
-from nose.plugins.attrib import attr
+import pytest
 
 # sample_data_path = os.path.dirname(os.path.abspath(__file__))
 # sample_data_path
@@ -56,7 +56,7 @@ class DicomReaderTest(unittest.TestCase):
     #        self.data3d = reader.get_3Ddata()
     #        self.metadata = reader.get_metaData()
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_untar(self):
         dcmdir = os.path.join(sample_data_path, "../sample_data/72136132.tar.bz2")
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'
@@ -65,7 +65,7 @@ class DicomReaderTest(unittest.TestCase):
         io3d.tgz.untar(dcmdir)
         # data3d, metadata = io3d.datareader.read(dcmdir)
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_tar_read(self):
         dcmdir = os.path.join(sample_data_path, "../sample_data/72136132.tar.bz2")
         # dcmdir = '/home/mjirik/data/medical/data_orig/jatra-kma/jatra_5mm/'

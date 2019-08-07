@@ -13,6 +13,7 @@ import os.path as op
 
 import unittest
 from nose.plugins.attrib import attr
+import pytest
 
 # sample_data_path = os.path.dirname(os.path.abspath(__file__))
 # sample_data_path
@@ -256,7 +257,7 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(stats[7]["Modality"], "CT")
         self.assertTrue(info_str, "7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n")
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_micro_ct(self):
         # there was problem with DICOMDIR file
 
@@ -278,7 +279,7 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(stats[7]["Modality"], "CT")
         self.assertTrue(info_str, "7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n")
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_perfusion_data_with_strange_serieses(self):
         # there was problem with DICOMDIR file
 
@@ -305,7 +306,7 @@ class DicomReaderTest(unittest.TestCase):
         # self.assertTrue(info_str,
         #                 '7 (93, CT, DE_Abdom_1F  5.0  B30f M_0.3, )\n')
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_some_strange_data(self):
         # there was problem with DICOMDIR file
 
@@ -357,7 +358,7 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(data3d.shape[2], 512)
         self.assertEqual(metadata["voxelsize_mm"][0], 5)
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_guess_series_number(self):
 
         dcmdir = os.path.join(sample_data_path, "../sample_data/jatra_5mm")
@@ -377,7 +378,7 @@ class DicomReaderTest(unittest.TestCase):
 
     # @unittest.skipIf(not interactivetTest, 'interactiveTest')
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_select_series_reasmusplus(self):
 
         # dirpath = dcmr.get_dcmdir_qt()
@@ -389,7 +390,7 @@ class DicomReaderTest(unittest.TestCase):
         self.data3d = reader.get_3Ddata()
         self.metadata = reader.get_metaData()
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_isbweb_phalanx1(self):
 
         # dirpath = dcmr.get_dcmdir_qt()
@@ -401,7 +402,7 @@ class DicomReaderTest(unittest.TestCase):
         self.data3d = reader.get_3Ddata()
         self.metadata = reader.get_metaData()
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_piglets(self):
 
         # dirpath = dcmr.get_dcmdir_qt()
@@ -413,7 +414,7 @@ class DicomReaderTest(unittest.TestCase):
         self.data3d = reader.get_3Ddata()
         self.metadata = reader.get_metaData()
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_dcmread_not_defined_slice_width(self):
 
         # app = QApplication(sys.argv)
@@ -458,7 +459,7 @@ class DicomReaderTest(unittest.TestCase):
         # sss.visualization()
         # import pdb; pdb.set_trace()
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_is_dicomdir_information_about_files_with_perfusion_data(self):
         """
         files in vincentka_sample have no extension
@@ -474,7 +475,7 @@ class DicomReaderTest(unittest.TestCase):
         print(sorted_files_with_info)
         self.assertTrue(op.exists(sorted_files[0]))
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_read_big_big_data(self):
         """
         files in nejlepsi_rozli_nevycistene
@@ -484,7 +485,7 @@ class DicomReaderTest(unittest.TestCase):
         # print(sorted_files_with_info)
         # self.assertTrue(op.exists(sorted_files[0]))
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_read_dataset_where_is_voxelsize_equal_zero(self):
         """
         voxelsize_mm[0] should be grater than zero
@@ -497,7 +498,7 @@ class DicomReaderTest(unittest.TestCase):
         # print(sorted_files_with_info)
         # self.assertTrue(op.exists(sorted_files[0]))
 
-    @attr("dataset")
+    @pytest.mark.dataset
     def test_read_and_write_dataset_to_fix_problem_with_out_of_memory(self):
         """
         voxelsize_mm[0] should be grater than zero

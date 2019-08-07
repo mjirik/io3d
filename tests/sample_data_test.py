@@ -42,7 +42,7 @@ class SampleDataTest(unittest.TestCase):
         # yaml_output = os.path.join(path_to_script, "delme_esofspy.txt")
         # vt.vt2esofspy(yaml_input, yaml_output)
 
-    @attr("slow")
+    @pytest.mark.slow
     def sample_data_get_all_test(self):
         keys = sd.data_urls.keys()
         sd.download(keys, "delete_all")

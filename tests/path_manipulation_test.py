@@ -18,7 +18,6 @@ import shutil
 
 import numpy as np
 
-from nose.plugins.attrib import attr
 
 try:
     import dicom as pydicom
