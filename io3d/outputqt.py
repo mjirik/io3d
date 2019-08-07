@@ -1,12 +1,11 @@
-import logging
-
-logger = logging.getLogger(__name__)
-from PyQt4.QtGui import QGridLayout, QLabel, QPushButton, QLineEdit, QCheckBox, QFileDialog
-from PyQt4 import QtGui
+from loguru import logger
+from PyQt5.QtWidgets import (QGridLayout, QLabel, QPushButton, QLineEdit, QCheckBox,
+                         QFileDialog)
+from PyQt5 import QtGui, QtWidgets
 import os.path as op
 
 
-class SelectOutputPathWidget(QtGui.QWidget):
+class SelectOutputPathWidget(QtWidgets.QWidget):
     def __init__(self, path=None, widget_label=None, save_dialog_message="Save file",
                  save_dialog_filter="", *args, **kwargs):
         super(SelectOutputPathWidget, self).__init__()
@@ -55,7 +54,7 @@ class SelectOutputPathWidget(QtGui.QWidget):
             self.save_dialog_message,
             pth,
             filter=self.save_dialog_filter
-        )))
+        )))[0]
 
 
     # def update_ui(self):

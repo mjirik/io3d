@@ -1,6 +1,6 @@
 import pyqtgraph
 
-def params_and_values(p:pyqtgraph.parametertree.Parameter, pth="", dct={}, separator=";"):
+def params_and_values(p:pyqtgraph.parametertree.Parameter, pth=None, dct={}, separator=";"):
     """
     Get dict of all parameters. Key is the path to the parameter, value is value of the parameter.
     :param p:
@@ -11,7 +11,10 @@ def params_and_values(p:pyqtgraph.parametertree.Parameter, pth="", dct={}, separ
     """
     for name in p.getValues():
         # print(f"name: {name}, type {type(name)}")
-        pth_local = pth + separator + name
+        if pth is not None:
+            pth_local = pth + separator + name
+        else:
+            pth_local = name
         # print(pth)
         ch = p.child(name)
         # print(f"name: {name}, type {type(ch)}")
@@ -22,5 +25,3 @@ def params_and_values(p:pyqtgraph.parametertree.Parameter, pth="", dct={}, separ
             params_and_values(ch, pth_local)
 
     return dct
-
-

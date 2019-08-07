@@ -12,23 +12,45 @@
 
 import logging
 
+# try:
+#     QString = unicode
+# except NameError:
+#     # Python 3
+#     QString = str
+
+QString = str
 logger = logging.getLogger(__name__)
 import argparse
 
-from PyQt4.QtGui import QGridLayout, QLabel,\
-    QPushButton, QLineEdit, QApplication
-from PyQt4 import QtGui
-from PyQt4.QtCore import Qt
+
+
+from PyQt5.QtWidgets import (QGridLayout, QLabel,
+    QPushButton, QLineEdit,
+                         QApplication)
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import Qt
+
+
 import sys
+
+
 import os.path
+
+
 import copy
 
 
+
+
 from . import datareader
+
+
 from . import cachefile as cachef
 
 
-class DataReaderWidget(QtGui.QWidget):
+
+
+class DataReaderWidget(QtWidgets.QWidget):
 
     def __init__(
             self,
@@ -104,7 +126,7 @@ class DataReaderWidget(QtGui.QWidget):
         if self.loadfiledir is None:
             self.loadfiledir = ''
         directory = str(self.loadfiledir)
-        from PyQt4.QtGui import QFileDialog
+        from PyQt5.QtWidgets import QFileDialog
         if not app:
             inner_app = QApplication(sys.argv)
         if self._skip_get_path_dialog_for_tests:
@@ -114,7 +136,7 @@ class DataReaderWidget(QtGui.QWidget):
                 caption='Select Data File',
                 directory=directory
                 # ptions=QFileDialog.ShowDirsOnly,
-            )
+            )[0]
         # dcmdir = QFileDialog.getOpenFileName(
         #     caption='Select Data file',
         #     # ptions=QFileDialog.ShowDirsOnly,
@@ -157,7 +179,7 @@ class DataReaderWidget(QtGui.QWidget):
 
         directory = self.loaddir
 
-        from PyQt4.QtGui import QFileDialog
+        from PyQt5.QtWidgets import QFileDialog
         if not app:
             app_inner = QApplication(sys.argv)
         if self._skip_get_path_dialog_for_tests:
@@ -303,8 +325,10 @@ def my_after_fcn(arg):
 
 def get_str(text):
     if sys.version_info.major == 2:
-        import PyQt4.QtCore
-        if type(text) is PyQt4.QtCore.QString:
+        import PyQt5.QtCore
+
+
+        if type(text) is QString:
             text = str(text)
 
     return text
@@ -361,7 +385,7 @@ def main():
     if args.debug:
         ch.setLevel(logging.DEBUG)
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})

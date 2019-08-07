@@ -30,7 +30,6 @@ from . import dcmtools
 from io3d.deprecation import deprecated
 
 
-
 def read(datapath, qt_app=None, dataplus_format=True, gui=False, start=0, stop=None, step=1, convert_to_gray=True,
          series_number=None, dicom_expected=None, **kwargs):
     """Simple read function. Internally calls DataReader.Get3DData()"""
@@ -95,7 +94,7 @@ class DataReader:
             logger.error("Path '" + datapath + "' does not exist")
             return
         if qt_app is None and gui is True:
-            from PyQt4.QtGui import QApplication
+            from PyQt5.QtWidgets import QApplication
             qt_app = QApplication(sys.argv)
 
         if type(datapath) is not str:
@@ -171,6 +170,8 @@ class DataReader:
             flist = []
             try:
                 import SimpleITK as Sitk
+
+
             except ImportError as e:
                 logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
             for f in os.listdir(datapath):
@@ -220,6 +221,8 @@ class DataReader:
         if ext in ('pklz', 'pkl'):
             logger.debug('pklz format detected')
             from . import misc
+
+
             data = misc.obj_from_file(datapath, filetype='pkl')
             data3d = data.pop('data3d')
             # metadata must have series_number
@@ -228,6 +231,8 @@ class DataReader:
 
         elif ext in ['hdf5']:
             from . import hdf5_io
+
+
             datap = hdf5_io.load_dict_from_hdf5(datapath)
             # datap = self.read_hdf5(datapath)
             data3d = datap.pop('data3d')
@@ -241,6 +246,8 @@ class DataReader:
 
         elif ext in ['idx']:
             from . import idxformat
+
+
             idxreader = idxformat.IDXReader()
             data3d, metadata = idxreader.read(datapath)
         elif ext in ['dcm', 'DCM', 'dicom']:
@@ -264,6 +271,8 @@ class DataReader:
         """
         try:
             import SimpleITK as Sitk
+
+
         except ImportError as e:
             logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
         image = Sitk.ReadImage(datapath)
@@ -377,6 +386,8 @@ def main():
                             series_number=args.seriesnumber,
                             dataplus_format=False)
     import sed3
+
+
     ed = sed3.sed3(data3d)
     ed.show()
 
