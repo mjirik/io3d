@@ -17,7 +17,7 @@ from nose.plugins.attrib import attr
 # sys.path.append(os.path.join(path_to_script, "../extern/py3DSeedEditor/"))
 # sys.path.append(os.path.join(path_to_script, "../src/"))
 
-from PyQt4.QtGui import QFileDialog, QApplication, QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow
 import sys
 
 import numpy as np
@@ -72,9 +72,9 @@ class FileSystemBrowserTest(unittest.TestCase):
 
     @unittest.skip('technology test')
     def test_devel_qt_dialog_fsbrowser(self):
-        import PyQt4
         import sys
-        from PyQt4.QtGui import QApplication, QWidget, QLineEdit, QPushButton, QImage, QPixmap, QLabel
+        from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QPushButton, QLabel
+        from PyQt5.QtGui import QImage, QPixmap
         import matplotlib.pyplot as plt
 
         # Create an PyQT4 application object.

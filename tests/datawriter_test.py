@@ -228,7 +228,7 @@ class DicomWriterTest(unittest.TestCase):
 
     def test_add_overlay_and_read_one_file_with_overlay(self):
         logger.info("test started")
-        logger.info(logger.handlers)
+        # logger.info(logger.handlers)
         filename = 'tests_outputs/test_file.dcm'
         filedir = os.path.dirname(filename)
 

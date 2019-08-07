@@ -30,7 +30,7 @@ MOCK_MODULES = [
     # 'pysegbase.pycut', 'sklearn', 'skimage', 'dicom', 'vtk', 'vtk.util',
     # 'larcc', 'larcc.VIEW', 'larcc.MKPOL', 'larcc.AA', 'larcc.INTERVALS',
     # 'larcc.MAP',
-    'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', #'web', 'lar2psm',
+    'PyQt5', 'PyQt5.QtCore', 'PyQt5.QtGui', #'web', 'lar2psm',
     # 'scipy.ndimage.measurements',  'lar', 'extern.lar', 'splines',
     # 'scipy.sparse', 'skimage.filter', 'mapper', 'skelet3d', 'numpy.core',
     # 'skimage.filters', 'skimage.restoration','skimage.io',

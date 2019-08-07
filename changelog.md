@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+
+## 2.0
+
+* [Changed] Python 3 compatibility only
+
 ## 1.26.0
 
 * [Added] New function io3d.datasets.get_labels() for obtaining list of available data

@@ -7,8 +7,8 @@
 import logging
 import sys
 
-from PyQt4 import QtGui
-from PyQt4.QtGui import QGridLayout, QLabel, \
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QGridLayout, QLabel, \
     QPushButton, QLineEdit, QApplication
 
 logger = logging.getLogger(__name__)

@@ -17,7 +17,6 @@ from nose.plugins.attrib import attr
 # sys.path.append(os.path.join(path_to_script, "../extern/py3DSeedEditor/"))
 # sys.path.append(os.path.join(path_to_script, "../src/"))
 
-# from PyQt4.QtGui import QFileDialog, QApplication, QMainWindow
 
 import numpy as np
 

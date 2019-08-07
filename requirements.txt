@@ -1,6 +1,6 @@
 checksumdir
 SimpleITK
-PyQt4
+PyQt5
 h5py
 numpy
 sed3

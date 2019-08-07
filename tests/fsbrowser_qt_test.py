@@ -34,7 +34,7 @@ import io3d.dcmreaddata as dcmr
 # sample_data_path = "~/data/medical/orig/sample_data/"
 # sample_data_path = op.expanduser(sample_data_path)
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 import io3d.outputqt
 import io3d.datareaderqt
 import io3d.datasets
