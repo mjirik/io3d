@@ -14,8 +14,7 @@ import os.path
 # ys.path.append(os.path.join(path_to_script, "../extern/"))
 # mport featurevector
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import argparse
 
 __author__ = 'mjirik'

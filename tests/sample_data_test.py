@@ -12,8 +12,7 @@ import unittest
 import shutil
 import numpy as np
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 # from imtools import qmisc

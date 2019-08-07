@@ -9,8 +9,7 @@
 """
 Module for testing format rawiv
 """
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 import unittest
 import os.path as op

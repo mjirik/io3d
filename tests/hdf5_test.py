@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import unittest
 import numpy as np
 import io3d.hdf5_io as hp

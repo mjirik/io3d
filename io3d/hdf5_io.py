@@ -5,8 +5,7 @@ based on https://codereview.stackexchange.com/questions/120802/recursively-save-
 
 """
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 import numpy as np
 import h5py

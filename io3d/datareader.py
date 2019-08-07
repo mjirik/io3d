@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 """Module for reading 3D dicom data"""
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 import argparse
 import numpy as np

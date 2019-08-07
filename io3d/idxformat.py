@@ -5,8 +5,7 @@ import os.path as op
 
 import glob
 import numpy as np
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 class IDXReader:
     def _init__(self):

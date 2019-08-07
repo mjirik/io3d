@@ -9,8 +9,7 @@ Example:
 $ dcmreaddata -d sample_data -o head.mat
 """
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import os
 import re
 import sys
@@ -369,6 +368,8 @@ def files_in_dir(dirpath, wildcard="*", startpath=None):
     """
 
     import glob
+
+
 
     filelist = []
 
@@ -854,6 +855,8 @@ class DicomDirectory:
                         # print('Dicom read problem with file ' + filepath)
                         logger.info('Dicom read problem with file ' + filepath)
                         import traceback
+
+
                         logger.debug(traceback.format_exc())
             if hasattr(dcmdata, "DirectoryRecordSequence"):
                 # file is DICOMDIR - metainfo about files in directory
@@ -949,6 +952,8 @@ def get_series_number_by_guess_for_liver(dcmreader, counts, bins, qt_app=None):
     series_info = dcmreader.dicomdirectory.get_stats_of_series_in_dir()
     print(dcmreader.print_series_info(series_info))
     import pandas as pd
+
+
     df = pd.DataFrame(list(series_info.values()))
 
     #select CT
@@ -1009,7 +1014,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no co
     series_info = dcmreader.dicomdirectory.get_stats_of_series_in_dir()
     study_info_msg = dcmreader.dicomdirectory.get_study_info_msg(series_info=series_info)
     print(dcmreader.print_series_info(series_info))
-    from PyQt4.QtGui import QInputDialog
+    from PyQt5.QtWidgets import QInputDialog
     # bins = ', '.join([str(ii) for ii in bins])
     sbins = [str(ii) for ii in bins]
     sbinsd = {}
@@ -1030,7 +1035,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no co
 
 
 def get_dcmdir_qt(app=False, directory=''):  # pragma: no cover
-    from PyQt4.QtGui import QFileDialog, QApplication
+    from PyQt5.QtGui import QFileDialog, QApplication
     if app:
         dcmdir = QFileDialog.getExistingDirectory(
             caption='Select DICOM Folder',

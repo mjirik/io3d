@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 try:
     import pydicom

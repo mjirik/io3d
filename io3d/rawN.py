@@ -10,8 +10,7 @@
 
 """
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import argparse
 import struct
 import numpy as np
