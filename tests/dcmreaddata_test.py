@@ -12,7 +12,6 @@ import os.path as op
 # import copy
 
 import unittest
-from nose.plugins.attrib import attr
 import pytest
 
 # sample_data_path = os.path.dirname(os.path.abspath(__file__))

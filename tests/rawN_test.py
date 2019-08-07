@@ -11,7 +11,6 @@ Module for testing format rawiv
 """
 from loguru import logger
 import unittest
-from nose.plugins.attrib import attr
 import numpy as np
 import os
 

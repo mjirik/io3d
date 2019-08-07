@@ -48,7 +48,7 @@ install:
 #    - wget http://home.zcu.cz/~mjirik/lisa/sample-data/io3d_sample_data.zip
 #    - unzip -d ~/data/medical/orig/ io3d_sample_data.zip
 # command to install dependencies
-    - conda create --yes -n travis pip nose pytest coveralls pytest-cov python=$CONDA_PYTHON_VERSION
+    - conda create --yes -n travis pip pytest coveralls pytest-cov python=$CONDA_PYTHON_VERSION
     - source activate travis
 #    - Install dependencies
 #    - pip install python-coveralls
