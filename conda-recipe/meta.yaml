@@ -39,7 +39,7 @@ requirements:
     - scipy
     - pydicom=1
 #    - pyyaml
-#    - ruamel.yaml
+    - ruamel.yaml
     # - simpleitk
     - scikit-image
 #    - imma
@@ -52,7 +52,7 @@ requirements:
     - scipy
     - pydicom=1
 #    - pyyaml
-#    - ruamel.yaml
+    - ruamel.yaml
     - h5py
     - checksumdir
     # - simpleitk # version0.9.* is ok for python2.7
