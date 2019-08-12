@@ -33,11 +33,12 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         # 'Programming Language :: Python :: 2',
         # 'Programming Language :: Python :: 2.6',
-        "Programming Language :: Python :: 2.7",
+        # "Programming Language :: Python :: 2.7",
         # 'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.2',
         # 'Programming Language :: Python :: 3.3',
-        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     # What does your project relate to?
     keywords="dicom 3D read write",
@@ -48,7 +49,9 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
-    install_requires=["numpy", "scipy", "ruamel.yaml"],
+    install_requires=[
+        # "numpy", "scipy", "ruamel.yaml"
+    ],
     # 'SimpleITK', "dicom"],  # Removed becaouse of errors when pip is installing
     dependency_links=[],
     # If there are data files included in your packages that need to be
