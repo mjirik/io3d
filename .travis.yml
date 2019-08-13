@@ -1,7 +1,8 @@
 # if no languge, the ruby is used
 #language: ruby
 #language: bash
-#language: python
+language: python
+python: 2.7
 #virtualenv:
 #    system_site_packages: false
 
