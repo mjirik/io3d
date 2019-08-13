@@ -25,7 +25,6 @@ skip_on_local = False
 
 
 class AnonTestCase(unittest.TestCase):
-
     @pytest.mark.xfail
     @unittest.skipIf(os.environ.get("TRAVIS", skip_on_local), "Skip on Travis-CI")
     def test_anon_file(self):
