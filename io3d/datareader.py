@@ -260,7 +260,7 @@ class DataReader:
             metadata = _create_meta(datapath)
             metadata.update(data)
 
-        elif ext in ["hdf5"]:
+        elif ext in ('hdf5', "h5"):
             from . import hdf5_io
 
             datap = hdf5_io.load_dict_from_hdf5(datapath)
