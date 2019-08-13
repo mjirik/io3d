@@ -2,19 +2,22 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 import numpy as np
+
 
 def get_pixel_array_from_sitk(sitk_image):
     dim = sitk_image
 
     import SimpleITK as sitk
+
     if dim.HasMetaDataKey("0028|1052") and dim.HasMetaDataKey("0028|1053"):
         rescale_intercept = dim.GetMetaData("0028|1052")
         rescale_slope = dim.GetMetaData("0028|1053")
-        slope, inter = get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept)
+        slope, inter = get_slope_and_intercept_from_strings(
+            rescale_slope, rescale_intercept
+        )
     else:
         slope = 1
         inter = 0
@@ -23,6 +26,7 @@ def get_pixel_array_from_sitk(sitk_image):
     data3d = rescale_pixel_array(data3d, slope=slope, inter=inter)
 
     return data3d
+
 
 def get_sitk_image_from_ndarray(data3d):
     """
@@ -35,18 +39,19 @@ def get_sitk_image_from_ndarray(data3d):
     """
 
     import SimpleITK as sitk
+
     rescale_intercept = None
     if sitk.Version.MajorVersion() > 0:
         if data3d.dtype == np.int8:
-            rescale_intercept = -2**7
+            rescale_intercept = -2 ** 7
             data3d = (data3d - rescale_intercept).astype(np.uint8)
         elif data3d.dtype == np.int16:
             # simpleitk is not able to store this. It uses only 11 bites
             # rescale_intercept = -2**15
-            rescale_intercept = -2**10
+            rescale_intercept = -2 ** 10
             data3d = (data3d - rescale_intercept).astype(np.uint16)
         elif data3d.dtype == np.int32:
-            rescale_intercept = -2**31
+            rescale_intercept = -2 ** 31
             data3d = (data3d - rescale_intercept).astype(np.uint16)
 
     dim = sitk.GetImageFromArray(data3d)
@@ -57,6 +62,7 @@ def get_sitk_image_from_ndarray(data3d):
             dim.SetMetaData("0028|1053", "1")
 
     return dim
+
 
 def get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept):
     if type(rescale_slope) is str:
@@ -71,6 +77,7 @@ def get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept):
 
     return slope, inter
 
+
 def get_slope_and_intercept_from_pdcm(dcmdata):
     """
     Get scale and intercept from pydicom file object.
@@ -81,12 +88,15 @@ def get_slope_and_intercept_from_pdcm(dcmdata):
     if hasattr(dcmdata, "RescaleSlope") and hasattr(dcmdata, "RescaleIntercept"):
         rescale_slope = dcmdata.RescaleSlope
         rescale_intercept = dcmdata.RescaleIntercept
-        slope, inter = get_slope_and_intercept_from_strings(rescale_slope, rescale_intercept)
+        slope, inter = get_slope_and_intercept_from_strings(
+            rescale_slope, rescale_intercept
+        )
     else:
         slope = 1
         inter = 0
 
     return slope, inter
+
 
 # def get_pixel_array_from_pdcm(data):
 #     """

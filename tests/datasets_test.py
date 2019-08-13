@@ -9,8 +9,7 @@
 """
 Module for testing format rawiv
 """
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 import unittest
 import os.path as op
@@ -18,9 +17,8 @@ import shutil
 import sys
 import numpy as np
 import io3d
-import glob
 
-from nose.plugins.attrib import attr
+import pytest
 
 class DatasetsTest(unittest.TestCase):
 
@@ -79,15 +77,23 @@ class DatasetsTest(unittest.TestCase):
         # return path back
         io3d.datasets.set_dataset_path(dp_old)
 
-    @attr('slow')
-    def test_getold(self):
+    @pytest.mark.slow
+    def test_getold1(self):
         io3d.datasets.download("3Dircadb1.1")
         io3d.datasets.get_old("3Dircadb1", "*1/P*")
 
     def test_getold(self):
-        pth = io3d.datasets.join_path("medical", "orig", "sample_data", "SCP003", "SCP003.ndpi.ndpa", get_root=True)
+        pth = io3d.datasets.join_path(
+            "medical",
+            "orig",
+            "sample_data",
+            "SCP003",
+            "SCP003.ndpi.ndpa",
+            get_root=True,
+        )
         if op.exists(pth):
             import os
+
             os.remove(pth)
         io3d.datasets.download("SCP003-ndpa")
         self.assertTrue(op.exists(pth))
@@ -97,7 +103,6 @@ class DatasetsTest(unittest.TestCase):
 
         datap = io3d.datasets.get("jatra_5mm")
         self.assertEqual(datap["data3d"].shape[1], 512)
-
 
     @unittest.skip("waiting for implementation of get() function")
     def test_get_with_series_number(self):
@@ -156,13 +161,17 @@ class DatasetsTest(unittest.TestCase):
         data3d = datap["data3d"]
         segmentation = datap["segmentation"]
 
-
         # self.assertTrue(np.array_equal([5, 42, 34], data3d.shape))
         self.assertEqual(segmentation[2, 0, 0], False, "In the corner should be False")
-        self.assertTrue(np.array_equal(np.unique(segmentation), [0, 1, 2]), "Three labels in output segmentation")
+        self.assertTrue(
+            np.array_equal(np.unique(segmentation), [0, 1, 2]),
+            "Three labels in output segmentation",
+        )
 
     def test_generate_synghetic_liver(self):
-        data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta = io3d.datasets.generate_synthetic_liver()
+        data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta = (
+            io3d.datasets.generate_synthetic_liver()
+        )
 
         self.assertTrue(np.array_equal(data3d.shape, segm.shape))
         self.assertTrue(np.array_equal(data3d.shape, seeds_porta.shape))

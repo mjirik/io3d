@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+
+## 2.0
+
+* [Changed] Python 3 compatibility only
+
+## 1.26.0
+
+* [Added] New function io3d.datasets.get_labels() for obtaining list of available data
+
+## 1.25.0
+
+* [Changed] Checkum is computed on oreder directory (is less system dependent)
+
+## 1.24.0
+
+* [Changed] Compact checksumlog. Added hash for ircad
+
 ## 1.22.0
 
 * [Added] Control over relative download directory for every dataset

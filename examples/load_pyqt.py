@@ -7,14 +7,14 @@
 import logging
 import sys
 
-from PyQt4 import QtGui
-from PyQt4.QtGui import QGridLayout, QLabel, \
-    QPushButton, QLineEdit, QApplication
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton, QLineEdit, QApplication
 
 logger = logging.getLogger(__name__)
 import argparse
 
 from io3d.datareaderqt import DataReaderWidget
+
 
 def main():
     logger = logging.getLogger()
@@ -33,38 +33,29 @@ def main():
     # logger.debug('start')
 
     # input parser
-    parser = argparse.ArgumentParser(
-        description=__doc__
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-i', '--inputfile',
-        default=None,
-        required=True,
-        help='input file'
+        "-i", "--inputfile", default=None, required=True, help="input file"
     )
-    parser.add_argument(
-        '-sn', '--seriesnumber',
-        default=None,
-        help='seriesnumber'
-    )
-    parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='Debug mode')
+    parser.add_argument("-sn", "--seriesnumber", default=None, help="seriesnumber")
+    parser.add_argument("-d", "--debug", action="store_true", help="Debug mode")
     args = parser.parse_args()
 
     if args.debug:
         ch.setLevel(logging.DEBUG)
 
-    data3d, metadata = read(args.inputfile, series_number = args.seriesnumber)
+    data3d, metadata = read(args.inputfile, series_number=args.seriesnumber)
 
 
 def show(data3dw):
     data3d = data3dw.datap["data3d"]
     import sed3
+
     ed = sed3.sed3qt(data3d)
     # ed = sed3.se
     # ed.show()
     ed.exec_()
+
 
 if __name__ == "__main__":
     # main()
@@ -73,17 +64,22 @@ if __name__ == "__main__":
 
     # w = QtGui.QWidget()
     # w = DictEdit(dictionary={'jatra':2, 'ledviny':7})
-    w = DataReaderWidget(loaddir="~", loadfiledir="~",
-                         cachefile="~/cache.yaml",
-                         after_function=None, before_function=None)
+    w = DataReaderWidget(
+        loaddir="~",
+        loadfiledir="~",
+        cachefile="~/cache.yaml",
+        after_function=None,
+        before_function=None,
+    )
     w.resize(250, 150)
     w.move(300, 300)
-    w.setWindowTitle('io3dQtWidget')
+    w.setWindowTitle("io3dQtWidget")
     w.show()
 
     app.exec_()
     data3d = w.datap["data3d"]
 
     import sed3
+
     ed = sed3.sed3(data3d)
     ed.show()

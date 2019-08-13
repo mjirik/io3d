@@ -1,27 +1,29 @@
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import glob
+
 try:
     import pydicom
 except ImportError:
     import warnings
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         import dicom as pydicom
     logger.debug("dicom imported - it would be better use pydicom")
 
-class Anonymizer():
+
+class Anonymizer:
     def __init__(self):
-        self.filename = ''
-        self.output_filename = ''
+        self.filename = ""
+        self.output_filename = ""
         self.whitelist = None
 
     def file_anonymization(self, filename, output_filename=None):
         self.filename = filename
         self.output_filename = output_filename
-        if(self.output_filename == None):
-            self.output_filename = 'D:\jatra_test'
-        if(self.whitelist == None):
+        if self.output_filename is None:
+            self.output_filename = "D:\jatra_test"
+        if self.whitelist is None:
             self.setWhitelistDefault()
 
         dcmobj = pydicom.read_file(self.filename)
@@ -30,11 +32,11 @@ class Anonymizer():
 
         for atribut in atrr_list:
             for item in self.whitelist:
-                if(atribut != item):
+                if atribut != item:
                     check = False
-                if(atribut == item):
+                if atribut == item:
                     check = True
-        if(check == False):
+        if check == False:
             setattr(dcmobj, atribut, "")
         check = None
 
@@ -45,7 +47,7 @@ class Anonymizer():
 
         pass
 
-     ## gives path to whitelist text (.txt) file
+    ## gives path to whitelist text (.txt) file
     def setWhitelist(self, whitelistPath):
         self.whitelistPath = whitelistPath
         pthR = whitelistPath
@@ -58,37 +60,36 @@ class Anonymizer():
 
     def setWhitelistDefault(self):
         self.whitelist = [
-            'Modality',
-            'PatientAge',
-            'AcquisitionDate',
-            'AcquisitionNumber',
-            'AcquisitionTime',
-            'PatientPosition',
-            'PatientSex',
-            'RescaleSlope',
-            'RescaleIntercept',
-            'PixelSpacing',
-            'SeriesDate',
-            'SeriesDescription',
-            'SeriesTime',
-            'SeriesNumber',
-            'SliceLocation',
-            'SliceThickness',
-            'StudyDate',
-            'StudyID',
-            'StudyTime',
-            'StudyDesciption',
-            'OverlayType',
-            'OverlayRows',
-            'OverlayOrigin',
-            'OverlayDescription',
-            'OverlayData',
-            'OverlayColumns',
-            'OverlayBitsAllocated',
-            'OverlayBitPosition',
-            'ImageComments',
-            'ImageFrameOrigin',
-            'ImageOrientationPatient',
-            'ImagePositionPatient',
-            ]
-
+            "Modality",
+            "PatientAge",
+            "AcquisitionDate",
+            "AcquisitionNumber",
+            "AcquisitionTime",
+            "PatientPosition",
+            "PatientSex",
+            "RescaleSlope",
+            "RescaleIntercept",
+            "PixelSpacing",
+            "SeriesDate",
+            "SeriesDescription",
+            "SeriesTime",
+            "SeriesNumber",
+            "SliceLocation",
+            "SliceThickness",
+            "StudyDate",
+            "StudyID",
+            "StudyTime",
+            "StudyDesciption",
+            "OverlayType",
+            "OverlayRows",
+            "OverlayOrigin",
+            "OverlayDescription",
+            "OverlayData",
+            "OverlayColumns",
+            "OverlayBitsAllocated",
+            "OverlayBitPosition",
+            "ImageComments",
+            "ImageFrameOrigin",
+            "ImageOrientationPatient",
+            "ImagePositionPatient",
+        ]

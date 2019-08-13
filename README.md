@@ -11,7 +11,7 @@ This package contains set of functions used for reading and writing 3D data.
 Use anaconda 
 
 ```shell
-conda install -c mjirik io3d
+conda install -c mjirik -c conda-forge -c SimpleITK io3d
 ```
 
 or

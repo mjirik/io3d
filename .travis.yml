@@ -1,22 +1,40 @@
-language: python
+# if no languge, the ruby is used
+#language: ruby
+#language: bash
+#language: python
 #virtualenv:
 #    system_site_packages: false
 
+os:
+    - linux
+    - osx
+#    - windows # on bash there does not work linux X server
+services:
+  - xvfb
 env:
-    - CONDA_PYTHON_VERSION=2.7
+#    - CONDA_PYTHON_VERSION=2.7
     - CONDA_PYTHON_VERSION=3.6
+    - CONDA_PYTHON_VERSION=3.7
 
+matrix:
+  allow_failures:
+    - env: CONDA_PYTHON_VERSION=2.7
+    - env: CONDA_PYTHON_VERSION=3.7
+  fast_finish: true
 before_install:
     # We do this conditionally because it saves us some downloading if the
     # version is the same.
-    - if [[ "$CONDA_PYTHON_VERSION" == "2.7" ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
-      else
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        if [[ "$CONDA_PYTHON_VERSION" == "2.7" ]]; then
+            wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+        else
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        fi
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe -O miniconda.exe;
       fi
-#    - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-#    - chmod +x miniconda.sh
-#    - ./miniconda.sh -b
     - bash miniconda.sh -b -p $HOME/miniconda
     - export PATH="$HOME/miniconda/bin:$PATH"
     - hash -r
@@ -29,17 +47,19 @@ install:
     - conda config --add channels conda-forge
     - conda config --add channels SimpleITK
     - conda config --add channels mjirik
-    - sudo apt-get install -qq $(< apt_requirements.txt)
-    - mkdir -p ~/data/medical/orig
-    - wget http://147.228.240.61/queetech/sample-extra-data/io3d_sample_data.zip
-    - unzip -d ~/data/medical/orig/ io3d_sample_data.zip
+#    - sudo apt-get install -qq $(< apt_requirements.txt)
+# download training data
+#    - mkdir -p ~/data/medical/orig
+#    - wget http://home.zcu.cz/~mjirik/lisa/sample-data/io3d_sample_data.zip
+#    - unzip -d ~/data/medical/orig/ io3d_sample_data.zip
 # command to install dependencies
-    - conda create --yes -n travis pip nose python=$CONDA_PYTHON_VERSION
+    - conda create --yes -n travis pip pytest coveralls pytest-cov python=$CONDA_PYTHON_VERSION
     - source activate travis
 #    - Install dependencies
-    - pip install python-coveralls
+#    - pip install python-coveralls
     - conda install --yes --file requirements_conda.txt python=$CONDA_PYTHON_VERSION
 #    - pip install checksumdir
+#    - pip install pathlib # install pathlib for python 2.7, useless on python 3.*
     - conda list
 
     - python -m io3d.datasets -l 3Dircadb1.1 jatra_5mm exp_small sliver_training_001 io3d_sample_data head volumetrie
@@ -50,9 +70,16 @@ install:
 before_script:
     # GUI
     - "export DISPLAY=:99.0"
-    - "sh -e /etc/init.d/xvfb start"
-    - sleep 3 # give xvfb sume time to start
+#    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+#        export DISPLAY=:99.0;
+#        sh -e /etc/init.d/xvfb start ;
+#        sleep 3 ;
+#      fi
+#    # give xvfb sume time to start
+#    - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
 
-script: nosetests -v --with-coverage --cover-package=io3d
+#script: nosetests -v --with-coverage --cover-package=io3d
+script:
+  - python -m pytest --cov=io3d/
 after_success:
     - coveralls

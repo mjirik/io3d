@@ -4,8 +4,7 @@
 """
 Module is provides funcions for dict lists and functions processing
 """
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import collections
 import inspect
 import copy
@@ -13,7 +12,7 @@ import numpy as np
 
 
 def get_default_args(obj):
-    if ("__init__" in dir(obj)):
+    if "__init__" in dir(obj):
         if inspect.isfunction(obj.__init__) or inspect.ismethod(obj.__init__):
             argspec = inspect.getargspec(obj.__init__)
         else:
@@ -25,6 +24,7 @@ def get_default_args(obj):
     defaults = argspec.defaults
     dc = collections.OrderedDict(zip(args, defaults))
     return dc
+
 
 def subdict(dct, keys):
     if type(dct) == collections.OrderedDict:
@@ -38,8 +38,9 @@ def subdict(dct, keys):
     return p
 
 
-def list_filter(lst, startswith=None, notstartswith=None,
-                contain=None, notcontain=None):
+def list_filter(
+    lst, startswith=None, notstartswith=None, contain=None, notcontain=None
+):
     """ Keep in list items according to filter parameters.
 
     :param lst: item list
@@ -67,6 +68,7 @@ def list_filter(lst, startswith=None, notstartswith=None,
             keeped.append(item)
     return keeped
 
+
 def kick_from_dict(dct, keys):
     if type(dct) == collections.OrderedDict:
         p = collections.OrderedDict()
@@ -78,6 +80,7 @@ def kick_from_dict(dct, keys):
 
     # p = {key: value for key, value in dct.items() if key not in keys}
     return p
+
 
 def split_dict(dct, keys):
     """
@@ -101,6 +104,7 @@ def split_dict(dct, keys):
             dict_out[key] = value
     return dict_in, dict_out
 
+
 def recursive_update(d, u):
     """
     Dict recursive update.
@@ -120,10 +124,12 @@ def recursive_update(d, u):
             d[k] = u[k]
     return d
 
+
 from collections import Mapping
 from operator import add
 
 _FLAG_FIRST = object()
+
 
 def flatten_dict_join_keys(dct, join_symbol=" "):
     """ Flatten dict with defined key join symbol.
@@ -132,10 +138,10 @@ def flatten_dict_join_keys(dct, join_symbol=" "):
     :param join_symbol: default value is " "
     :return:
     """
-    return dict( flatten_dict(dct, join=lambda a,b:a+join_symbol+b) )
+    return dict(flatten_dict(dct, join=lambda a, b: a + join_symbol + b))
 
 
-def flatten_dict(dct, separator=None, join=add, lift=lambda x:x):
+def flatten_dict(dct, separator=None, join=add, lift=lambda x: x):
     """
 
     Based on ninjagecko code on stackoveflow
@@ -159,16 +165,18 @@ def flatten_dict(dct, separator=None, join=add, lift=lambda x:x):
     if type(separator) is str:
         join = lambda a, b: a + separator + b
     elif type(separator) in (list, tuple):
-        lift = lambda x:(x,)
+        lift = lambda x: (x,)
 
     results = []
+
     def visit(subdict, results, partialKey):
-        for k,v in subdict.items():
-            newKey = lift(k) if partialKey==_FLAG_FIRST else join(partialKey,lift(k))
-            if isinstance(v,Mapping):
+        for k, v in subdict.items():
+            newKey = lift(k) if partialKey == _FLAG_FIRST else join(partialKey, lift(k))
+            if isinstance(v, Mapping):
                 visit(v, results, newKey)
             else:
-                results.append((newKey,v))
+                results.append((newKey, v))
+
     visit(dct, results, _FLAG_FIRST)
     return results
 
@@ -194,7 +202,7 @@ def df_drop_duplicates(df, ignore_key_pattern="time"):
     """
 
     keys_to_remove = list_contains(df.keys(), ignore_key_pattern)
-    #key_tf = [key.find(noinfo_key_pattern) != -1 for key in df.keys()]
+    # key_tf = [key.find(noinfo_key_pattern) != -1 for key in df.keys()]
     # keys_to_remove
     # remove duplicates
     ks = copy.copy(list(df.keys()))
@@ -252,8 +260,13 @@ def sort_list_of_dicts(lst_of_dct, keys, reverse=False, **sort_args):
         keys = [keys]
     # dcmdir = lst_of_dct[:]
     # lst_of_dct.sort(key=lambda x: [x[key] for key in keys], reverse=reverse, **sort_args)
-    lst_of_dct.sort(key=lambda x: [((False, x[key]) if key in x else (True, 0)) for key in keys], reverse=reverse, **sort_args)
+    lst_of_dct.sort(
+        key=lambda x: [((False, x[key]) if key in x else (True, 0)) for key in keys],
+        reverse=reverse,
+        **sort_args
+    )
     return lst_of_dct
+
 
 def ordered_dict_to_dict(config):
     """
@@ -292,4 +305,3 @@ def ordered_dict_to_dict(config):
 #             isconverted[key] = True
 #             cfg[key] = yaml.dump(value, default_flow_style=True)
 #     return cfg
-

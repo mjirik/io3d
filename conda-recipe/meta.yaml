@@ -1,10 +1,10 @@
 package:
   name: io3d
-  version: "1.23.0"
+  version: "2.0.4"
 
 source:
 # this is used for build from git hub
-  git_rev: 1.23.0
+  git_rev: 2.0.4
   git_url: https://github.com/mjirik/io3d.git
 
 # this is used for pypi 
@@ -44,7 +44,8 @@ requirements:
     - scikit-image
 #    - imma
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
-    - {{ pin_compatible('imma', max_pin='x.x') }}
+    - {{ pin_compatible('imma', max_pin='x') }}
+    - loguru
   run:
     - python
     - numpy
@@ -58,7 +59,8 @@ requirements:
     - scikit-image
 #    - imma
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
-    - {{ pin_compatible('imma', max_pin='x.x') }}
+    - {{ pin_compatible('imma', max_pin='x') }}
+    - loguru
 
 test:
   # Python imports

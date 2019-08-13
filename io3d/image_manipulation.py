@@ -4,8 +4,12 @@
 import logging
 
 logger = logging.getLogger(__name__)
-DeprecationWarning("Image_manipulation would be removed from io3d in the future. Use imma.image_manipulation.")
-logger.warning("Image_manipulation would be removed from io3d in the future. Use imma.image_manipulation.")
+DeprecationWarning(
+    "Image_manipulation would be removed from io3d in the future. Use imma.image_manipulation."
+)
+logger.warning(
+    "Image_manipulation would be removed from io3d in the future. Use imma.image_manipulation."
+)
 from imma.image_manipulation import *
 
 # import os.path
@@ -692,4 +696,3 @@ from imma.image_manipulation import *
 #
 #     pass
 #
-

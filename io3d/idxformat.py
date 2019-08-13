@@ -5,8 +5,8 @@ import os.path as op
 
 import glob
 import numpy as np
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
+
 
 class IDXReader:
     def _init__(self):
@@ -23,18 +23,17 @@ class IDXReader:
 
     def read_files(self, datapath):
 
-
         datapath = op.expanduser(datapath)
 
         dirp, filename = op.split(datapath)
-        fn_template = op.join(dirp, self.header['filename_template'])
+        fn_template = op.join(dirp, self.header["filename_template"])
 
         fn_template = fn_template.replace("%04x", "????")
         filelist = glob.glob(fn_template.strip())
         filelist = sorted(filelist)
         print("sdfa")
         for fl in filelist:
-            self.read_bin_file(fl, bitsperblock=int(self.header['bitsperblock']))
+            self.read_bin_file(fl, bitsperblock=int(self.header["bitsperblock"]))
             pass
 
     def read_bin_file(self, filename, bitsperblock=8):
@@ -46,34 +45,33 @@ class IDXReader:
 
         data = np.fromfile(filename, dtype=np.uint8)
         shape = [1024, 1024, 10]
-        d3 = np.reshape(data[:np.prod(shape)],shape)
+        d3 = np.reshape(data[: np.prod(shape)], shape)
 
         import sed3
+
         ed = sed3.sed3(d3[:200, :200, :])
         ed.show()
         print("all ok")
-
 
         # with open(filename, 'rb') as f:	# Use file to refer to the file object
         #
         #     data = f.read(bytesperblock)
         #
 
-
     def header_file_parser(self, datapath):
         self.file_keys = [
-            'filename_template',
-            'logic_to_physic',
-            'bitsperblock',
-            'blocksperfile',
-            'interleave block',
-            'box',
-            'bits'
+            "filename_template",
+            "logic_to_physic",
+            "bitsperblock",
+            "blocksperfile",
+            "interleave block",
+            "box",
+            "bits",
         ]
         if op.exists(datapath):
             logger.error("File '%s' not found" % (datapath))
 
-        with open(datapath, 'rt') as f:	# Use file to refer to the file object
+        with open(datapath, "rt") as f:  # Use file to refer to the file object
             data = f.readlines()
             # data = file.read()
             # print(data)
@@ -85,6 +83,7 @@ class IDXReader:
                 if line.find("(" + key + ")") >= 0:
                     out[key] = data[n + 1]
         return out
+
 
 class IDXWriter:
     def _init__(self):

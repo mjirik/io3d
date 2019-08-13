@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 try:
     import pydicom
 except ImportError:
     import warnings
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         import dicom as pydicom
@@ -19,10 +19,14 @@ import os.path as op
 import os
 import io3d
 import io3d.anonym
+import pytest
 
 skip_on_local = False
+
+
 class AnonTestCase(unittest.TestCase):
 
+    @pytest.mark.xfail
     @unittest.skipIf(os.environ.get("TRAVIS", skip_on_local), "Skip on Travis-CI")
     def test_anon_file(self):
         # print("get travis", os.environ.get("TRAVIS"))
@@ -32,11 +36,12 @@ class AnonTestCase(unittest.TestCase):
         if op.exists(output_file):
             os.remove(output_file)
         anon = io3d.anonym.Anonymizer()
-        cesta_k_souboru_jater = io3d.datasets.join_path("medical", "orig", "jatra_5mm", "IM-0001-0001.dcm", get_root=True)
+        cesta_k_souboru_jater = io3d.datasets.join_path(
+            "medical", "orig", "jatra_5mm", "IM-0001-0001.dcm", get_root=True
+        )
         anon.file_anonymization(cesta_k_souboru_jater, output_file)
         self.assertTrue(op.exists(output_file))
 
-     
         dcm = pydicom.read_file(output_file)
 
         logger.debug(dcm.PatientName)
@@ -51,5 +56,5 @@ class AnonTestCase(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

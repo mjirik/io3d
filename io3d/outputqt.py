@@ -1,14 +1,26 @@
-import logging
-
-logger = logging.getLogger(__name__)
-from PyQt4.QtGui import QGridLayout, QLabel, QPushButton, QLineEdit, QCheckBox, QFileDialog
-from PyQt4 import QtGui
+from loguru import logger
+from PyQt5.QtWidgets import (
+    QGridLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QCheckBox,
+    QFileDialog,
+)
+from PyQt5 import QtGui, QtWidgets
 import os.path as op
 
 
-class SelectOutputPathWidget(QtGui.QWidget):
-    def __init__(self, path=None, widget_label=None, save_dialog_message="Save file",
-                 save_dialog_filter="", *args, **kwargs):
+class SelectOutputPathWidget(QtWidgets.QWidget):
+    def __init__(
+        self,
+        path=None,
+        widget_label=None,
+        save_dialog_message="Save file",
+        save_dialog_filter="",
+        *args,
+        **kwargs
+    ):
         super(SelectOutputPathWidget, self).__init__()
 
         self.ui_slab = {}
@@ -50,20 +62,19 @@ class SelectOutputPathWidget(QtGui.QWidget):
 
     def action_select_path(self):
         pth = op.expanduser(self.get_path())
-        self.set_path(str(QFileDialog.getSaveFileName(
-            self,
-            self.save_dialog_message,
-            pth,
-            filter=self.save_dialog_filter
-        )))
-
+        self.set_path(
+            str(
+                QFileDialog.getSaveFileName(
+                    self, self.save_dialog_message, pth, filter=self.save_dialog_filter
+                )
+            )
+        )[0]
 
     # def update_ui(self):
     #     keyword = "dirname"
     #     self.ui_buttons[keyword].setText(str(self._dirname))
     #     keyword = "filename"
     #     self.ui_buttons[keyword].setText(str(self._filename))
-
 
     def init_ui(self):
 
@@ -75,22 +86,21 @@ class SelectOutputPathWidget(QtGui.QWidget):
         self._row += 1
         if self.widget_label is not None:
             keyword = "label"
-            vtk_fileQLabel= QLabel(self.widget_label)
+            vtk_fileQLabel = QLabel(self.widget_label)
             self.mainLayout.addWidget(vtk_fileQLabel, self._row, 2)
             print("-----------------")
-
 
         keyword = "dirname"
         self.ui_buttons[keyword] = QLineEdit()
         # self.ui_buttons[keyword].setText(str(self.output_path))
         self.mainLayout.addWidget(self.ui_buttons[keyword], self._row + 1, 2, 1, 2)
-        vtk_fileQLabel= QLabel("dir")
+        vtk_fileQLabel = QLabel("dir")
         self.mainLayout.addWidget(vtk_fileQLabel, self._row + 1, 1)
         keyword = "filename"
         self.ui_buttons[keyword] = QLineEdit()
         # self.ui_buttons[keyword].setText(str(self.output_path))
         self.mainLayout.addWidget(self.ui_buttons[keyword], self._row + 2, 2)
-        vtk_fileQLabel= QLabel("file")
+        vtk_fileQLabel = QLabel("file")
         self.mainLayout.addWidget(vtk_fileQLabel, self._row + 2, 1)
         keyword = "path_button"
         self.ui_buttons[keyword] = QPushButton("Select", self)
@@ -98,4 +108,3 @@ class SelectOutputPathWidget(QtGui.QWidget):
         self.mainLayout.addWidget(self.ui_buttons[keyword], self._row + 2, 3, 1, 1)
 
         # self.update_ui()
-

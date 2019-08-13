@@ -2,25 +2,24 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 import unittest
 import numpy as np
 import io3d.hdf5_io as hp
 
-class Hdf5Test(unittest.TestCase):
 
+class Hdf5Test(unittest.TestCase):
     def test_read_write_h5(self):
-        data = {'x': 'astring',
-                'y': np.arange(10),
-                'd': {'z': np.ones((2, 3)),
-                      'b': b'bytestring'},
-                "none": None,
-                1: 1,
-                "tuple": (5, 7),
-                5: None,
-                "float": 3.14,
-                }
+        data = {
+            "x": "astring",
+            "y": np.arange(10),
+            "d": {"z": np.ones((2, 3)), "b": b"bytestring"},
+            "none": None,
+            1: 1,
+            "tuple": (5, 7),
+            5: None,
+            "float": 3.14,
+        }
 
         fn = "hdf5_testfile.h5"
         hp.save_dict_to_hdf5(data, fn)
@@ -38,6 +37,3 @@ class Hdf5Test(unittest.TestCase):
         self.assertEqual(data[5], data2[5])
         self.assertEqual(type(data["float"]), type(data2["float"]))
         self.assertEqual(type(data[1]), type(data2[1]))
-
-
-

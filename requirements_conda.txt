@@ -11,8 +11,9 @@ SimpleITK=1.0.*
 # SimpleITK=1.0.1=py36h6ab5f95_0 # works on py36 linux
 libpng # kvuli simpleik 0.9.
 checksumdir
-pyqt=4.11.*
+pyqt=5
 pydicom
 ruamel.yaml
 scikit-image
 imma
+loguru

@@ -4,8 +4,7 @@
 # import sys
 import os
 
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 import sys
 import os.path
@@ -17,6 +16,7 @@ sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
 
 from .dili_subset import ndarray_to_list_in_structure
 
+
 def old_str_format_to_new(string):
     """
     convert old format style to new style. Works for digits only
@@ -25,7 +25,9 @@ def old_str_format_to_new(string):
     :return:
     """
     import re
+
     return re.sub(r"%(\d*d)", r"{:\1}", string)
+
 
 def suggest_filename(file_path, exists=None):
     """
@@ -34,6 +36,7 @@ def suggest_filename(file_path, exists=None):
     """
     import os.path
     import re
+
     if not isinstance(exists, bool):
         exists = os.path.exists(file_path)
 
@@ -45,10 +48,10 @@ def suggest_filename(file_path, exists=None):
             # cislo = 2
             new_cislo_str = "_2"
         else:
-            cislostr = (m.group())
+            cislostr = m.group()
             cislo = int(cislostr[1:]) + 1
             # it is normal number
-            file_path = file_path[:-len(cislostr)]
+            file_path = file_path[: -len(cislostr)]
             new_cislo_str = "_" + str(cislo)
 
         file_path = file_path + new_cislo_str + file_extension  # .zfill(2)
@@ -58,15 +61,16 @@ def suggest_filename(file_path, exists=None):
     return file_path
 
 
-def obj_from_file(filename='annotation.yaml', filetype='auto'):
-    ''' Read object from file '''
+def obj_from_file(filename="annotation.yaml", filetype="auto"):
+    """ Read object from file """
 
-    if filetype == 'auto':
+    if filetype == "auto":
         _, ext = os.path.splitext(filename)
         filetype = ext[1:]
 
-    if filetype in ('yaml', 'yml'):
+    if filetype in ("yaml", "yml"):
         from ruamel.yaml import YAML
+
         yaml = YAML(typ="unsafe")
         with open(filename, encoding="utf-8") as f:
             obj = yaml.load(f)
@@ -76,7 +80,7 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
         # with open(filename, encoding="utf-8") as f:
         #     intext = f.read()
         #     obj = yaml.load(intext)
-    elif filetype in ('pickle', 'pkl', 'pklz', 'picklezip'):
+    elif filetype in ("pickle", "pkl", "pklz", "picklezip"):
         fcontent = read_pkl_and_pklz(filename)
         # import pickle
         if sys.version_info[0] < 3:
@@ -89,7 +93,7 @@ def obj_from_file(filename='annotation.yaml', filetype='auto'):
         else:
             obj = pickle.loads(fcontent, encoding="latin1")
     else:
-        logger.error('Unknown filetype ' + filetype)
+        logger.error("Unknown filetype " + filetype)
     return obj
 
 
@@ -100,26 +104,28 @@ def read_pkl_and_pklz(filename):
     fcontent = None
     try:
         import gzip
-        f = gzip.open(filename, 'rb')
+
+        f = gzip.open(filename, "rb")
         fcontent = f.read()
         f.close()
     except IOError as e:
         # if the problem is in not gzip file
         logger.info("Input gzip exception: " + str(e))
-        f = open(filename, 'rb')
+        f = open(filename, "rb")
         fcontent = f.read()
         f.close()
     except Exception as e:
         # other problem
         import traceback
+
         logger.error("Input gzip exception: " + str(e))
         logger.error(traceback.format_exc())
 
     return fcontent
 
 
-def obj_to_file(obj, filename, filetype='auto', ndarray_to_list=False, squeeze=True):
-    '''Writes annotation in file.
+def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=True):
+    """Writes annotation in file.
 
     :param filetype:
         auto
@@ -129,7 +135,7 @@ def obj_to_file(obj, filename, filetype='auto', ndarray_to_list=False, squeeze=T
     :param ndarray_to_list: convert ndarrays in obj to lists
     :param squeeze: squeeze ndarray
 
-    '''
+    """
     # import json
     # with open(filename, mode='w') as f:
     #    json.dump(annotation,f)
@@ -141,15 +147,16 @@ def obj_to_file(obj, filename, filetype='auto', ndarray_to_list=False, squeeze=T
     if not os.path.exists(d):
         os.makedirs(d)
 
-    if filetype == 'auto':
+    if filetype == "auto":
         _, ext = os.path.splitext(filename)
         filetype = ext[1:]
 
-    if filetype in ('yaml', 'yml'):
+    if filetype in ("yaml", "yml"):
         # import yaml
         from ruamel.yaml import YAML
+
         yaml = YAML(typ="unsafe")
-        with open(filename, 'wt', encoding="utf-8") as f:
+        with open(filename, "wt", encoding="utf-8") as f:
             yaml.dump(obj, f)
         # if sys.version_info.major == 2:
         #     with open(filename, 'wb') as f:
@@ -157,38 +164,45 @@ def obj_to_file(obj, filename, filetype='auto', ndarray_to_list=False, squeeze=T
         # else:
         #     with open(filename, "w", encoding="utf-8") as f:
         #         yaml.dump(obj, f)
-    elif filetype in ('pickle', 'pkl'):
-        f = open(filename, 'wb')
+    elif filetype in ("pickle", "pkl"):
+        f = open(filename, "wb")
         logger.info("filename " + filename)
         # if sys.version_info[0] < 3: import cPickle as pickle
         # else: import _pickle as pickle
         import pickle
+
         pickle.dump(obj, f, -1)
         f.close
-    elif filetype in ('streamingpicklezip', 'spklz'):
+    elif filetype in ("streamingpicklezip", "spklz"):
         # this is not working :-(
         import gzip
         import sPickle as pickle
-        f = gzip.open(filename, 'wb', compresslevel=1)
+
+        f = gzip.open(filename, "wb", compresslevel=1)
         # f = open(filename, 'wb')
         pickle.s_dump(obj, f)
         f.close
-    elif filetype in ('picklezip', 'pklz'):
+    elif filetype in ("picklezip", "pklz"):
         import gzip
-        if sys.version_info[0] < 3: import cPickle as pickle
-        else: import _pickle as pickle
-        f = gzip.open(filename, 'wb', compresslevel=1)
+
+        if sys.version_info[0] < 3:
+            import cPickle as pickle
+        else:
+            import _pickle as pickle
+        f = gzip.open(filename, "wb", compresslevel=1)
         # f = open(filename, 'wb')
         pickle.dump(obj, f)
         f.close
-    elif filetype in('mat'):
+    elif filetype in ("mat"):
 
         import scipy.io as sio
+
         sio.savemat(filename, obj)
     else:
-        logger.error('Unknown filetype ' + filetype)
+        logger.error("Unknown filetype " + filetype)
 
-def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
+
+def resize_to_shape(data, shape, zoom=None, mode="nearest", order=0):
     """
     Function resize input data to specific shape.
 
@@ -205,34 +219,31 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
         # rint 'za vyjimkou'
         import skimage
         import skimage.transform
-# Now we need reshape  seeds and segmentation to original size
+
+        # Now we need reshape  seeds and segmentation to original size
 
         segm_orig_scale = skimage.transform.resize(
-            data, shape, order=0,
-            preserve_range=True,
-            mode="constant",
+            data, shape, order=0, preserve_range=True, mode="constant"
         )
 
         segmentation = segm_orig_scale
-        logger.debug('resize to orig with skimage')
+        logger.debug("resize to orig with skimage")
     except:
         import scipy
         import scipy.ndimage
+
         dtype = data.dtype
         if zoom is None:
             zoom = shape / np.asarray(data.shape).astype(np.double)
 
         segm_orig_scale = scipy.ndimage.zoom(
-            data,
-            1.0 / zoom,
-            mode=mode,
-            order=order
+            data, 1.0 / zoom, mode=mode, order=order
         ).astype(dtype)
-        logger.debug('resize to orig with scipy.ndimage')
+        logger.debug("resize to orig with scipy.ndimage")
 
-# @TODO odstranit hack pro oříznutí na stejnou velikost
-# v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
-# tam je bohužel patrně bug
+        # @TODO odstranit hack pro oříznutí na stejnou velikost
+        # v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
+        # tam je bohužel patrně bug
         # rint 'd3d ', self.data3d.shape
         # rint 's orig scale shape ', segm_orig_scale.shape
         shp = [
@@ -244,16 +255,15 @@ def resize_to_shape(data, shape, zoom=None, mode='nearest', order=0):
         # mport ipdb; ipdb.set_trace() # BREAKPOINT
 
         segmentation = np.zeros(shape, dtype=dtype)
-        segmentation[
-            0:shp[0],
-            0:shp[1],
-            0:shp[2]] = segm_orig_scale[0:shp[0], 0:shp[1], 0:shp[2]]
+        segmentation[0 : shp[0], 0 : shp[1], 0 : shp[2]] = segm_orig_scale[
+            0 : shp[0], 0 : shp[1], 0 : shp[2]
+        ]
 
         del segm_orig_scale
     return segmentation
 
 
-def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
+def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode="nearest"):
     """
     Function can resize data3d or segmentation to specifed voxelsize_mm
     :new_voxelsize_mm: requested voxelsize. List of 3 numbers, also
@@ -265,22 +275,20 @@ def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode='nearest'):
     import scipy
     import scipy.ndimage
 
-    if np.all(list(new_voxelsize_mm) == 'orig'):
+    if np.all(list(new_voxelsize_mm) == "orig"):
         new_voxelsize_mm = np.array(voxelsize_mm)
-    elif np.all(list(new_voxelsize_mm) == 'orig*2'):
+    elif np.all(list(new_voxelsize_mm) == "orig*2"):
         new_voxelsize_mm = np.array(voxelsize_mm) * 2
-    elif np.all(list(new_voxelsize_mm) == 'orig*4'):
+    elif np.all(list(new_voxelsize_mm) == "orig*4"):
         new_voxelsize_mm = np.array(voxelsize_mm) * 4
         # vx_size = np.array(metadata['voxelsize_mm']) * 4
 
     zoom = voxelsize_mm / (1.0 * np.array(new_voxelsize_mm))
-    data3d_res = scipy.ndimage.zoom(
-        data3d,
-        zoom,
-        mode=mode,
-        order=1
-    ).astype(data3d.dtype)
+    data3d_res = scipy.ndimage.zoom(data3d, zoom, mode=mode, order=1).astype(
+        data3d.dtype
+    )
     return data3d_res
+
 
 def suits_with_dtype(mn, mx, dtype):
     """
@@ -295,6 +303,7 @@ def suits_with_dtype(mn, mx, dtype):
         return True
     else:
         return False
+
 
 def use_economic_dtype(data3d, slope=1, inter=0, dtype=None):
     """ Use more economic integer-like dtype if it is possible.
@@ -329,4 +338,3 @@ def use_economic_dtype(data3d, slope=1, inter=0, dtype=None):
     else:
         new_data3d = ((slope * data3d) + inter).astype(dtype)
     return new_data3d
-
