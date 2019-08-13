@@ -26,8 +26,12 @@ from skimage import io
 import io3d
 import io3d.dcmreaddata
 
-# TODO - PyQt5
-from PyQt4 import QtCore, QtGui
+# TODO - PyQt5 - done
+from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QMenu, QAction, qApp, QFileDialog
+from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
+from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
 
 def remove_if_exists(filename):
     if os.path.exists(filename):
@@ -271,41 +275,44 @@ class FileSystemBrowser:
         pass
     
 #Widget - dcm browser    
-#TODO - PyQt5
-class DCMage(QtGui.QMainWindow):
+#TODO - PyQt5 - done
+class DCMage(QMainWindow):
     def __init__(self):
-        super(DCMage, self).__init__()
-        self.printer = QtGui.QPrinter()
+        super().__init__()
+        self.printer = QPrinter()
         self.scaleFactor = 0.0
-        self.imageLabel = QtGui.QLabel()
-        self.imageLabel.setBackgroundRole(QtGui.QPalette.Base)
-        self.imageLabel.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        self.imageLabel = QLabel()
+        self.imageLabel.setBackgroundRole(QPalette.Base)
+        self.imageLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.imageLabel.setScaledContents(True)
-        self.scrollArea = QtGui.QScrollArea()
-        self.scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
+        self.scrollArea = QScrollArea()
+        self.scrollArea.setBackgroundRole(QPalette.Dark)
         self.scrollArea.setWidget(self.imageLabel)
+        self.scrollArea.setVisible(False)
+        
         self.setCentralWidget(self.scrollArea)
+        #widget with info about dcm
         self.cActions()
         self.cMenus()
         self.setWindowTitle("DCMage")
         self.resize(1000, 750)
 
-    #basic format jpg,png... etc. test
     def open(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self, "Open File", QtCore.QDir.currentPath())
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()','','Images (*.dcm *.png *.jpeg *.jpg *.bmp *.gif)', options = options)
         if fileName:
-            image = QtGui.QImage(fileName)
+            image = QImage(fileName)
             if image.isNull():
-                QtGui.QMessageBox.information(self, "DCMage", "Cannot load %s." % fileName)
+                QMessageBox.information(self, "Image Viewer", "Cannot load" % fileName)
                 return
-            self.imageLabel.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.imageLabel.setPixmap(QPixmap.fromImage(image))
             self.scaleFactor = 1.0
+            self.scrollArea.setVisible(True)
             self.fitToWindowAct.setEnabled(True)
             self.updateActions()
             if not self.fitToWindowAct.isChecked():
                 self.imageLabel.adjustSize()
-
-    #zoom
+    #zooms
     def zoomIn(self):
         self.scaleImage(1.25)
     def zoomOut(self):
@@ -313,27 +320,35 @@ class DCMage(QtGui.QMainWindow):
     def normalSz(self):
         self.imageLabel.adjustSize()
         self.scaleFactor = 1.0
-    def fitToWindow(self):
+    def fitTW(self):
         fitToWindow = self.fitToWindowAct.isChecked()
         self.scrollArea.setWidgetResizable(fitToWindow)
         if not fitToWindow:
             self.normalSz()
         self.updateActions()
+        
+    def scaleImage(self, f):
+        self.scaleFactor *= f
+        self.imageLabel.resize(self.scaleFactor * self.imageLabel.pixmap().size())
+        self.adjustScrollBar(self.scrollArea.horizontalScrollBar(), f)
+        self.adjustScrollBar(self.scrollArea.verticalScrollBar(), f)
+        self.zoomInAct.setEnabled(self.scaleFactor<3.0)
+        self.zoomOutAct.setEnabled(self.scaleFactor>0.333)
 
     def cActions(self):
-        self.openAct = QtGui.QAction("Open", self, shortcut="Ctrl+O", triggered=self.open)
-        self.exitAct = QtGui.QAction("Exit", self, shortcut="Ctrl+Q", triggered=self.close)
-        self.zoomInAct = QtGui.QAction("Zoom ++ (25%)", self, shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
-        self.zoomOutAct = QtGui.QAction("Zoom -- (25%)", self, shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
-        self.normalSizeAct = QtGui.QAction("Normal", self, shortcut="Ctrl+S", enabled=False, triggered=self.normalSz)
-        self.fitToWindowAct = QtGui.QAction("Fit", self, enabled=False, checkable=True, shortcut="Ctrl+F", triggered=self.fitToWindow)
-
+        self.openAct = QAction("Open...", self, shortcut="Ctrl+O", triggered=self.open)
+        self.fitToWindowAct = QAction("Fit", self, enabled=False, checkable=True, shortcut="Ctrl+F", triggered=self.fitTW)
+        self.zoomInAct = QAction("ZoomIn 25%", self, shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
+        self.zoomOutAct = QAction("ZoomOut 25%", self, shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
+        self.normalSizeAct = QAction("Normal", self, shortcut="Ctrl+S", enabled=False, triggered=self.normalSz)
+        self.exitAct = QAction("Exit", self, shortcut="Ctrl+Q", triggered=self.close)
+        
     def cMenus(self):
-        self.fileMenu = QtGui.QMenu("&File", self)
+        self.fileMenu = QMenu("File", self)
         self.fileMenu.addAction(self.openAct)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAct)
-        self.viewMenu = QtGui.QMenu("&View", self)
+        self.viewMenu = QMenu("View", self)
         self.viewMenu.addAction(self.zoomInAct)
         self.viewMenu.addAction(self.zoomOutAct)
         self.viewMenu.addAction(self.normalSizeAct)
@@ -347,13 +362,5 @@ class DCMage(QtGui.QMainWindow):
         self.zoomOutAct.setEnabled(not self.fitToWindowAct.isChecked())
         self.normalSizeAct.setEnabled(not self.fitToWindowAct.isChecked())
 
-    def scaleImage(self, f):
-        self.scaleFactor *= f
-        self.imageLabel.resize(self.scaleFactor * self.imageLabel.pixmap().size())
-        self.adjustScrollBar(self.scrollArea.horizontalScrollBar(), f)
-        self.adjustScrollBar(self.scrollArea.verticalScrollBar(), f)
-        self.zoomInAct.setEnabled(self.scaleFactor < 3.0)
-        self.zoomOutAct.setEnabled(self.scaleFactor > 0.333)
-
     def adjustScrollBar(self, scrollBar, f):
-        scrollBar.setValue(int(f * scrollBar.value() + ((f - 1) * scrollBar.pageStep()/2)))
+        scrollBar.setValue(int(f*scrollBar.value()+((f-1)*scrollBar.pageStep()/2)))
