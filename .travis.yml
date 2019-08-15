@@ -33,6 +33,7 @@ matrix:
   allow_failures:
     - env: CONDA_PYTHON_VERSION=2.7
     - env: CONDA_PYTHON_VERSION=3.7
+    - name: "osx python37"
   fast_finish: true
 before_install:
     # We do this conditionally because it saves us some downloading if the
