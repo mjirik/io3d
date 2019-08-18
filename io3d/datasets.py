@@ -294,13 +294,17 @@ def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     cache.update("local_dataset_dir", path)
 
 
-def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
+def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None):
     """Get dataset path.
 
     :param cache: CacheFile object
     :param cachefile: cachefile path, default '~/.io3d_cache.yaml'
+    :param get_root: In old versions the path was to root/medical/orig. If the get_root is set to True, the path
+    is root.
     :return: path to dataset
+
     """
+
     local_data_dir = local_dir
 
     if cachefile is not None:
@@ -309,10 +313,13 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
     if cache is not None:
         local_data_dir = cache.get_or_save_default("local_dataset_dir", local_dir)
 
+    if get_root is None:
+        get_root = False
+        logger.warning("Deprecated call without get_root. The actual value "
+                       "get_root=False will be changed to get_root=True in the future.")
     if get_root:
         local_data_dir
     else:
-        logger.warning("Parameter")
         local_data_dir = op.join(local_data_dir, "medical", "orig")
 
     return op.expanduser(local_data_dir)
