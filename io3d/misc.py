@@ -16,6 +16,7 @@ sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
 
 from .dili_subset import ndarray_to_list_in_structure
 
+# from imma.image import resize_to_mm, resize_to_shape
 
 def old_str_format_to_new(string):
     """

@@ -32,10 +32,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 
-def remove_if_exists(filename):
-    if os.path.exists(filename):
-        os.remove(filename)
-
 
 # FileSystemBrowser("c:/jkdfaldkfj/asdfasjfh")
 
