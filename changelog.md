@@ -5,6 +5,8 @@
 ## 2.1
 
 [Fixed] mode and order in `resize_to_shape` function
+[Fixed] respect new functionality in skimage.transform
+[Added] New arguments in `resize_to_shape` function
 
 ## 2.0
 

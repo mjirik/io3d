@@ -202,7 +202,7 @@ def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=T
         logger.error("Unknown filetype " + filetype)
 
 
-def resize_to_shape(data, shape, zoom=None, mode="constant", order=0):
+def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None, check_seeds=False, anti_aliasing=False, **kwargs):
     """
     Function resize input data to specific shape.
 
@@ -211,55 +211,61 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0):
     :param zoom: zoom is used for back compatibility
     :mode: default is 'nearest'
     """
-    # @TODO remove old code in except part
+    # # @TODO remove old code in except part
+    #
+    # try:
+    # rint 'pred vyjimkou'
+    # aise Exception ('test without skimage')
+    # rint 'za vyjimkou'
+    import skimage
+    import skimage.transform
 
-    try:
-        # rint 'pred vyjimkou'
-        # aise Exception ('test without skimage')
-        # rint 'za vyjimkou'
-        import skimage
-        import skimage.transform
+    # Now we need reshape  seeds and segmentation to original size
 
-        # Now we need reshape  seeds and segmentation to original size
-
-        segm_orig_scale = skimage.transform.resize(
-            data, shape, order=order, preserve_range=True, mode=mode
-        )
-
-        segmentation = segm_orig_scale
-        logger.debug("resize to orig with skimage")
-    except:
-        import scipy
-        import scipy.ndimage
-
+    if dtype is None:
         dtype = data.dtype
-        if zoom is None:
-            zoom = shape / np.asarray(data.shape).astype(np.double)
+    segm_orig_scale = skimage.transform.resize(
+        data, shape, order=order, preserve_range=True, mode=mode, anti_aliasing=anti_aliasing, **kwargs
+    )
 
-        segm_orig_scale = scipy.ndimage.zoom(
-            data, 1.0 / zoom, mode=mode, order=order
-        ).astype(dtype)
-        logger.debug("resize to orig with scipy.ndimage")
-
-        # @TODO odstranit hack pro oříznutí na stejnou velikost
-        # v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
-        # tam je bohužel patrně bug
-        # rint 'd3d ', self.data3d.shape
-        # rint 's orig scale shape ', segm_orig_scale.shape
-        shp = [
-            np.min([segm_orig_scale.shape[0], shape[0]]),
-            np.min([segm_orig_scale.shape[1], shape[1]]),
-            np.min([segm_orig_scale.shape[2], shape[2]]),
-        ]
-        # elf.data3d = self.data3d[0:shp[0], 0:shp[1], 0:shp[2]]
-        # mport ipdb; ipdb.set_trace() # BREAKPOINT
-
-        segmentation = np.zeros(shape, dtype=dtype)
-        segmentation[0 : shp[0], 0 : shp[1], 0 : shp[2]] = segm_orig_scale[
-            0 : shp[0], 0 : shp[1], 0 : shp[2]
-        ]
-
-        del segm_orig_scale
+    segmentation = segm_orig_scale
+    logger.debug("resize to orig with skimage")
+    segmentation.astype(dtype=dtype)
+    # except:
+    #     import scipy
+    #     import scipy.ndimage
+    #
+    #     dtype = data.dtype
+    #     if zoom is None:
+    #         zoom = shape / np.asarray(data.shape).astype(np.double)
+    #
+    #     segm_orig_scale = scipy.ndimage.zoom(
+    #         data, 1.0 / zoom, mode=mode, order=order
+    #     ).astype(dtype)
+    #     logger.debug("resize to orig with scipy.ndimage")
+    #
+    #     # @TODO odstranit hack pro oříznutí na stejnou velikost
+    #     # v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
+    #     # tam je bohužel patrně bug
+    #     # rint 'd3d ', self.data3d.shape
+    #     # rint 's orig scale shape ', segm_orig_scale.shape
+    #     shp = [
+    #         np.min([segm_orig_scale.shape[0], shape[0]]),
+    #         np.min([segm_orig_scale.shape[1], shape[1]]),
+    #         np.min([segm_orig_scale.shape[2], shape[2]]),
+    #     ]
+    #     # elf.data3d = self.data3d[0:shp[0], 0:shp[1], 0:shp[2]]
+    #     # mport ipdb; ipdb.set_trace() # BREAKPOINT
+    #
+    #     segmentation = np.zeros(shape, dtype=dtype)
+    #     segmentation[0 : shp[0], 0 : shp[1], 0 : shp[2]] = segm_orig_scale[
+    #         0 : shp[0], 0 : shp[1], 0 : shp[2]
+    #     ]
+    #
+    #     del segm_orig_scale
+    if check_seeds:
+        if not np.all(np.unique(data) == np.unique(segmentation)):
+            logger.warning("Input levels are different from output levels")
     return segmentation
 
 
