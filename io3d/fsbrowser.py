@@ -23,8 +23,6 @@ from os import listdir
 from os.path import isfile, join
 from . import datareader
 from skimage import io
-import io3d
-import io3d.dcmreaddata
 
 # TODO - PyQt5 - done
 from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QMenu, QAction, qApp, QFileDialog
@@ -32,6 +30,7 @@ from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+
 
 def remove_if_exists(filename):
     if os.path.exists(filename):
