@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 2.1
+
+[Fixed] mode and order in `resize_to_shape` function
 
 ## 2.0
 
