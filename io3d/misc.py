@@ -212,8 +212,6 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
     :param dtype: default None, It can be set to dtype from numpy or "orig" - use the data.dtype
     :mode: default is 'nearest'
     """
-    # # @TODO remove old code in except part
-    #
     # try:
     # rint 'pred vyjimkou'
     # aise Exception ('test without skimage')
@@ -227,6 +225,7 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
 
     if dtype is "orig":
         dtype = data.dtype
+
     segm_orig_scale = skimage.transform.resize(
         data, shape, order=order, preserve_range=True, mode=mode, anti_aliasing=anti_aliasing, **kwargs
     )
@@ -234,7 +233,8 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
     segmentation = segm_orig_scale
     logger.debug("resize to orig with skimage")
     if dtype is not None:
-        segmentation.astype(dtype=dtype)
+        logger.debug(f"changing dtype to {dtype}")
+        segmentation = segmentation.astype(dtype=dtype)
     # except:
     #     import scipy
     #     import scipy.ndimage
