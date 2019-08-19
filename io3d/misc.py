@@ -209,6 +209,7 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
     :param data: input 3d array-like data
     :param shape: shape of output data
     :param zoom: zoom is used for back compatibility
+    :param dtype: default None, It can be set to dtype from numpy or "orig" - use the data.dtype
     :mode: default is 'nearest'
     """
     # # @TODO remove old code in except part
@@ -217,12 +218,14 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
     # rint 'pred vyjimkou'
     # aise Exception ('test without skimage')
     # rint 'za vyjimkou'
+    if zoom is not None:
+        logger.warning("zoom parameter is deprecated")
     import skimage
     import skimage.transform
 
     # Now we need reshape  seeds and segmentation to original size
 
-    if dtype is None:
+    if dtype is "orig":
         dtype = data.dtype
     segm_orig_scale = skimage.transform.resize(
         data, shape, order=order, preserve_range=True, mode=mode, anti_aliasing=anti_aliasing, **kwargs
@@ -230,7 +233,8 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
 
     segmentation = segm_orig_scale
     logger.debug("resize to orig with skimage")
-    segmentation.astype(dtype=dtype)
+    if dtype is not None:
+        segmentation.astype(dtype=dtype)
     # except:
     #     import scipy
     #     import scipy.ndimage
@@ -264,7 +268,7 @@ def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None
     #
     #     del segm_orig_scale
     if check_seeds:
-        if not np.all(np.unique(data) == np.unique(segmentation)):
+        if not np.array_equal(np.unique(data), np.unique(segmentation)):
             logger.warning("Input levels are different from output levels")
     return segmentation
 

@@ -32,6 +32,20 @@ class ImageManipulationTest(unittest.TestCase):
         self.assertEquals(new_shape[1], data_out.shape[1])
         self.assertEquals(new_shape[2], data_out.shape[2])
 
+    def test_resize_to_shape_with_small_number_of_seeds(self):
+
+        data = np.zeros([50, 51, 52])
+        data[10:15, 10:30, 10:30] = 1
+        data[30:36, 20:30, 20:30] = 2
+        new_shape = [10, 10, 10]
+        data_out = io3d.misc.resize_to_shape(data, new_shape, order=0, dtype=None)
+
+        assert np.array_equal(np.unique(data), np.unique(data_out))
+
+        self.assertEquals(new_shape[0], data_out.shape[0])
+        self.assertEquals(new_shape[1], data_out.shape[1])
+        self.assertEquals(new_shape[2], data_out.shape[2])
+
     def test_resize_to_mm(self):
 
         data = np.random.rand(3, 4, 6)
@@ -45,6 +59,7 @@ class ImageManipulationTest(unittest.TestCase):
         self.assertEquals(expected_shape[0], data_out.shape[0])
         self.assertEquals(expected_shape[1], data_out.shape[1])
         self.assertEquals(expected_shape[2], data_out.shape[2])
+
 
     def test_store_to_SparseMatrix_and_back(self):
         data = np.zeros([4, 4, 4])
