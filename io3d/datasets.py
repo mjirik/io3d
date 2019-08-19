@@ -14,8 +14,9 @@ import numpy as np
 import zipfile
 import glob
 import os.path as op
-import io3d
+# import io3d
 from . import cachefile as cachef
+from . import datareader
 
 # if sys.version_info < (3, 0):
 #     import urllib as urllibr
@@ -481,7 +482,7 @@ def get_old(dataset_label, data_id, destination_dir=None):
     print(data_id)
     pathsf = fnmatch.filter(paths, data_id)
     print(pathsf)
-    datap = io3d.read(pathsf[0], dataplus_format=True)
+    datap = datareader.read(pathsf[0], dataplus_format=True)
     return datap
 
 
@@ -503,7 +504,7 @@ def get(dataset_label, series_number=None, *args, **kwargs):
         relative_path_extracted_from_data_urls, "medical", "data", get_root=True
     )
     # read 3D data from datapath
-    datap = io3d.read(
+    datap = datareader.read(
         datapath, series_number=series_number, dataplus_format=True, *args, **kwargs
     )
     return datap
@@ -825,10 +826,10 @@ def sliver_reader(
         ref_data = None
         orig_data = None
         if read_orig:
-            orig_data, metadata = io3d.datareader.read(oname, dataplus_format=False)
+            orig_data, metadata = datareader.read(oname, dataplus_format=False)
             vs_mm = metadata["voxelsize_mm"]
         if read_seg:
-            ref_data, metadata = io3d.datareader.read(rname, dataplus_format=False)
+            ref_data, metadata = datareader.read(rname, dataplus_format=False)
             vs_mm = metadata["voxelsize_mm"]
 
         import re
