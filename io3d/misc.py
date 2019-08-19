@@ -202,102 +202,34 @@ def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=T
         logger.error("Unknown filetype " + filetype)
 
 
-def resize_to_shape(data, shape, zoom=None, mode="constant", order=0, dtype=None, check_seeds=False, anti_aliasing=False, **kwargs):
-    """
-    Function resize input data to specific shape.
-
-    :param data: input 3d array-like data
-    :param shape: shape of output data
-    :param zoom: zoom is used for back compatibility
-    :param dtype: default None, It can be set to dtype from numpy or "orig" - use the data.dtype
-    :mode: default is 'nearest'
-    """
-    # try:
-    # rint 'pred vyjimkou'
-    # aise Exception ('test without skimage')
-    # rint 'za vyjimkou'
-    if zoom is not None:
-        logger.warning("zoom parameter is deprecated")
-    import skimage
-    import skimage.transform
-
-    # Now we need reshape  seeds and segmentation to original size
-
-    if dtype is "orig":
-        dtype = data.dtype
-
-    segm_orig_scale = skimage.transform.resize(
-        data, shape, order=order, preserve_range=True, mode=mode, anti_aliasing=anti_aliasing, **kwargs
-    )
-
-    segmentation = segm_orig_scale
-    logger.debug("resize to orig with skimage")
-    if dtype is not None:
-        logger.debug(f"changing dtype to {dtype}")
-        segmentation = segmentation.astype(dtype=dtype)
-    # except:
-    #     import scipy
-    #     import scipy.ndimage
-    #
-    #     dtype = data.dtype
-    #     if zoom is None:
-    #         zoom = shape / np.asarray(data.shape).astype(np.double)
-    #
-    #     segm_orig_scale = scipy.ndimage.zoom(
-    #         data, 1.0 / zoom, mode=mode, order=order
-    #     ).astype(dtype)
-    #     logger.debug("resize to orig with scipy.ndimage")
-    #
-    #     # @TODO odstranit hack pro oříznutí na stejnou velikost
-    #     # v podstatě je to vyřešeno, ale nechalo by se to dělat elegantněji v zoom
-    #     # tam je bohužel patrně bug
-    #     # rint 'd3d ', self.data3d.shape
-    #     # rint 's orig scale shape ', segm_orig_scale.shape
-    #     shp = [
-    #         np.min([segm_orig_scale.shape[0], shape[0]]),
-    #         np.min([segm_orig_scale.shape[1], shape[1]]),
-    #         np.min([segm_orig_scale.shape[2], shape[2]]),
-    #     ]
-    #     # elf.data3d = self.data3d[0:shp[0], 0:shp[1], 0:shp[2]]
-    #     # mport ipdb; ipdb.set_trace() # BREAKPOINT
-    #
-    #     segmentation = np.zeros(shape, dtype=dtype)
-    #     segmentation[0 : shp[0], 0 : shp[1], 0 : shp[2]] = segm_orig_scale[
-    #         0 : shp[0], 0 : shp[1], 0 : shp[2]
-    #     ]
-    #
-    #     del segm_orig_scale
-    if check_seeds:
-        if not np.array_equal(np.unique(data), np.unique(segmentation)):
-            logger.warning("Input levels are different from output levels")
-    return segmentation
+from imma.image import resize_to_shape, resize_to_shape
 
 
-def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode="nearest", order=1):
-    """
-    Function can resize data3d or segmentation to specifed voxelsize_mm
-    :new_voxelsize_mm: requested voxelsize. List of 3 numbers, also
-        can be a string 'orig', 'orgi*2' and 'orgi*4'.
-
-    :voxelsize_mm: size of voxel
-    :mode: default is 'nearest'
-    """
-    import scipy
-    import scipy.ndimage
-
-    if np.all(list(new_voxelsize_mm) == "orig"):
-        new_voxelsize_mm = np.array(voxelsize_mm)
-    elif np.all(list(new_voxelsize_mm) == "orig*2"):
-        new_voxelsize_mm = np.array(voxelsize_mm) * 2
-    elif np.all(list(new_voxelsize_mm) == "orig*4"):
-        new_voxelsize_mm = np.array(voxelsize_mm) * 4
-        # vx_size = np.array(metadata['voxelsize_mm']) * 4
-
-    zoom = voxelsize_mm / (1.0 * np.array(new_voxelsize_mm))
-    data3d_res = scipy.ndimage.zoom(data3d, zoom, mode=mode, order=order).astype(
-        data3d.dtype
-    )
-    return data3d_res
+# def resize_to_mm(data3d, voxelsize_mm, new_voxelsize_mm, mode="nearest", order=1):
+#     """
+#     Function can resize data3d or segmentation to specifed voxelsize_mm
+#     :new_voxelsize_mm: requested voxelsize. List of 3 numbers, also
+#         can be a string 'orig', 'orgi*2' and 'orgi*4'.
+#
+#     :voxelsize_mm: size of voxel
+#     :mode: default is 'nearest'
+#     """
+#     import scipy
+#     import scipy.ndimage
+#
+#     if np.all(list(new_voxelsize_mm) == "orig"):
+#         new_voxelsize_mm = np.array(voxelsize_mm)
+#     elif np.all(list(new_voxelsize_mm) == "orig*2"):
+#         new_voxelsize_mm = np.array(voxelsize_mm) * 2
+#     elif np.all(list(new_voxelsize_mm) == "orig*4"):
+#         new_voxelsize_mm = np.array(voxelsize_mm) * 4
+#         # vx_size = np.array(metadata['voxelsize_mm']) * 4
+#
+#     zoom = voxelsize_mm / (1.0 * np.array(new_voxelsize_mm))
+#     data3d_res = scipy.ndimage.zoom(data3d, zoom, mode=mode, order=order).astype(
+#         data3d.dtype
+#     )
+#     return data3d_res
 
 
 def suits_with_dtype(mn, mx, dtype):

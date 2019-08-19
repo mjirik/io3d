@@ -3,6 +3,9 @@
 ## Unreleased
 
 
+## 2.1
+
+* [Changed] dependency on actual `imma` package
 
 ## 2.0
 
