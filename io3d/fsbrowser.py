@@ -268,6 +268,11 @@ class FileSystemBrowser:
     def recursive_anonymization(self, path, output_path=None):
         dirlist = glob.glob(path)
         pass
+
+def getOpenFileName(path, *other_params):
+    # TODO naimplementovat na základě fsbrowser_test.py:test_devel_qt_dialog_fsbrowser()
+    filename = ""
+    return filename
     
 #Widget - dcm browser    
 #TODO - PyQt5 - done

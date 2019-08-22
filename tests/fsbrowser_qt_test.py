@@ -39,10 +39,11 @@ import io3d.dcmreaddata as dcmr
 # sample_data_path = "~/data/medical/orig/sample_data/"
 # sample_data_path = op.expanduser(sample_data_path)
 
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 import io3d.outputqt
 import io3d.datareaderqt
 import io3d.datasets
+import io3d.fsbrowser
 
 
 class QtTest(unittest.TestCase):
@@ -61,8 +62,45 @@ class QtTest(unittest.TestCase):
 
         fsw = io3d.fsbrowser.FilePathInfoWidget()
         fsw.refresh_path(filepath)
+    #
+    # def test_fsbrowser_qt_simple(self):
+    #     import pydicom.data
+    #
+    #     # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
+    #     filepath = op.join(
+    #         pydicom.data.DATA_ROOT, "test_files/dicomdirtests/98892001/CT2N"
+    #     )
+    #
+    #     sdp = io3d.datasets.join_path("sample_data")
+    #     dp = io3d.datasets.join_path("sample_data/jatra_5mm/")
+    #     app = QApplication(sys.argv)
+    #
+    #     fsw = io3d.fsbrowser.DCMage()
+    #     fsw.show()
+    #
+    #     # FilePathInfoWidget()
+    #     # fsw.refresh_path(filepath)
+    #     app.exec_()
 
-        # app.exec_()
+    def test_fsbrowser_qt_simple(self):
+        import pydicom.data
+
+        # filepath = pydicom.data.get_testdata_files('DICOMDIR')[0]
+        filepath = op.join(
+            pydicom.data.DATA_ROOT, "test_files/dicomdirtests/98892001/CT2N"
+        )
+
+        sdp = io3d.datasets.join_path("sample_data")
+        dp = io3d.datasets.join_path("sample_data/jatra_5mm/")
+        app = QApplication(sys.argv)
+
+        fd = QFileDialog()
+        fd.ge
+        fd.getOpenFileName()
+        mw = QMainWindow()
+        mw.show()
+
+
 
 
 if __name__ == "__main__":

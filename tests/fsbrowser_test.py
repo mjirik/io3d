@@ -115,10 +115,6 @@ class FileSystemBrowserTest(unittest.TestCase):
         # Set window title
         w.setWindowTitle("Hello World!")
 
-        # Get filename using QFileDialog
-        # filename = QFileDialog.getOpenFileName(w, 'Open File', '/')
-        # print(filename)
-
         qfd = QFileDialog(None)
         qfd.setOption(QFileDialog.DontUseNativeDialog)
 
