@@ -14,8 +14,9 @@ import numpy as np
 import zipfile
 import glob
 import os.path as op
-import io3d
+# import io3d
 from . import cachefile as cachef
+from . import datareader
 
 # if sys.version_info < (3, 0):
 #     import urllib as urllibr
@@ -294,13 +295,17 @@ def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     cache.update("local_dataset_dir", path)
 
 
-def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
+def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None):
     """Get dataset path.
 
     :param cache: CacheFile object
     :param cachefile: cachefile path, default '~/.io3d_cache.yaml'
+    :param get_root: In old versions the path was to root/medical/orig. If the get_root is set to True, the path
+    is root.
     :return: path to dataset
+
     """
+
     local_data_dir = local_dir
 
     if cachefile is not None:
@@ -309,10 +314,13 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=False):
     if cache is not None:
         local_data_dir = cache.get_or_save_default("local_dataset_dir", local_dir)
 
+    if get_root is None:
+        get_root = False
+        logger.warning("Deprecated call without get_root. The actual value "
+                       "get_root=False will be changed to get_root=True in the future.")
     if get_root:
         local_data_dir
     else:
-        logger.warning("Parameter")
         local_data_dir = op.join(local_data_dir, "medical", "orig")
 
     return op.expanduser(local_data_dir)
@@ -474,7 +482,7 @@ def get_old(dataset_label, data_id, destination_dir=None):
     print(data_id)
     pathsf = fnmatch.filter(paths, data_id)
     print(pathsf)
-    datap = io3d.read(pathsf[0], dataplus_format=True)
+    datap = datareader.read(pathsf[0], dataplus_format=True)
     return datap
 
 
@@ -496,7 +504,7 @@ def get(dataset_label, series_number=None, *args, **kwargs):
         relative_path_extracted_from_data_urls, "medical", "data", get_root=True
     )
     # read 3D data from datapath
-    datap = io3d.read(
+    datap = datareader.read(
         datapath, series_number=series_number, dataplus_format=True, *args, **kwargs
     )
     return datap
@@ -818,10 +826,10 @@ def sliver_reader(
         ref_data = None
         orig_data = None
         if read_orig:
-            orig_data, metadata = io3d.datareader.read(oname, dataplus_format=False)
+            orig_data, metadata = datareader.read(oname, dataplus_format=False)
             vs_mm = metadata["voxelsize_mm"]
         if read_seg:
-            ref_data, metadata = io3d.datareader.read(rname, dataplus_format=False)
+            ref_data, metadata = datareader.read(rname, dataplus_format=False)
             vs_mm = metadata["voxelsize_mm"]
 
         import re

@@ -1,13 +1,15 @@
 # if no languge, the ruby is used
 #language: ruby
 #language: bash
-#language: python
+language: python
+python: 2.7
+#language: minimal
 #virtualenv:
 #    system_site_packages: false
 
 os:
     - linux
-    - osx
+#    - osx
 #    - windows # on bash there does not work linux X server
 services:
   - xvfb
@@ -17,26 +19,40 @@ env:
     - CONDA_PYTHON_VERSION=3.7
 
 matrix:
+  include:
+    - os: osx
+      language: minimal
+      name: osx python36
+      env:
+        - CONDA_PYTHON_VERSION=3.6
+    - os: osx
+      language: minimal
+      name: osx python37
+      env:
+        - CONDA_PYTHON_VERSION=3.7
   allow_failures:
     - env: CONDA_PYTHON_VERSION=2.7
     - env: CONDA_PYTHON_VERSION=3.7
+    - name: "osx python37"
   fast_finish: true
 before_install:
     # We do this conditionally because it saves us some downloading if the
     # version is the same.
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$CONDA_PYTHON_VERSION" == "2.7" ]]; then
-            wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
-        else
-            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-        fi
-      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
-      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe -O miniconda.exe;
-      fi
-    - bash miniconda.sh -b -p $HOME/miniconda
-    - export PATH="$HOME/miniconda/bin:$PATH"
+#    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+#        if [[ "$CONDA_PYTHON_VERSION" == "2.7" ]]; then
+#            wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+#        else
+#            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+#        fi
+#      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+#        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+#      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+#        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe -O miniconda.exe;
+#      fi
+#    - bash miniconda.sh -b -p $HOME/miniconda
+#    - export PATH="$HOME/miniconda/bin:$PATH"
+#    - wget http://home.zcu.cz/~mjirik/lisa/install/install_conda.sh && source install_conda.sh
+    - wget https://raw.githubusercontent.com/mjirik/discon/master/tools/install_conda.sh && source install_conda.sh
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda

@@ -3,9 +3,18 @@
 ## Unreleased
 
 
+## 2.1
+
+* [Changed] dependency on actual `imma` package
+
 ## 2.0
 
 * [Changed] Python 3 compatibility only
+* [Fixed] mode and order in `resize_to_shape` function
+* [Fixed] respect new functionality in skimage.transform
+* [Added] New arguments in `resize_to_shape` function
+* [Added] New tests for seeds
+* [Added] On resize check if all seeds are preserved
 
 ## 1.26.0
 
