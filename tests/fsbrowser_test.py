@@ -6,8 +6,8 @@ from loguru import logger
 
 # import funkcí z jiného adresáře
 # import sys
-import os.path
 import os.path as op
+import pytest
 
 # import copy
 
@@ -88,7 +88,9 @@ class FileSystemBrowserTest(unittest.TestCase):
         self.assertTrue("path" in dirlist[0])
         self.assertTrue("name" in dirlist[0])
 
-    @unittest.skip("technology test")
+    # @unittest.skip("technology test")
+    # @pytest.mark.skip("technology test")
+    @pytest.mark.interactive
     def test_devel_qt_dialog_fsbrowser(self):
         import sys
         from PyQt5.QtWidgets import (
@@ -118,6 +120,7 @@ class FileSystemBrowserTest(unittest.TestCase):
         # print(filename)
 
         qfd = QFileDialog(None)
+        qfd.setOption(QFileDialog.DontUseNativeDialog)
 
         lineedit = QLineEdit(qfd)
         # Create a button in the window
@@ -150,6 +153,13 @@ class FileSystemBrowserTest(unittest.TestCase):
         layout.addWidget(lineedit)
         layout.addWidget(button, 2, 5)
         layout.addWidget(label, 1, 5)
+
+        def process_selected_file(filename):
+            print("print_all")
+            print(filename)
+            lineedit.setText(filename)
+
+        qfd.currentChanged.connect(process_selected_file)
 
         if qfd.exec_():
             print(qfd.selectedFiles())
