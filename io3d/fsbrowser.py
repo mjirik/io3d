@@ -25,11 +25,13 @@ from . import datareader
 from skimage import io
 
 # TODO - PyQt5 - done
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QMenu, QAction, qApp, QFileDialog
-from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
+from PyQt5.QtWidgets import QFileDialog, QLabel, QVBoxLayout
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
+import sys
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 
@@ -275,92 +277,66 @@ def getOpenFileName(path, *other_params):
     return filename
     
 #Widget - dcm browser    
-#TODO - PyQt5 - done
-class DCMage(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.printer = QPrinter()
-        self.scaleFactor = 0.0
-        self.imageLabel = QLabel()
-        self.imageLabel.setBackgroundRole(QPalette.Base)
-        self.imageLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        self.imageLabel.setScaledContents(True)
-        self.scrollArea = QScrollArea()
-        self.scrollArea.setBackgroundRole(QPalette.Dark)
-        self.scrollArea.setWidget(self.imageLabel)
-        self.scrollArea.setVisible(False)
+#TODO - import textbox with basic info
+class DCMage(QFileDialog):
+    def __init__(self, *args, **kwargs):
+        QFileDialog.__init__(self, *args, **kwargs)
+        self.setOption(QFileDialog.DontUseNativeDialog, True)
         
-        self.setCentralWidget(self.scrollArea)
-        #widget with info about dcm
-        self.cActions()
-        self.cMenus()
-        self.setWindowTitle("DCMage")
-        self.resize(1000, 750)
+        box = QVBoxLayout()
 
-    def open(self):
-        options = QFileDialog.Options()
-        fileName, _ = QFileDialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()','','Images (*.dcm *.png *.jpeg *.jpg *.bmp *.gif)', options = options)
-        if fileName:
-            image = QImage(fileName)
-            if image.isNull():
-                QMessageBox.information(self, "Image Viewer", "Cannot load" % fileName)
-                return
-            self.imageLabel.setPixmap(QPixmap.fromImage(image))
-            self.scaleFactor = 1.0
-            self.scrollArea.setVisible(True)
-            self.fitToWindowAct.setEnabled(True)
-            self.updateActions()
-            if not self.fitToWindowAct.isChecked():
-                self.imageLabel.adjustSize()
-    #zooms
-    def zoomIn(self):
-        self.scaleImage(1.25)
-    def zoomOut(self):
-        self.scaleImage(0.75)
-    def normalSz(self):
-        self.imageLabel.adjustSize()
-        self.scaleFactor = 1.0
-    def fitTW(self):
-        fitToWindow = self.fitToWindowAct.isChecked()
-        self.scrollArea.setWidgetResizable(fitToWindow)
-        if not fitToWindow:
-            self.normalSz()
-        self.updateActions()
+        self.setFixedSize(self.width() + 400, self.height())
+
+        self.mpPreview = QLabel("Preview", self)
+        self.mpPreview.setFixedSize(300, 300)
+        self.mpPreview.setAlignment(Qt.AlignCenter)
+        self.mpPreview.setObjectName("DCMage")
+        box.addWidget(self.mpPreview)
+
+        box.addStretch()
+
+        self.layout().addLayout(box, 1, 3, 1, 1)
+
+        self.currentChanged.connect(self.onChange)
+        self.fileSelected.connect(self.onFileSelected)
+        self.filesSelected.connect(self.onFilesSelected)
+
+        self._fileSelected = None
+        self._filesSelected = None
+
+    def dcm2png(self, path):
+        ds1 = pdicom.read_file(path, force = True)
+        x = plt.imsave('tempfile.png', ds1.pixel_array, cmap=plt.cm.gray)
+        img = io.imread("tempfile.png")
         
-    def scaleImage(self, f):
-        self.scaleFactor *= f
-        self.imageLabel.resize(self.scaleFactor * self.imageLabel.pixmap().size())
-        self.adjustScrollBar(self.scrollArea.horizontalScrollBar(), f)
-        self.adjustScrollBar(self.scrollArea.verticalScrollBar(), f)
-        self.zoomInAct.setEnabled(self.scaleFactor<3.0)
-        self.zoomOutAct.setEnabled(self.scaleFactor>0.333)
+    def onChange(self, path):
+        path_l = path.lower()
+        if((".dcm") in path_l):
+            self.dcm2png(path)
+        else:
+            self.mpPreview.setText("Preview")
+            
+        pixmap = QPixmap("tempfile.png")
 
-    def cActions(self):
-        self.openAct = QAction("Open...", self, shortcut="Ctrl+O", triggered=self.open)
-        self.fitToWindowAct = QAction("Fit", self, enabled=False, checkable=True, shortcut="Ctrl+F", triggered=self.fitTW)
-        self.zoomInAct = QAction("ZoomIn 25%", self, shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
-        self.zoomOutAct = QAction("ZoomOut 25%", self, shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
-        self.normalSizeAct = QAction("Normal", self, shortcut="Ctrl+S", enabled=False, triggered=self.normalSz)
-        self.exitAct = QAction("Exit", self, shortcut="Ctrl+Q", triggered=self.close)
+        if(pixmap.isNull()):
+            self.mpPreview.setText("Preview")
+        else:
+            self.mpPreview.setPixmap(pixmap.scaled(self.mpPreview.width(), self.mpPreview.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         
-    def cMenus(self):
-        self.fileMenu = QMenu("File", self)
-        self.fileMenu.addAction(self.openAct)
-        self.fileMenu.addSeparator()
-        self.fileMenu.addAction(self.exitAct)
-        self.viewMenu = QMenu("View", self)
-        self.viewMenu.addAction(self.zoomInAct)
-        self.viewMenu.addAction(self.zoomOutAct)
-        self.viewMenu.addAction(self.normalSizeAct)
-        self.viewMenu.addSeparator()
-        self.viewMenu.addAction(self.fitToWindowAct)
-        self.menuBar().addMenu(self.fileMenu)
-        self.menuBar().addMenu(self.viewMenu)
+        try:
+            os.remove("tempfile.png")
+        except:
+            print("")
+            
 
-    def updateActions(self):
-        self.zoomInAct.setEnabled(not self.fitToWindowAct.isChecked())
-        self.zoomOutAct.setEnabled(not self.fitToWindowAct.isChecked())
-        self.normalSizeAct.setEnabled(not self.fitToWindowAct.isChecked())
+    def onFileSelected(self, file):
+        self._fileSelected = file
 
-    def adjustScrollBar(self, scrollBar, f):
-        scrollBar.setValue(int(f*scrollBar.value()+((f-1)*scrollBar.pageStep()/2)))
+    def onFilesSelected(self, files):
+        self._filesSelected = files
+
+    def getFileSelected(self):
+        return self._fileSelected
+
+    def getFilesSelected(self):
+        return self._filesSelected
