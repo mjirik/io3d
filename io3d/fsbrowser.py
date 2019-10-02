@@ -303,6 +303,8 @@ class DCMage(QFileDialog):
 
         self._fileSelected = None
         self._filesSelected = None
+        
+        
 
     def dcm2png(self, path):
         ds1 = pdicom.read_file(path, force = True)
@@ -311,8 +313,34 @@ class DCMage(QFileDialog):
         
     def onChange(self, path):
         path_l = path.lower()
-        if((".dcm") in path_l):
-            self.dcm2png(path)
+        if(".dcm" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
+        elif("study" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
+        elif("serie" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+        elif("case" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+        elif("series" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
         else:
             self.mpPreview.setText("Preview")
             
@@ -323,6 +351,7 @@ class DCMage(QFileDialog):
         else:
             self.mpPreview.setPixmap(pixmap.scaled(self.mpPreview.width(), self.mpPreview.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         
+        #self.get_path_info("tempfile.png")
         try:
             os.remove("tempfile.png")
         except:
@@ -340,3 +369,102 @@ class DCMage(QFileDialog):
 
     def getFilesSelected(self):
         return self._filesSelected
+    
+    def get_path_info(self, path):
+        print(path)
+        try:
+            path_sl = path + "/"
+            res_last = path[-1]
+            if res_last == "/":
+                path_sl = path
+            else:
+                path_sl = path + "/"
+        #name
+            name = os.path.basename(os.path.normpath(path))
+            name_final = ("name: " + name)
+        #type
+            type_ = os.path.isdir(path)
+            if type_ == 1:
+                type_res = "type: .dir"
+            if type_ == 0:
+                type_res = ("type: " + name)
+
+        #text - files, series, files
+            serie_counter = 0
+            study_counter = 0
+            all_names = []
+            counter_fail = 0
+            for root, dirs, files in os.walk(path):
+                for d in dirs:
+                    all_names.append(d.lower())
+                    #TODO fix limit
+                    for f in files:
+                        all_names.append(f.lower())
+
+
+        #lowercase - should be able to count all series,studies..
+            for i in all_names:
+                if "serie" in i: 
+                    serie_counter += 1
+                if "study" in i:
+                    study_counter += 1
+            filescounter = sum([len(files) for r, d, files in os.walk(path)])
+            text = ("Study: " + str(study_counter) + " Series: " + str(serie_counter) +" Files: " + str(filescounter))
+
+            path_lower = path.lower()
+
+        #preview - forced path,some pic. from serie?
+            if ".jpg" in path_lower:
+                preview = ("Used path leads to current image.")
+
+            elif ".png" in path_lower:
+                preview = ("Used path leads to current image.")
+
+            elif ".dcm" in path_lower:
+                preview = ("Used path leads to current image.")
+
+            else:
+                preview = ("Preview of files in dir: " + name) 
+                only_files = [f for f in listdir(path) if isfile(join(path, f))]
+
+                for x in only_files:
+                    if (".dcm" or ".Dcm" or ".DCM") in x:
+                        print("dcm files")
+                        break
+                    elif (".jpg" or ".Jpg" or ".JPG") in x:
+                        print("jpf files")
+                        break
+
+                    elif (".png" or ".Png" or ".PNG") in x:
+                        print("png files")
+                        break
+
+                    else:
+                        None
+                        break
+
+            text_path = ("path: " + path)
+            acquid = 0
+            modality = 0
+            path = text_path
+            name = name_final
+
+            retval = [name, type_res, preview, text, acquid, modality, path]
+            #"acquisition_date": ["2015-02-16", "2015-02-16"],
+            #"modality": "MRI",
+            print(retval)
+            #print(retval[0])
+            #print(retval[1])
+            #print(retval[2])
+            #print(retval[3])
+            #print(retval[4])
+            #print(retval[5])
+            #print(retval[6])
+
+        except:
+            print("$$$")
+            return None
+        else:
+            print("Target dir with dcms")
+            return None
+        return retval
