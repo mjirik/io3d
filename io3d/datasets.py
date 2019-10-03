@@ -34,6 +34,7 @@ __url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 __url_server = "http://147.228.240.61/queetech/"
 __url_server = "http://home.zcu.cz/~mjirik/lisa/"
 __hash_path_prefix = ""
+__rel_medical_orig_path = "medical/orig/"
 
 # Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
@@ -45,7 +46,7 @@ data_urls = {
     "jatra_06mm_jenjatra": [
         __url_server + "sample_data/jatra_06mm_jenjatra.zip",
         None,
-        __hash_path_prefix + "jatra_06mm_jenjatra/*.dcm",
+        "jatra_06mm_jenjatra/*.dcm",
     ],
     "jatra_5mm": [
         __url_server + "sample_data/jatra_5mm.zip",
@@ -56,27 +57,25 @@ data_urls = {
     "sliver_training_001": [
         __url_server + "sample_data/sliver_training_001.zip",
         "d64235727c0adafe13d24bfb311d1ed0",
-        __hash_path_prefix + "liver*001.*",
+        "liver*001.*",
     ],
     "volumetrie": [
         __url_server + "sample_data/volumetrie.zip",
         "6b2a2da67874ba526e2fe00a78dd19c9",
-        __hash_path_prefix
     ],
     "vessels.pkl": [
         __url_server + "sample_data/vessels.pkl.zip",
         "698ef2bc345bb616f8d4195048538ded",
-        __hash_path_prefix
     ],
     "biodur_sample": [
         __url_server + "sample_data/biodur_sample.zip",
         "d459dd5b308ca07d10414b3a3a9000ea",
-        __hash_path_prefix + "biodur_sample/*.tiff"
+        "biodur_sample/*.tiff"
     ],
     "gensei_slices": [
         __url_server + "sample_data/gensei_slices.zip",
         "ef93b121add8e4a133bb086e9e6491c9",
-        __hash_path_prefix
+        # __hash_path_prefix
     ],
     "arina": [
         __url_server + "anwa/arina.mp4",
@@ -87,27 +86,25 @@ data_urls = {
     "exp_small": [
         __url_server + "sample_data/exp_small.zip",
         "0526ba8ea363fe8b5227f5807b7aaca7",
-        __hash_path_prefix
+        # __hash_path_prefix
     ],
     "vincentka": [
         __url_server + "sample_data/vincentka.zip",
         "a30fdabaa39c5ce032a3223ed30b88e3",
-        __hash_path_prefix
+        # __hash_path_prefix
     ],
     "vincentka_sample": [__url_server + "sample_data/vincentka_sample.zip"],
     "SCP003-ndpi": [
         __url_server + "sample_data/SCP003/SCP003.ndpi",
         "c7e74c1487bcaa9061aea1ce5c9b8bc9",
         "SCP003.ndpi",
-        "sample_data/SCP003",
-        __hash_path_prefix
+        __rel_medical_orig_path + "sample_data/SCP003",
     ],
     "SCP003-ndpa": [
         __url_server + "sample_data/SCP003/SCP003.ndpi.ndpa",
-        # 'd41d8cd98f00b204e9800998ecf8427e',
         None,
         "SCP003.ndpi.ndpa",
-        __hash_path_prefix + "sample_data/SCP003",
+        __rel_medical_orig_path + "sample_data/SCP003",
     ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample_data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
@@ -117,7 +114,7 @@ data_urls = {
         __url_server + "sample_data/nrn4.pklz",
         "ec470d016c31b8d17d09475fa93ad7d2",
         "nrn4.pklz",
-        __hash_path_prefix + "sample_data/",
+        __rel_medical_orig_path + "sample_data/",
     ],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample_data/io3d_sample_data.zip", None, __hash_path_prefix],
