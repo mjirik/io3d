@@ -3,6 +3,12 @@
 ## Unreleased
 
 
+## 2.2
+
+* [Changed] Some data are stored to `sample-data` instead of `sample_data`
+* [Changed] Internal representation of dataset dir is now just `root` 
+(instead of`root/medical/orig`)
+
 ## 2.1
 
 * [Changed] dependency on actual `imma` package

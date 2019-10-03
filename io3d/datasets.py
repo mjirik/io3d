@@ -32,80 +32,94 @@ local_dir = "~/data/"
 __url_home = "http://home.zcu.cz/~mjirik/lisa/testdata/sample-extra-data/"
 __url_server = "http://147.228.240.61/queetech/"
 __url_server = "http://home.zcu.cz/~mjirik/lisa/"
+__medical_orig = "medical/orig/"
 
 # Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
     "head": [
         __url_server + "sample-data/head.zip",
         "89e9b60fd23257f01c4a1632ff7bb800",
-        "matlab",
+        __medical_orig + "/matlab",
     ],
     "jatra_06mm_jenjatra": [
         __url_server + "sample-data/jatra_06mm_jenjatra.zip",
         None,
-        "jatra_06mm_jenjatra/*.dcm",
+        __medical_orig + "jatra_06mm_jenjatra/*.dcm",
     ],
     "jatra_5mm": [
         __url_server + "sample-data/jatra_5mm.zip",
         "1b9039ffe1ff9af9caa344341c8cec03",
-        "jatra_5mm/*.dcm",
+        __medical_orig + "jatra_5mm/*.dcm",
     ],
     "exp": [__url_server + "sample-data/exp.zip", "74f2c10b17b6bd31bd03662df6cf884d"],
     "sliver_training_001": [
         __url_server + "sample-data/sliver_training_001.zip",
         "d64235727c0adafe13d24bfb311d1ed0",
-        "liver*001.*",
+        __medical_orig + "liver*001.*",
     ],
     "volumetrie": [
         __url_server + "sample-data/volumetrie.zip",
         "6b2a2da67874ba526e2fe00a78dd19c9",
+        __medical_orig
     ],
     "vessels.pkl": [
         __url_server + "sample-data/vessels.pkl.zip",
         "698ef2bc345bb616f8d4195048538ded",
+        __medical_orig
     ],
     "biodur_sample": [
         __url_server + "sample-data/biodur_sample.zip",
         "d459dd5b308ca07d10414b3a3a9000ea",
+        __medical_orig
     ],
     "gensei_slices": [
         __url_server + "sample-data/gensei_slices.zip",
         "ef93b121add8e4a133bb086e9e6491c9",
+        __medical_orig
     ],
+    "arina": [
+        __url_server + "anwa/arina.mp4",
+        None,
+        "anwa"
+        # "ef93b121add8e4a133bb086e9e6491c9",
+        ],
     "exp_small": [
         __url_server + "sample-data/exp_small.zip",
         "0526ba8ea363fe8b5227f5807b7aaca7",
+        __medical_orig
     ],
     "vincentka": [
         __url_server + "sample-data/vincentka.zip",
         "a30fdabaa39c5ce032a3223ed30b88e3",
+        __medical_orig
     ],
     "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
     "SCP003-ndpi": [
         __url_server + "sample-data/SCP003/SCP003.ndpi",
         "c7e74c1487bcaa9061aea1ce5c9b8bc9",
         "SCP003.ndpi",
-        "sample_data/SCP003",
+        "sample-data/SCP003",
+        __medical_orig
     ],
     "SCP003-ndpa": [
         __url_server + "sample-data/SCP003/SCP003.ndpi.ndpa",
         # 'd41d8cd98f00b204e9800998ecf8427e',
         None,
         "SCP003.ndpi.ndpa",
-        "sample_data/SCP003",
+        __medical_orig + "sample-data/SCP003",
     ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
-    "donut": __url_server + "sample-data/donut.zip",
+    "donut": [__url_server + "sample-data/donut.zip", None, __medical_orig],
     # alternative linux hash nrn4 'd41d8cd98f00b204e9800998ecf8427e'
     "nrn4": [
         __url_server + "sample-data/nrn4.pklz",
         "ec470d016c31b8d17d09475fa93ad7d2",
         "nrn4.pklz",
-        "sample-data/",
+        __medical_orig + "sample-data/",
     ],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
-    "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip"],
+    "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip", None, __medical_orig],
     "lisa": {
         "package": [
             "donut",
@@ -156,107 +170,107 @@ data_urls = {
     "3Dircadb1.2": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.2.zip",
         "eff7ff35b7ebc87ce55488549bfc5ee4",
-        "3Dircadb1.2/**/image_*",
+        __medical_orig + "3Dircadb1.2/**/image_*",
     ],
     "3Dircadb1.3": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.3.zip",
         "e5de3e88e062c4c2ee26e53b029aac6d",
-        "3Dircadb1.3/**/image_*",
+        __medical_orig + "3Dircadb1.3/**/image_*",
     ],
     "3Dircadb1.4": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.4.zip",
         "71b9108d25f257e6b295323ec129aafc",
-        "3Dircadb1.4/**/image_*",
+        __medical_orig + "3Dircadb1.4/**/image_*",
     ],
     "3Dircadb1.5": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.5.zip",
         "e3ac71113dc1dd1cb6b0418f98b2e02d",
-        "3Dircadb1.5/**/image_*",
+        __medical_orig + "3Dircadb1.5/**/image_*",
     ],
     "3Dircadb1.6": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.6.zip",
         "79825fd27c3261976ecb2f0f2a7e43f7",
-        "3Dircadb1.6/**/image_*",
+        __medical_orig + "3Dircadb1.6/**/image_*",
     ],
     "3Dircadb1.7": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.7.zip",
         "f74267454be34a8fd6ce9f446528044f",
-        "3Dircadb1.7/**/image_*",
+        __medical_orig + "3Dircadb1.7/**/image_*",
     ],
     "3Dircadb1.8": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.8.zip",
         "b05978969d4e5b4e9169eac2ec6d912c",
-        "3Dircadb1.8/**/image_*",
+        __medical_orig + "3Dircadb1.8/**/image_*",
     ],
     "3Dircadb1.9": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.9.zip",
         "c8c57d9a37e5b6951f7c63fa2cec1e4c",
-        "3Dircadb1.9/**/image_*",
+        __medical_orig + "3Dircadb1.9/**/image_*",
     ],
     "3Dircadb1.10": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.10.zip",
         "3ab9c809148993efa879cbaa60c20a25",
-        "3Dircadb1.10/**/image_*",
+        __medical_orig + "3Dircadb1.10/**/image_*",
     ],
     "3Dircadb1.11": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.11.zip",
         "e0fb55fd031f526a7e77539d709fbff1",
-        "3Dircadb1.11/**/image_*",
+        __medical_orig + "3Dircadb1.11/**/image_*",
     ],
     "3Dircadb1.12": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.12.zip",
         "867b014422550205306477dad3c8725e",
-        "3Dircadb1.12/**/image_*",
+        __medical_orig + "3Dircadb1.12/**/image_*",
     ],
     "3Dircadb1.13": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.13.zip",
         "2f476b9fa26bfb3f28df84288adaf78a",
-        "3Dircadb1.13/**/image_*",
+        __medical_orig + "3Dircadb1.13/**/image_*",
     ],
     "3Dircadb1.14": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.14.zip",
         "7c1035538d2506fb49bdb28942a6900a",
-        "3Dircadb1.14/**/image_*",
+        __medical_orig + "3Dircadb1.14/**/image_*",
     ],
     "3Dircadb1.15": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.15.zip",
         "63dc46d980d5c7b6ef91c7b85afbbb5b",
-        "3Dircadb1.15/**/image_*",
+        __medical_orig + "3Dircadb1.15/**/image_*",
     ],
     "3Dircadb1.16": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.16.zip",
         "ba7dd7f899f9c9a63f5dcb1a2165fb16",
-        "3Dircadb1.16/**/image_*",
+        __medical_orig + "3Dircadb1.16/**/image_*",
     ],
     "3Dircadb1.17": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.17.zip",
         "c6b59e9ea625b2b72348fdbd9cdc4ca3",
-        "3Dircadb1.17/**/image_*",
+        __medical_orig + "3Dircadb1.17/**/image_*",
     ],
     "3Dircadb1.18": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.18.zip",
         "92e63cd6c268efe6f285a8779ddfa437",
-        "3Dircadb1.18/**/image_*",
+        __medical_orig + "3Dircadb1.18/**/image_*",
     ],
     "3Dircadb1.19": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.19.zip",
         "30555382d82ee5057997a48987b0f47b",
-        "3Dircadb1.19/**/image_*",
+        __medical_orig + "3Dircadb1.19/**/image_*",
     ],
     "3Dircadb1.20": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.20.zip",
         "89790e5e2060a642365ebf8bb1bfa14b",
-        "3Dircadb1.20/**/image_*",
+        __medical_orig + "3Dircadb1.20/**/image_*",
     ],
     "CMU-1": [
         "http://openslide.cs.cmu.edu/download/openslide-testdata/Hamamatsu/CMU-1.ndpi",
         "1f9df18b8dc6403cd2434bfd3cf20c7f",
-        "CMU-1.ndpi",
+        __medical_orig + "CMU-1.ndpi",
     ],
     "CMU-1-annotation": [
         __url_server + "sample-data/CMU-1.ndpi.ndpa",
         "f2f70fe432bd9dc3c252540313b92df0",
-        "CMU-1.ndpi.ndpa",
+        __medical_orig + "CMU-1.ndpi.ndpa",
     ],
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
@@ -383,7 +397,8 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     :param dry_run: runs function without downloading anything
     """
     if destination_dir is None:
-        destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
+        # destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
+        destination_dir = op.join(dataset_path(get_root=True))
 
     destination_dir = op.expanduser(destination_dir)
     logger.info("destination dir: {}".format(destination_dir))
@@ -857,7 +872,7 @@ def get_labels():
     return list(sorted(data_urls.keys()))
 
 
-def downzip(url, destination="./sample_data/"):
+def downzip(url, destination="./sample-data/"):
     """Download, unzip and delete. Warning: function with strong side effects!
 
     Returns downloaded data.
