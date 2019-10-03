@@ -82,6 +82,7 @@ data_urls = {
         None,
         "anwa"
         # "ef93b121add8e4a133bb086e9e6491c9",
+        "anwa"
         ],
     "exp_small": [
         __url_server + "sample_data/exp_small.zip",
@@ -417,7 +418,8 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             label
         )
         if relative_download_dir is None:
-            label_destination_dir = destination_dir
+
+            label_destination_dir = op.join(destination_dir, "medical", "orig")
         else:
             label_destination_dir = op.join(destination_dir, relative_download_dir)
         if not op.exists(label_destination_dir):

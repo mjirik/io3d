@@ -5,8 +5,8 @@
 from loguru import logger
 
 import argparse
-import numpy as np
-import h5py
+# import numpy as np
+# import h5py
 
 import os.path
 import sys
@@ -386,33 +386,3 @@ def get_datapath_qt(qt_app):
     return dcmr.get_datapath_qt(qt_app)
 
 
-def main():
-    main_logger = logging.getLogger()
-
-    main_logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    main_logger.addHandler(ch)
-
-    # input parser
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "-i", "--inputfile", default=None, required=True, help="input file"
-    )
-    parser.add_argument("-sn", "--seriesnumber", default=None, help="seriesnumber")
-    parser.add_argument("-d", "--debug", action="store_true", help="Debug mode")
-    args = parser.parse_args()
-
-    if args.debug:
-        ch.setLevel(logging.DEBUG)
-
-    data3d, metadata = read(
-        args.inputfile, series_number=args.seriesnumber, dataplus_format=False
-    )
-    import sed3
-
-    ed = sed3.sed3(data3d)
-    ed.show()
-
-
-if __name__ == "__main__":
-    main()

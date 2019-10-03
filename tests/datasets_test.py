@@ -41,7 +41,7 @@ class DatasetsTest(unittest.TestCase):
     def test_download(self):
 
         io3d.datasets.download("gensei_slices")
-        pth = io3d.datasets.join_path("gensei_slices")
+        pth = io3d.datasets.join_path("medical", "orig", "gensei_slices", get_root=True)
         logger.debug(pth)
         self.assertTrue(op.exists(pth))
         # import sed3
