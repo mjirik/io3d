@@ -440,7 +440,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             logger.warning("problem with sample_data.checksum()")
             computed_hash = None
 
-        None,
+        # None,
         logger.info("dataset: '" + label + "'")
         # logger.info("path to hash: {}".format(path_to_hash))
         logger.info("expected hash:   '" + str(expected_hash) + "'")
@@ -969,16 +969,9 @@ class ExtendAction(argparse.Action):
 
 def main(turn_on_logging=False):
     if turn_on_logging:
-        # logger = logging.getLogger()
-        # logger.setLevel(logging.DEBUG)
-        main_logger = logging.getLogger(__file__ + "datasets commandline")
-
-        main_logger.setLevel(logging.WARNING)
-        ch = logging.StreamHandler()
-        main_logger.addHandler(ch)
+        pass
     else:
-        logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
-        main_logger = logger
+        logger.add(level="info")
 
     # logger.debug('input params')
 
@@ -1041,10 +1034,9 @@ def main(turn_on_logging=False):
     #        args.install = True
     #        args.build_gco = False
     if args.verbose:
-        # logger.setLevel(logging.DEBUG)
-        main_logger.setLevel(logging.INFO)
+        logger.add(level="info")
     if args.debug is not None:
-        main_logger.setLevel(int(args.debug))
+        logger.add(level="debug")
 
     if args.set_dataset_path is not None:
         set_dataset_path(args.set_dataset_path)
