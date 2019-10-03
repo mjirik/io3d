@@ -25,11 +25,13 @@ from . import datareader
 from skimage import io
 
 # TODO - PyQt5 - done
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QMenu, QAction, qApp, QFileDialog
-from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
+from PyQt5.QtWidgets import QFileDialog, QLabel, QVBoxLayout
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
+import sys
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 
@@ -275,92 +277,194 @@ def getOpenFileName(path, *other_params):
     return filename
     
 #Widget - dcm browser    
-#TODO - PyQt5 - done
-class DCMage(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.printer = QPrinter()
-        self.scaleFactor = 0.0
-        self.imageLabel = QLabel()
-        self.imageLabel.setBackgroundRole(QPalette.Base)
-        self.imageLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        self.imageLabel.setScaledContents(True)
-        self.scrollArea = QScrollArea()
-        self.scrollArea.setBackgroundRole(QPalette.Dark)
-        self.scrollArea.setWidget(self.imageLabel)
-        self.scrollArea.setVisible(False)
+#TODO - import textbox with basic info
+class DCMage(QFileDialog):
+    def __init__(self, *args, **kwargs):
+        QFileDialog.__init__(self, *args, **kwargs)
+        self.setOption(QFileDialog.DontUseNativeDialog, True)
         
-        self.setCentralWidget(self.scrollArea)
-        #widget with info about dcm
-        self.cActions()
-        self.cMenus()
-        self.setWindowTitle("DCMage")
-        self.resize(1000, 750)
+        box = QVBoxLayout()
 
-    def open(self):
-        options = QFileDialog.Options()
-        fileName, _ = QFileDialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()','','Images (*.dcm *.png *.jpeg *.jpg *.bmp *.gif)', options = options)
-        if fileName:
-            image = QImage(fileName)
-            if image.isNull():
-                QMessageBox.information(self, "Image Viewer", "Cannot load" % fileName)
-                return
-            self.imageLabel.setPixmap(QPixmap.fromImage(image))
-            self.scaleFactor = 1.0
-            self.scrollArea.setVisible(True)
-            self.fitToWindowAct.setEnabled(True)
-            self.updateActions()
-            if not self.fitToWindowAct.isChecked():
-                self.imageLabel.adjustSize()
-    #zooms
-    def zoomIn(self):
-        self.scaleImage(1.25)
-    def zoomOut(self):
-        self.scaleImage(0.75)
-    def normalSz(self):
-        self.imageLabel.adjustSize()
-        self.scaleFactor = 1.0
-    def fitTW(self):
-        fitToWindow = self.fitToWindowAct.isChecked()
-        self.scrollArea.setWidgetResizable(fitToWindow)
-        if not fitToWindow:
-            self.normalSz()
-        self.updateActions()
+        self.setFixedSize(self.width() + 400, self.height())
+
+        self.mpPreview = QLabel("Preview", self)
+        self.mpPreview.setFixedSize(300, 300)
+        self.mpPreview.setAlignment(Qt.AlignCenter)
+        self.mpPreview.setObjectName("DCMage")
+        box.addWidget(self.mpPreview)
+
+        box.addStretch()
+
+        self.layout().addLayout(box, 1, 3, 1, 1)
+
+        self.currentChanged.connect(self.onChange)
+        self.fileSelected.connect(self.onFileSelected)
+        self.filesSelected.connect(self.onFilesSelected)
+
+        self._fileSelected = None
+        self._filesSelected = None
         
-    def scaleImage(self, f):
-        self.scaleFactor *= f
-        self.imageLabel.resize(self.scaleFactor * self.imageLabel.pixmap().size())
-        self.adjustScrollBar(self.scrollArea.horizontalScrollBar(), f)
-        self.adjustScrollBar(self.scrollArea.verticalScrollBar(), f)
-        self.zoomInAct.setEnabled(self.scaleFactor<3.0)
-        self.zoomOutAct.setEnabled(self.scaleFactor>0.333)
-
-    def cActions(self):
-        self.openAct = QAction("Open...", self, shortcut="Ctrl+O", triggered=self.open)
-        self.fitToWindowAct = QAction("Fit", self, enabled=False, checkable=True, shortcut="Ctrl+F", triggered=self.fitTW)
-        self.zoomInAct = QAction("ZoomIn 25%", self, shortcut="Ctrl++", enabled=False, triggered=self.zoomIn)
-        self.zoomOutAct = QAction("ZoomOut 25%", self, shortcut="Ctrl+-", enabled=False, triggered=self.zoomOut)
-        self.normalSizeAct = QAction("Normal", self, shortcut="Ctrl+S", enabled=False, triggered=self.normalSz)
-        self.exitAct = QAction("Exit", self, shortcut="Ctrl+Q", triggered=self.close)
         
-    def cMenus(self):
-        self.fileMenu = QMenu("File", self)
-        self.fileMenu.addAction(self.openAct)
-        self.fileMenu.addSeparator()
-        self.fileMenu.addAction(self.exitAct)
-        self.viewMenu = QMenu("View", self)
-        self.viewMenu.addAction(self.zoomInAct)
-        self.viewMenu.addAction(self.zoomOutAct)
-        self.viewMenu.addAction(self.normalSizeAct)
-        self.viewMenu.addSeparator()
-        self.viewMenu.addAction(self.fitToWindowAct)
-        self.menuBar().addMenu(self.fileMenu)
-        self.menuBar().addMenu(self.viewMenu)
 
-    def updateActions(self):
-        self.zoomInAct.setEnabled(not self.fitToWindowAct.isChecked())
-        self.zoomOutAct.setEnabled(not self.fitToWindowAct.isChecked())
-        self.normalSizeAct.setEnabled(not self.fitToWindowAct.isChecked())
+    def dcm2png(self, path):
+        ds1 = pdicom.read_file(path, force = True)
+        x = plt.imsave('tempfile.png', ds1.pixel_array, cmap=plt.cm.gray)
+        img = io.imread("tempfile.png")
+        
+    def onChange(self, path):
+        path_l = path.lower()
+        if(".dcm" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
+        elif("study" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
+        elif("serie" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+        elif("case" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+        elif("series" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
+        else:
+            self.mpPreview.setText("Preview")
+            
+        pixmap = QPixmap("tempfile.png")
 
-    def adjustScrollBar(self, scrollBar, f):
-        scrollBar.setValue(int(f*scrollBar.value()+((f-1)*scrollBar.pageStep()/2)))
+        if(pixmap.isNull()):
+            self.mpPreview.setText("Preview")
+        else:
+            self.mpPreview.setPixmap(pixmap.scaled(self.mpPreview.width(), self.mpPreview.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        
+        #self.get_path_info("tempfile.png")
+        try:
+            os.remove("tempfile.png")
+        except:
+            print("")
+            
+
+    def onFileSelected(self, file):
+        self._fileSelected = file
+
+    def onFilesSelected(self, files):
+        self._filesSelected = files
+
+    def getFileSelected(self):
+        return self._fileSelected
+
+    def getFilesSelected(self):
+        return self._filesSelected
+    
+    def get_path_info(self, path):
+        print(path)
+        try:
+            path_sl = path + "/"
+            res_last = path[-1]
+            if res_last == "/":
+                path_sl = path
+            else:
+                path_sl = path + "/"
+        #name
+            name = os.path.basename(os.path.normpath(path))
+            name_final = ("name: " + name)
+        #type
+            type_ = os.path.isdir(path)
+            if type_ == 1:
+                type_res = "type: .dir"
+            if type_ == 0:
+                type_res = ("type: " + name)
+
+        #text - files, series, files
+            serie_counter = 0
+            study_counter = 0
+            all_names = []
+            counter_fail = 0
+            for root, dirs, files in os.walk(path):
+                for d in dirs:
+                    all_names.append(d.lower())
+                    #TODO fix limit
+                    for f in files:
+                        all_names.append(f.lower())
+
+
+        #lowercase - should be able to count all series,studies..
+            for i in all_names:
+                if "serie" in i: 
+                    serie_counter += 1
+                if "study" in i:
+                    study_counter += 1
+            filescounter = sum([len(files) for r, d, files in os.walk(path)])
+            text = ("Study: " + str(study_counter) + " Series: " + str(serie_counter) +" Files: " + str(filescounter))
+
+            path_lower = path.lower()
+
+        #preview - forced path,some pic. from serie?
+            if ".jpg" in path_lower:
+                preview = ("Used path leads to current image.")
+
+            elif ".png" in path_lower:
+                preview = ("Used path leads to current image.")
+
+            elif ".dcm" in path_lower:
+                preview = ("Used path leads to current image.")
+
+            else:
+                preview = ("Preview of files in dir: " + name) 
+                only_files = [f for f in listdir(path) if isfile(join(path, f))]
+
+                for x in only_files:
+                    if (".dcm" or ".Dcm" or ".DCM") in x:
+                        print("dcm files")
+                        break
+                    elif (".jpg" or ".Jpg" or ".JPG") in x:
+                        print("jpf files")
+                        break
+
+                    elif (".png" or ".Png" or ".PNG") in x:
+                        print("png files")
+                        break
+
+                    else:
+                        None
+                        break
+
+            text_path = ("path: " + path)
+            acquid = 0
+            modality = 0
+            path = text_path
+            name = name_final
+
+            retval = [name, type_res, preview, text, acquid, modality, path]
+            #"acquisition_date": ["2015-02-16", "2015-02-16"],
+            #"modality": "MRI",
+            print(retval)
+            #print(retval[0])
+            #print(retval[1])
+            #print(retval[2])
+            #print(retval[3])
+            #print(retval[4])
+            #print(retval[5])
+            #print(retval[6])
+
+        except:
+            print("$$$")
+            return None
+        else:
+            print("Target dir with dcms")
+            return None
+        return retval
