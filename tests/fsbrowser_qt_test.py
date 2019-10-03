@@ -95,7 +95,6 @@ class QtTest(unittest.TestCase):
         app = QApplication(sys.argv)
 
         fd = QFileDialog()
-        fd.ge
         fd.getOpenFileName()
         mw = QMainWindow()
         mw.show()
