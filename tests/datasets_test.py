@@ -32,7 +32,7 @@ class DatasetsTest(unittest.TestCase):
     def test_download_package_dry_run(self):
         dataset_labels = ["lisa"]
         new_dataset_labels = io3d.datasets._expand_dataset_packages(dataset_labels)
-        self.assertGreater(len(new_dataset_labels), 1)
+        assert len(dataset_labels) <= len(new_dataset_labels)
 
     def test_download_package_dry_run(self):
         logger.debug("download in progress")

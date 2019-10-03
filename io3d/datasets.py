@@ -418,7 +418,8 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         data_url, url, expected_hash, hash_path_suffix, relative_download_dir = get_dataset_meta(
             label
         )
-        logger.info(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
+        logger.debug(f"dataset_label={dataset_label}")
+        logger.debug(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
         if relative_download_dir is None:
             label_destination_dir = op.join(destination_dir, "medical", "orig")
         else:
@@ -455,6 +456,8 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             if not dry_run:
                 downzip(url, destination=label_destination_dir)
                 logger.info("finished")
+                logger.debug(f"label_destination_dir={label_destination_dir}")
+                logger.debug(f"hash_path_suffix= {hash_path_suffix}")
                 new_hash_path = os.path.join(label_destination_dir, hash_path_suffix)
                 downloaded_hash = checksum(
                     new_hash_path
