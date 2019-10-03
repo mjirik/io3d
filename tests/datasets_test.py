@@ -40,7 +40,7 @@ class DatasetsTest(unittest.TestCase):
 
     def test_download(self):
 
-        io3d.datasets.download("gensei_slices")
+        dirs = io3d.datasets.download("gensei_slices")
         pth = io3d.datasets.join_path("medical", "orig", "gensei_slices", get_root=True)
         logger.debug(pth)
         self.assertTrue(op.exists(pth))
@@ -52,12 +52,14 @@ class DatasetsTest(unittest.TestCase):
         pass
 
     def test_download_to_dir(self):
-        pth = op.join("./tmp/", "biodur_sample")
+        pth = op.join("./tests_tmp_outputs", "medical", "orig", "biodur_sample")
         if op.exists(pth):
             shutil.rmtree(pth)
 
-        io3d.datasets.download("biodur_sample", "./tmp/")
-        pth = op.join("./tmp/", "biodur_sample")
+        odirs = io3d.datasets.download("biodur_sample", "./tests_tmp_outputs")
+        # pth = op.join("./tests_tmp_outputs", "medical", "orig", "biodur_sample")
+        logger.debug(odirs)
+        # import ipdb; ipdb.set_trace()
         self.assertTrue(op.exists(pth))
 
     def test_change_dataset_path(self):

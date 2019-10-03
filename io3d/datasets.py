@@ -4,9 +4,10 @@
 Module is used for visualization of segmentation stored in pkl, dcm and other files.
 """
 
-import logging
-
-logger = logging.getLogger(__name__)
+from loguru import logger
+# import logging
+#
+# logger = logging.getLogger(__name__)
 import os.path
 import sys
 import argparse
@@ -70,7 +71,7 @@ data_urls = {
     "biodur_sample": [
         __url_server + "sample_data/biodur_sample.zip",
         "d459dd5b308ca07d10414b3a3a9000ea",
-        __hash_path_prefix
+        __hash_path_prefix + "biodur_sample/*.tiff"
     ],
     "gensei_slices": [
         __url_server + "sample_data/gensei_slices.zip",
@@ -408,15 +409,16 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
 
     if type(dataset_label) == str:
         dataset_label = [dataset_label]
-
+    retval_list_of_output_dist = []
     dataset_label = _expand_dataset_packages(dataset_label)
+
 
     for label in dataset_label:
         # make all data:url have length 3
-        data_url, url, expected_hash, hash_path, relative_download_dir = get_dataset_meta(
+        data_url, url, expected_hash, hash_path_suffix, relative_download_dir = get_dataset_meta(
             label
         )
-        logger.info(f"hash_path={hash_path}, relative_download_dir={relative_download_dir}")
+        logger.info(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
         if relative_download_dir is None:
             label_destination_dir = op.join(destination_dir, "medical", "orig")
         else:
@@ -425,10 +427,10 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             logger.debug("creating directory {}".format(label_destination_dir))
             os.makedirs(label_destination_dir)
 
-        if hash_path is None:
-            hash_path = label
+        if hash_path_suffix is None:
+            hash_path_suffix = label
 
-        path_to_hash = os.path.join(label_destination_dir, hash_path)
+        path_to_hash = os.path.join(label_destination_dir, hash_path_suffix)
         try:
             computed_hash = checksum(path_to_hash)
         except Exception as e:
@@ -438,14 +440,14 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             computed_hash = None
 
         None,
+        logger.info("dataset: '" + label + "'")
+        # logger.info("path to hash: {}".format(path_to_hash))
+        logger.info("expected hash:   '" + str(expected_hash) + "'")
         if expected_hash == "d41d8cd98f00b204e9800998ecf8427e":
             logger.warning("Expected hash is equal to hash of empty file list.")
+        logger.info("initial hash:    '" + str(computed_hash) + f"' in path: {path_to_hash}")
         if computed_hash == "d41d8cd98f00b204e9800998ecf8427e":
             logger.warning("Computed hash is equal to hash of empty file list.")
-        logger.info("dataset: '" + label + "'")
-        logger.info("path to hash: {}".format(path_to_hash))
-        logger.info("expected hash:   '" + str(expected_hash) + "'")
-        logger.info("initial hash:    '" + str(computed_hash) + "'")
         if (computed_hash is not None) and (expected_hash == computed_hash):
             logger.info("match ok - no download needed")
         else:
@@ -453,10 +455,11 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             if not dry_run:
                 downzip(url, destination=label_destination_dir)
                 logger.info("finished")
+                new_hash_path = os.path.join(label_destination_dir, hash_path_suffix)
                 downloaded_hash = checksum(
-                    os.path.join(label_destination_dir, hash_path)
+                    new_hash_path
                 )
-                logger.info("downloaded hash: '" + str(downloaded_hash) + "'")
+                logger.info(f"downloaded hash: '" + str(downloaded_hash) + f"' in path: {new_hash_path}")
                 if downloaded_hash != expected_hash:
                     logger.warning(
                         "downloaded hash is different from expected hash\n"
@@ -469,6 +472,9 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
                     )
             else:
                 logger.debug("dry run")
+        retval_list_of_output_dist.append(label_destination_dir)
+    return retval_list_of_output_dist
+
 
 
 # NOTE(mareklovci): I suppose, this isn't working at all

@@ -1174,12 +1174,13 @@ if __name__ == "__main__":  # pragma: no cover
     )
     (options, args) = parser.parse_args()
 
-    logger.setLevel(logging.WARNING)
-    ch = logging.StreamHandler()
-    logger.addHandler(ch)
+    # logger.setLevel(logging.WARNING)
+    # ch = logging.StreamHandler()
+    # logger.addHandler(ch)
 
     if options.debug:
-        logger.setLevel(logging.DEBUG)
+        logger.add(level="debug")
+        # logger.setLevel(logging.DEBUG)
 
     if options.dcmdir is None:
         dcmdir = get_dcmdir_qt()
