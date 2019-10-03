@@ -968,7 +968,7 @@ def main(turn_on_logging=False):
     if turn_on_logging:
         pass
     else:
-        logger.add(level="info")
+        logger.add(sys.stderr, level="info")
 
     # logger.debug('input params')
 
@@ -1057,7 +1057,7 @@ def main(turn_on_logging=False):
         return
 
     if args.labels is not None:
-        main_logger.info("Downloading labels: {}".format(args.labels))
+        logger.info("Downloading labels: {}".format(args.labels))
         download(
             args.labels, destination_dir=args.destination_dir, dry_run=args.dry_run
         )
