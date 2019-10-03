@@ -82,6 +82,7 @@ class QtTest(unittest.TestCase):
     #     # fsw.refresh_path(filepath)
     #     app.exec_()
 
+    @unittest.skip("waiting for implementation")
     def test_fsbrowser_qt_simple(self):
         import pydicom.data
 
@@ -97,7 +98,7 @@ class QtTest(unittest.TestCase):
         fd = QFileDialog()
         fd.getOpenFileName()
         mw = QMainWindow()
-        mw.show()
+        # mw.show()
 
 
 if __name__ == "__main__":
