@@ -37,43 +37,43 @@ __medical_orig = "medical/orig/"
 # Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
     "head": [
-        __url_server + "sample-data/head.zip",
+        __url_server + "sample_data/head.zip",
         "89e9b60fd23257f01c4a1632ff7bb800",
         __medical_orig + "/matlab",
     ],
     "jatra_06mm_jenjatra": [
-        __url_server + "sample-data/jatra_06mm_jenjatra.zip",
+        __url_server + "sample_data/jatra_06mm_jenjatra.zip",
         None,
         __medical_orig + "jatra_06mm_jenjatra/*.dcm",
     ],
     "jatra_5mm": [
-        __url_server + "sample-data/jatra_5mm.zip",
+        __url_server + "sample_data/jatra_5mm.zip",
         "1b9039ffe1ff9af9caa344341c8cec03",
         __medical_orig + "jatra_5mm/*.dcm",
     ],
-    "exp": [__url_server + "sample-data/exp.zip", "74f2c10b17b6bd31bd03662df6cf884d"],
+    "exp": [__url_server + "sample_data/exp.zip", "74f2c10b17b6bd31bd03662df6cf884d"],
     "sliver_training_001": [
-        __url_server + "sample-data/sliver_training_001.zip",
+        __url_server + "sample_data/sliver_training_001.zip",
         "d64235727c0adafe13d24bfb311d1ed0",
         __medical_orig + "liver*001.*",
     ],
     "volumetrie": [
-        __url_server + "sample-data/volumetrie.zip",
+        __url_server + "sample_data/volumetrie.zip",
         "6b2a2da67874ba526e2fe00a78dd19c9",
         __medical_orig
     ],
     "vessels.pkl": [
-        __url_server + "sample-data/vessels.pkl.zip",
+        __url_server + "sample_data/vessels.pkl.zip",
         "698ef2bc345bb616f8d4195048538ded",
         __medical_orig
     ],
     "biodur_sample": [
-        __url_server + "sample-data/biodur_sample.zip",
+        __url_server + "sample_data/biodur_sample.zip",
         "d459dd5b308ca07d10414b3a3a9000ea",
         __medical_orig
     ],
     "gensei_slices": [
-        __url_server + "sample-data/gensei_slices.zip",
+        __url_server + "sample_data/gensei_slices.zip",
         "ef93b121add8e4a133bb086e9e6491c9",
         __medical_orig
     ],
@@ -84,42 +84,42 @@ data_urls = {
         # "ef93b121add8e4a133bb086e9e6491c9",
         ],
     "exp_small": [
-        __url_server + "sample-data/exp_small.zip",
+        __url_server + "sample_data/exp_small.zip",
         "0526ba8ea363fe8b5227f5807b7aaca7",
         __medical_orig
     ],
     "vincentka": [
-        __url_server + "sample-data/vincentka.zip",
+        __url_server + "sample_data/vincentka.zip",
         "a30fdabaa39c5ce032a3223ed30b88e3",
         __medical_orig
     ],
-    "vincentka_sample": [__url_server + "sample-data/vincentka_sample.zip"],
+    "vincentka_sample": [__url_server + "sample_data/vincentka_sample.zip"],
     "SCP003-ndpi": [
-        __url_server + "sample-data/SCP003/SCP003.ndpi",
+        __url_server + "sample_data/SCP003/SCP003.ndpi",
         "c7e74c1487bcaa9061aea1ce5c9b8bc9",
         "SCP003.ndpi",
-        "sample-data/SCP003",
+        "sample_data/SCP003",
         __medical_orig
     ],
     "SCP003-ndpa": [
-        __url_server + "sample-data/SCP003/SCP003.ndpi.ndpa",
+        __url_server + "sample_data/SCP003/SCP003.ndpi.ndpa",
         # 'd41d8cd98f00b204e9800998ecf8427e',
         None,
         "SCP003.ndpi.ndpa",
-        __medical_orig + "sample-data/SCP003",
+        __medical_orig + "sample_data/SCP003",
     ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
-    # "SCP003": [__url_server + "sample-data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
-    "donut": [__url_server + "sample-data/donut.zip", None, __medical_orig],
+    # "SCP003": [__url_server + "sample_data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
+    "donut": [__url_server + "sample_data/donut.zip", None, __medical_orig],
     # alternative linux hash nrn4 'd41d8cd98f00b204e9800998ecf8427e'
     "nrn4": [
-        __url_server + "sample-data/nrn4.pklz",
+        __url_server + "sample_data/nrn4.pklz",
         "ec470d016c31b8d17d09475fa93ad7d2",
         "nrn4.pklz",
-        __medical_orig + "sample-data/",
+        __medical_orig + "sample_data/",
     ],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
-    "io3d_sample_data": [__url_server + "sample-data/io3d_sample_data.zip", None, __medical_orig],
+    "io3d_sample_data": [__url_server + "sample_data/io3d_sample_data.zip", None, __medical_orig],
     "lisa": {
         "package": [
             "donut",
@@ -268,12 +268,12 @@ data_urls = {
         __medical_orig + "CMU-1.ndpi",
     ],
     "CMU-1-annotation": [
-        __url_server + "sample-data/CMU-1.ndpi.ndpa",
+        __url_server + "sample_data/CMU-1.ndpi.ndpa",
         "f2f70fe432bd9dc3c252540313b92df0",
         __medical_orig + "CMU-1.ndpi.ndpa",
     ],
     # není nutné pole, stačí jen string
-    # "exp_small": "http://147.228.240.61/queetech/sample-data/exp_small.zip",
+    # "exp_small": "http://147.228.240.61/queetech/sample_data/exp_small.zip",
 }
 # cachefile = "~/io3d_cache.yaml"
 
@@ -872,7 +872,7 @@ def get_labels():
     return list(sorted(data_urls.keys()))
 
 
-def downzip(url, destination="./sample-data/"):
+def downzip(url, destination="./sample_data/"):
     """Download, unzip and delete. Warning: function with strong side effects!
 
     Returns downloaded data.
@@ -881,7 +881,7 @@ def downzip(url, destination="./sample-data/"):
     :param destination: destination to which data should be downloaded
     """
 
-    # url = "http://147.228.240.61/queetech/sample-data/jatra_06mm_jenjatra.zip"
+    # url = "http://147.228.240.61/queetech/sample_data/jatra_06mm_jenjatra.zip"
     logmsg = "downloading from '" + url + "' to '" + destination + "'"
     print(logmsg)
     logger.info(logmsg)

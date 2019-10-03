@@ -101,7 +101,5 @@ class QtTest(unittest.TestCase):
         mw.show()
 
 
-
-
 if __name__ == "__main__":
     unittest.main()
