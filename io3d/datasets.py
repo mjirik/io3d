@@ -318,13 +318,13 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None):
 
     """
 
-    local_data_dir = local_dir
+    local_data_dir = op.expanduser(local_dir)
 
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
         # cache.update('local_dataset_dir', head)
     if cache is not None:
-        local_data_dir = cache.get_or_save_default("local_dataset_dir", local_dir)
+        local_data_dir = cache.get_or_save_default("local_dataset_dir", local_data_dir)
 
     if get_root is None:
         get_root = False

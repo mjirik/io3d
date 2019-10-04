@@ -62,7 +62,7 @@ def suggest_filename(file_path, exists=None):
     return file_path
 
 
-def obj_from_file(filename="annotation.yaml", filetype="auto"):
+def obj_from_file(filename="annotation.yaml", filetype="auto", yaml_typ="unsafe"):
     """ Read object from file """
 
     if filetype == "auto":
@@ -72,7 +72,8 @@ def obj_from_file(filename="annotation.yaml", filetype="auto"):
     if filetype in ("yaml", "yml"):
         from ruamel.yaml import YAML
 
-        yaml = YAML(typ="unsafe")
+        # yaml = YAML(typ="unsafe")
+        yaml = YAML(typ=yaml_type)
         with open(filename, encoding="utf-8") as f:
             obj = yaml.load(f)
         if obj is None:
@@ -125,7 +126,7 @@ def read_pkl_and_pklz(filename):
     return fcontent
 
 
-def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=True):
+def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=True, yaml_typ="unsafe"):
     """Writes annotation in file.
 
     :param filetype:
@@ -156,7 +157,8 @@ def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=T
         # import yaml
         from ruamel.yaml import YAML
 
-        yaml = YAML(typ="unsafe")
+        # yaml = YAML(typ="unsafe")
+        yaml = YAML(typ=yaml_typ)
         with open(filename, "wt", encoding="utf-8") as f:
             yaml.dump(obj, f)
         # if sys.version_info.major == 2:

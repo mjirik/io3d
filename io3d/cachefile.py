@@ -27,7 +27,7 @@ class CacheFile:
 
     def __update(self):
         if op.exists(self.filename):
-            self.data = misc.obj_from_file(self.filename)
+            self.data = misc.obj_from_file(self.filename, yaml_typ="safe")
         else:
             self.data = {}
 
@@ -57,7 +57,7 @@ class CacheFile:
 
     def update(self, key, value):
         self.data[key] = value
-        misc.obj_to_file(self.data, self.filename)
+        misc.obj_to_file(self.data, self.filename, yaml_typ="safe")
 
 
 def main():
