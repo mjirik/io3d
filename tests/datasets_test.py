@@ -80,6 +80,24 @@ class DatasetsTest(unittest.TestCase):
         # return path back
         io3d.datasets.set_dataset_path(dp_old)
 
+    def test_change_dataset_path_with_windows_full_path(self):
+        dp_new1 = "c:/io3d_test1_dataset_dir/"
+        dp_new2 = "c:/io3d_test2_dataset_dir/"
+        dp_old = io3d.datasets.join_path(get_root=True)
+
+        # change once
+        io3d.datasets.set_dataset_path(dp_new1)
+        dp_joined1 = io3d.datasets.join_path("jatra_5mm")
+        self.assertTrue(dp_joined1.find("io3d_test1_dataset_dir") > 0)
+
+        # second change
+        io3d.datasets.set_dataset_path(dp_new2)
+        dp_joined2 = io3d.datasets.join_path("jatra_5mm")
+        self.assertTrue(dp_joined2.find("io3d_test2_dataset_dir") > 0)
+
+        # return path back
+        io3d.datasets.set_dataset_path(dp_old)
+
     @pytest.mark.slow
     def test_getold1(self):
         io3d.datasets.download("3Dircadb1.1")

@@ -73,7 +73,7 @@ def obj_from_file(filename="annotation.yaml", filetype="auto", yaml_typ="unsafe"
         from ruamel.yaml import YAML
 
         # yaml = YAML(typ="unsafe")
-        yaml = YAML(typ=yaml_type)
+        yaml = YAML(typ=yaml_typ)
         with open(filename, encoding="utf-8") as f:
             obj = yaml.load(f)
         if obj is None:
