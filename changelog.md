@@ -8,6 +8,7 @@
 * [Changed] Some data are stored to `sample_data` instead of `sample-data`
 * [Changed] Internal representation of dataset dir is now just `root` 
 (instead of`root/medical/orig`)
+* [Changed] Yaml save cache with safe typ
 
 ## 2.1
 
