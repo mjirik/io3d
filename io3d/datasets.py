@@ -968,7 +968,7 @@ def main(turn_on_logging=False):
     if turn_on_logging:
         pass
     else:
-        logger.add(sys.stderr, level="info")
+        logger.add(sys.stderr, level="INFO")
 
     # logger.debug('input params')
 
@@ -1031,9 +1031,9 @@ def main(turn_on_logging=False):
     #        args.install = True
     #        args.build_gco = False
     if args.verbose:
-        logger.add(sys.stderr, level="info")
+        logger.add(sys.stderr, level="INFO")
     if args.debug is not None:
-        logger.add(sys.stderr, level="debug")
+        logger.add(sys.stderr, level="DEBUG")
 
     if args.set_dataset_path is not None:
         set_dataset_path(args.set_dataset_path)
