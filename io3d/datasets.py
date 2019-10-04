@@ -81,7 +81,7 @@ data_urls = {
         __url_server + "anwa/arina.mp4",
         '913b49be5aa27b8519aa101b5df869bb',
         "arina.mp4",
-        "anwa",
+        "animals/orig/",
         ],
     "exp_small": [
         __url_server + "sample_data/exp_small.zip",
