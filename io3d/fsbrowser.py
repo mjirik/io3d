@@ -277,7 +277,7 @@ def getOpenFileName(path, *other_params):
     return filename
     
 #Widget - dcm browser    
-#TODO - import textbox with basic info
+#dcm preview widget + dir/img info widget
 class DCMage(QFileDialog):
     def __init__(self, *args, **kwargs):
         QFileDialog.__init__(self, *args, **kwargs)
@@ -285,21 +285,25 @@ class DCMage(QFileDialog):
         
         box = QVBoxLayout()
 
-        self.setFixedSize(self.width() + 400, self.height())
+        self.setFixedSize(self.width() + 450, self.height() + 500)
 
         self.mpPreview = QLabel("Preview", self)
-        self.mpPreview.setFixedSize(300, 300)
+        self.mpPreview.setFixedSize(500, 500)
         self.mpPreview.setAlignment(Qt.AlignCenter)
         self.mpPreview.setObjectName("DCMage")
         box.addWidget(self.mpPreview)
-
         box.addStretch()
-
         self.layout().addLayout(box, 1, 3, 1, 1)
-
+        
+        self.mpPreview_1 = QLabel("Preview", self)
+        self.mpPreview_1.setFixedSize(500, 500)
+        self.mpPreview_1.setAlignment(Qt.AlignCenter)
+        self.mpPreview_1.setObjectName("DCMage")
+        box.addWidget(self.mpPreview_1)
+        box.addStretch()
+        self.layout().addLayout(box, 3, 3, 1, 1)
         self.currentChanged.connect(self.onChange)
         self.fileSelected.connect(self.onFileSelected)
-        self.filesSelected.connect(self.onFilesSelected)
 
         self._fileSelected = None
         self._filesSelected = None
@@ -311,8 +315,29 @@ class DCMage(QFileDialog):
         x = plt.imsave('tempfile.png', ds1.pixel_array, cmap=plt.cm.gray)
         img = io.imread("tempfile.png")
         
+    def onChange_text(self, path):
+        path_l = path.lower()
+        if(".dcm" in path_l):
+            temp_text = self.get_path_info(path_l)
+            self.mpPreview_1.setText(temp_text)
+        elif("study" in path_l):
+            temp_text = self.get_path_info(path_l)
+            self.mpPreview_1.setText(temp_text)
+        elif("serie" in path_l):
+            temp_text = self.get_path_info(path_l)
+            self.mpPreview_1.setText(temp_text)
+        elif("case" in path_l):
+            temp_text = self.get_path_info(path_l)
+            self.mpPreview_1.setText(temp_text)
+        elif("series" in path_l):
+            temp_text = self.get_path_info(path_l)
+            self.mpPreview_1.setText(temp_text)
+        else:
+            temp_text = "go to dir with dcm files"
+            
     def onChange(self, path):
         path_l = path.lower()
+        self.onChange_text(path_l)
         if(".dcm" in path_l):
             try:
                 self.dcm2png(path)
@@ -356,7 +381,7 @@ class DCMage(QFileDialog):
             os.remove("tempfile.png")
         except:
             print("")
-            
+
 
     def onFileSelected(self, file):
         self._fileSelected = file
@@ -371,7 +396,56 @@ class DCMage(QFileDialog):
         return self._filesSelected
     
     def get_path_info(self, path):
-        print(path)
+        #problem with text len for qlabel - recomended for noneditable text //*textlen set to 00 needs to be edited
+        if len(path) >= 50 & len(path) < 100:
+            path1 = path[:50]
+            path2 = path[50:100]
+            path_formated = path1 + "\n" + path2
+            
+        #prepared cases for longer paths...
+        elif len(path) >= 100 & len(path) < 150:
+            path1 = path[:50]
+            path2 = path[50:100]
+            path3 = path[100:150]
+            path_formated = path1 + "\n" + path2 + "\n" + path3
+            
+        elif len(path) >= 150 & len(path) < 200:
+            path1 = path[:50]
+            path2 = path[50:100]
+            path3 = path[100:150]
+            path4 = path[150:200]
+            path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 
+            
+        elif len(path) >= 240 & len(path) < 300:
+            path1 = path[:60]
+            path2 = path[60:120]
+            path3 = path[120:180]
+            path4 = path[180:240]
+            path5 = path[240:300]
+            path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 + "\n" + path5
+            
+        elif len(path) >= 300 & len(path) < 360:
+            path1 = path[:60]
+            path2 = path[60:120]
+            path3 = path[120:180]
+            path4 = path[180:240]
+            path5 = path[240:300]
+            path6 = path[300:360]
+            path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 + "\n" + path5 + "\n" + path6
+
+        elif len(path) >= 360 & len(path) < 1000:
+            path1 = path[:60]
+            path2 = path[60:120]
+            path3 = path[120:180]
+            path4 = path[180:240]
+            path5 = path[240:300]
+            path6 = path[300:360]
+            path7 = path[360:420]
+            path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 + "\n" + path5 + "\n" + path6 + "\n" + path7
+
+        else:
+            print("too long path")
+            path_formated = path
         try:
             path_sl = path + "/"
             res_last = path[-1]
@@ -381,13 +455,13 @@ class DCMage(QFileDialog):
                 path_sl = path + "/"
         #name
             name = os.path.basename(os.path.normpath(path))
-            name_final = ("name: " + name)
+            name_final = ("name: " + name + '\n')
         #type
             type_ = os.path.isdir(path)
             if type_ == 1:
-                type_res = "type: .dir"
+                type_res = "type: .dir" + '\n'
             if type_ == 0:
-                type_res = ("type: " + name)
+                type_res = ("type: " + name + '\n')
 
         #text - files, series, files
             serie_counter = 0
@@ -409,22 +483,22 @@ class DCMage(QFileDialog):
                 if "study" in i:
                     study_counter += 1
             filescounter = sum([len(files) for r, d, files in os.walk(path)])
-            text = ("Study: " + str(study_counter) + " Series: " + str(serie_counter) +" Files: " + str(filescounter))
+            text = ("Study: " + str(study_counter) + '\n' + " Series: " + str(serie_counter) +" Files: " + str(filescounter) + '\n')
 
             path_lower = path.lower()
 
         #preview - forced path,some pic. from serie?
             if ".jpg" in path_lower:
-                preview = ("Used path leads to current image.")
+                preview = ("image.")
 
             elif ".png" in path_lower:
-                preview = ("Used path leads to current image.")
+                preview = ("image.")
 
             elif ".dcm" in path_lower:
-                preview = ("Used path leads to current image.")
+                preview = ("image.")
 
             else:
-                preview = ("Preview of files in dir: " + name) 
+                preview = ("Type: " + name) 
                 only_files = [f for f in listdir(path) if isfile(join(path, f))]
 
                 for x in only_files:
@@ -449,22 +523,14 @@ class DCMage(QFileDialog):
             path = text_path
             name = name_final
 
-            retval = [name, type_res, preview, text, acquid, modality, path]
+            retval = [name, type_res, preview, text, acquid, modality, path_formated]
+            #retval = [path_formated, path_formated1]
+            retval_str = ''.join(map(str, retval))
+
             #"acquisition_date": ["2015-02-16", "2015-02-16"],
             #"modality": "MRI",
-            print(retval)
-            #print(retval[0])
-            #print(retval[1])
-            #print(retval[2])
-            #print(retval[3])
-            #print(retval[4])
-            #print(retval[5])
-            #print(retval[6])
-
+            return retval_str
         except:
             print("$$$")
             return None
-        else:
-            print("Target dir with dcms")
-            return None
-        return retval
+        return None
