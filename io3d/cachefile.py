@@ -40,8 +40,8 @@ class CacheFile:
                 logger.debug(exc)
                 logger.warning(f"Problem with reading chache file '{self.filename}'. " +
                                f"Creating new one and saving copy to '{backup_fn}'")
-                import shutil
-                shutil.copyfile(self.filename, backup_fn)
+                import os
+                os.rename(self.filename, backup_fn)
         else:
             self.data = {}
 
