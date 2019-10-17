@@ -9,6 +9,7 @@
 * [Changed] Internal representation of dataset dir is now just `root` 
 (instead of`root/medical/orig`)
 * [Changed] Yaml save cache with safe typ
+* [Added] Crate backup cache file if the old is wrong
 
 ## 2.1
 
