@@ -22,6 +22,7 @@ class CacheFile:
 
         :param filename: File can be .yaml, .pkl or some other formats supported by misc.obj_from_file
         """
+        logger.debug(f"cache filename: {filename}")
         self.filename = op.expanduser(filename)
         self.__update()
 
