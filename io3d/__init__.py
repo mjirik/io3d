@@ -10,4 +10,4 @@ from .datareader import read
 from .datawriter import write
 from .datasets import download
 from .files import remove_if_exists
-from imma import image_manipulation
+from imma import image_manipulation, dili
