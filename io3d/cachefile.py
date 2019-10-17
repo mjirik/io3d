@@ -14,6 +14,7 @@ from loguru import logger
 import argparse
 import os.path as op
 from . import misc
+from . import files
 
 
 class CacheFile:
@@ -28,7 +29,19 @@ class CacheFile:
 
     def __update(self):
         if op.exists(self.filename):
-            self.data = misc.obj_from_file(self.filename, yaml_typ="safe")
+            import ruamel.yaml
+            try:
+                self.data = misc.obj_from_file(self.filename, yaml_typ="safe")
+            except ruamel.yaml.scanner.ScannerError as e:
+                import traceback
+
+                backup_fn = files.unique_path(str(self.filename) + ".{:03d}.backup" )
+                exc = traceback.format_exc()
+                logger.debug(exc)
+                logger.warning(f"Problem with reading chache file '{self.filename}'. " +
+                               f"Creating new one and saving copy to '{backup_fn}'")
+                import shutil
+                shutil.copyfile(self.filename, backup_fn)
         else:
             self.data = {}
 
