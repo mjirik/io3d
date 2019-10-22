@@ -278,6 +278,7 @@ def getOpenFileName(path, *other_params):
     
 #Widget - dcm browser    
 #dcm preview widget + dir/img info widget
+#getOpenFileName - fcn. to get path of chosen file
 class DCMage(QFileDialog):
     def __init__(self, *args, **kwargs):
         QFileDialog.__init__(self, *args, **kwargs)
@@ -303,13 +304,11 @@ class DCMage(QFileDialog):
         box.addStretch()
         self.layout().addLayout(box, 3, 3, 1, 1)
         self.currentChanged.connect(self.onChange)
-        self.fileSelected.connect(self.onFileSelected)
-
+        self.fileSelected.connect(self.getOpenFileName)
+        
         self._fileSelected = None
-        self._filesSelected = None
-        
-        
-
+        self._filesSelected = None         
+            
     def dcm2png(self, path):
         ds1 = pdicom.read_file(path, force = True)
         x = plt.imsave('tempfile.png', ds1.pixel_array, cmap=plt.cm.gray)
@@ -383,17 +382,11 @@ class DCMage(QFileDialog):
             print("")
 
 
-    def onFileSelected(self, file):
-        self._fileSelected = file
+    def getOpenFileName(self, file):
+        temp = self._fileSelected = file
+        #print(temp)
+        return temp
 
-    def onFilesSelected(self, files):
-        self._filesSelected = files
-
-    def getFileSelected(self):
-        return self._fileSelected
-
-    def getFilesSelected(self):
-        return self._filesSelected
     
     def get_path_info(self, path):
         #problem with text len for qlabel - recomended for noneditable text //*textlen set to 00 needs to be edited
@@ -424,25 +417,6 @@ class DCMage(QFileDialog):
             path5 = path[240:300]
             path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 + "\n" + path5
             
-        elif len(path) >= 300 & len(path) < 360:
-            path1 = path[:60]
-            path2 = path[60:120]
-            path3 = path[120:180]
-            path4 = path[180:240]
-            path5 = path[240:300]
-            path6 = path[300:360]
-            path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 + "\n" + path5 + "\n" + path6
-
-        elif len(path) >= 360 & len(path) < 1000:
-            path1 = path[:60]
-            path2 = path[60:120]
-            path3 = path[120:180]
-            path4 = path[180:240]
-            path5 = path[240:300]
-            path6 = path[300:360]
-            path7 = path[360:420]
-            path_formated = path1 + "\n" + path2 + "\n" + path3 + "\n" + path4 + "\n" + path5 + "\n" + path6 + "\n" + path7
-
         else:
             print("too long path")
             path_formated = path
