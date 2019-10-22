@@ -307,7 +307,7 @@ class DCMage(QFileDialog):
         self.fileSelected.connect(self.getOpenFileName)
         
         self._fileSelected = None
-        self._filesSelected = None         
+        
             
     def dcm2png(self, path):
         ds1 = pdicom.read_file(path, force = True)
