@@ -307,6 +307,10 @@ class DCMage(QFileDialog):
 
         self._fileSelected = None
         self._filesSelected = None
+
+    def get_selected_path(self):
+        # TODO
+        pass
         
         
 
