@@ -343,6 +343,12 @@ class DCMage(QFileDialog):
             except:
                 print("no dcm to display")
             self.get_path_info(path_l)
+        elif("image_" in path_l):
+            try:
+                self.dcm2png(path)
+            except:
+                print("no dcm to display")
+            self.get_path_info(path_l)
         elif("study" in path_l):
             try:
                 self.dcm2png(path)
