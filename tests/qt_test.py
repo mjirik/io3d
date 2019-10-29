@@ -174,7 +174,7 @@ class QtTest(unittest.TestCase):
         else:
             text = "i am str"
 
-        txt = io3d.datareaderqt.get_str(text)
+        txt = io3d.datareaderqt.get_str_py2_compatibility(text)
         self.assertTrue(type(txt) is str)
 
 

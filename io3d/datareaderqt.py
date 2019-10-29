@@ -138,7 +138,7 @@ class DataReaderWidget(QtWidgets.QWidget):
         if not app:
             inner_app.exit(0)
 
-        dcmdir = get_str(dcmdir)
+        dcmdir = get_str_py2_compatibility(dcmdir)
 
         if len(dcmdir) > 0:
             #
@@ -147,6 +147,7 @@ class DataReaderWidget(QtWidgets.QWidget):
             pass
         else:
             dcmdir = None
+            return dcmdir
 
         head, teil = os.path.split(dcmdir)
         if self.cache is not None:
@@ -186,7 +187,7 @@ class DataReaderWidget(QtWidgets.QWidget):
         if not app:
             app_inner.exit(0)
 
-        dcmdir = get_str(dcmdir)
+        dcmdir = get_str_py2_compatibility(dcmdir)
 
         if len(dcmdir) > 0:
 
@@ -320,7 +321,7 @@ def my_after_fcn(arg):
     print(arg.loadfiledir)
 
 
-def get_str(text):
+def get_str_py2_compatibility(text):
     if sys.version_info.major == 2:
         import PyQt5.QtCore
 
