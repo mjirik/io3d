@@ -116,6 +116,12 @@ data_urls = {
         "nrn4.pklz",
         __rel_medical_orig_path + "sample_data/",
     ],
+    "nrn10": [
+        __url_server + "sample_data/nrn10.pklz",
+        None,
+        "nrn4.pklz",
+        __rel_medical_orig_path + "sample_data/",
+    ],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
     "io3d_sample_data": [__url_server + "sample_data/io3d_sample_data.zip", None, __hash_path_prefix],
     "lisa": {
