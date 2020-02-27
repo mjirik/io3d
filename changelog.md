@@ -4,7 +4,7 @@
 
 ## 2.4
 
-* [Added] Specific dataset can be stored in different path
+* [Added] Specific dataset can be stored in different path (download is in plan todo)
 
 ## 2.2
 
