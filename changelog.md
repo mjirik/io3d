@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 2.3
+## 2.4
 
 * [Added] Specific dataset can be stored in different path
 
