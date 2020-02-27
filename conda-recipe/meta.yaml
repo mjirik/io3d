@@ -56,7 +56,7 @@ requirements:
 #    - pyyaml
     - ruamel.yaml
     - h5py
-    - checksumdir
+    - checksumdir # i have to build this package for conda
     # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
 #    - imma
