@@ -88,3 +88,10 @@ Put this data into sample_data dir.
 ```shell
 python -m io3d -c directory_path
 ```
+
+
+### Specific dataset path
+
+```shell
+python -m io3d -ssdp c:/data bio/flowers
+```

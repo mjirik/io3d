@@ -45,6 +45,10 @@ class CacheFile:
         else:
             self.data = {}
 
+    def delete_key(self, key):
+        self.data.pop(key)
+        misc.obj_to_file(self.data, self.filename, yaml_typ="safe")
+
     def get(self, key):
         self.__update()
         return self.data[key]

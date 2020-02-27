@@ -15,6 +15,7 @@ import numpy as np
 import zipfile
 import glob
 import os.path as op
+from pathlib import Path
 # import io3d
 from . import cachefile as cachef
 from . import datareader
@@ -35,6 +36,7 @@ __url_server = "http://147.228.240.61/queetech/"
 __url_server = "http://home.zcu.cz/~mjirik/lisa/"
 __hash_path_prefix = ""
 __rel_medical_orig_path = "medical/orig/"
+__local_dataset_specific_dir_prefix = "local_dataset_specific_dir_"
 
 # Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
@@ -294,7 +296,7 @@ def join_path(*path_to_join, **kwargs):
     else:
         # default value
         get_root = False
-    sdp = dataset_path(get_root=get_root)
+    sdp = dataset_path(get_root=get_root, path_to_join=path_to_join)
     pth = os.path.join(sdp, *path_to_join)
     logger.debug("sample_data_path" + str(sdp))
     logger.debug("path " + str(pth))
@@ -312,17 +314,50 @@ def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
         cache = cachef.CacheFile(cachefile)
     cache.update("local_dataset_dir", path)
 
+def set_specific_dataset_path(path, key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"):
+    """Sets path to dataset. Warning: function with side effects!
 
-def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None):
+    :param path: path you want to store dataset
+    :param key_path_prefix: specific string to identify the specific path
+    :param cache: CacheFile object
+    :param cachefile: default '~/.io3d_cache.yaml'
+    """
+    key_path_prefix = str(Path(key_path_prefix)).replace("\\", "/")
+    logger.debug(f"adding specific dataset path prefix: {key_path_prefix}")
+
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+    cache.update(__local_dataset_specific_dir_prefix + key_path_prefix, path)
+
+
+def delete_specific_dataset_path(key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"):
+    key_path_prefix = str(Path(key_path_prefix)).replace("\\", "/")
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+    cache.delete_key(__local_dataset_specific_dir_prefix + key_path_prefix)
+
+
+def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path_to_join=None):
     """Get dataset path.
 
     :param cache: CacheFile object
     :param cachefile: cachefile path, default '~/.io3d_cache.yaml'
     :param get_root: In old versions the path was to root/medical/orig. If the get_root is set to True, the path
+    :param path_to_join: List. Used if specific dataset is installed in other than normal destination.
+
     is root.
     :return: path to dataset
 
     """
+
+    if get_root is None:
+        get_root = False
+        logger.warning("Deprecated call without get_root. The actual value "
+                       "get_root=False will be changed to get_root=True in the future.")
+    if get_root:
+        append_path = []
+    else:
+        append_path = ["medical", "orig"]
 
     local_data_dir = op.expanduser(local_dir)
 
@@ -332,14 +367,29 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None):
     if cache is not None:
         local_data_dir = cache.get_or_save_default("local_dataset_dir", local_data_dir)
 
-    if get_root is None:
-        get_root = False
-        logger.warning("Deprecated call without get_root. The actual value "
-                       "get_root=False will be changed to get_root=True in the future.")
-    if get_root:
-        local_data_dir
-    else:
-        local_data_dir = op.join(local_data_dir, "medical", "orig")
+    local_data_dir = op.join(local_data_dir, *append_path)
+
+    if path_to_join is not None:
+
+        # convert to string
+        if type(path_to_join) in(list, tuple):
+            path_to_join = "/".join(path_to_join).replace("\\","/")
+
+        sappend_path = "/".join(append_path).replace("\\", "/")
+        if len(sappend_path) > 0 and sappend_path[-1] != "/":
+            sappend_path = sappend_path + "/"
+        path_to_join =  sappend_path + path_to_join
+
+
+        if cache is not None:
+            for pth in reversed([pth for pth in Path(path_to_join).parents]):
+                spth = str(pth).replace("\\","/")
+                key = __local_dataset_specific_dir_prefix + spth
+                logger.debug(f"checking for key {key}")
+                val = cache.get_or_none(key)
+                if val is not None:
+                    local_data_dir = val
+                    logger.debug(f"found value {val}")
 
     return op.expanduser(local_data_dir)
 
@@ -483,35 +533,35 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
 
 
 
-# NOTE(mareklovci): I suppose, this isn't working at all
-def get_old(dataset_label, data_id, destination_dir=None):
-    """Get the 3D data from specified dataset with specified id.
-
-    Download data if necessary.
-
-    :param dataset_label:
-    :param data_id: integer or wildcards file pattern
-    :param destination_dir:
-    :return:
-    """
-    # TODO implement
-    if destination_dir is None:
-        destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
-
-    destination_dir = op.expanduser(destination_dir)
-    data_url, url, expected_hash, hash_path, relative_output_path = get_dataset_meta(
-        dataset_label
-    )
-    paths = glob.glob(os.path.join(destination_dir, hash_path))
-    paths.sort()
-    import fnmatch
-
-    print(paths)
-    print(data_id)
-    pathsf = fnmatch.filter(paths, data_id)
-    print(pathsf)
-    datap = datareader.read(pathsf[0], dataplus_format=True)
-    return datap
+# # NOTE(mareklovci): I suppose, this isn't working at all
+# def get_old(dataset_label, data_id, destination_dir=None):
+#     """Get the 3D data from specified dataset with specified id.
+#
+#     Download data if necessary.
+#
+#     :param dataset_label:
+#     :param data_id: integer or wildcards file pattern
+#     :param destination_dir:
+#     :return:
+#     """
+#     # TODO implement
+#     if destination_dir is None:
+#         destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
+#
+#     destination_dir = op.expanduser(destination_dir)
+#     data_url, url, expected_hash, hash_path, relative_output_path = get_dataset_meta(
+#         dataset_label
+#     )
+#     paths = glob.glob(os.path.join(destination_dir, hash_path))
+#     paths.sort()
+#     import fnmatch
+#
+#     print(paths)
+#     print(data_id)
+#     pathsf = fnmatch.filter(paths, data_id)
+#     print(pathsf)
+#     datap = datareader.read(pathsf[0], dataplus_format=True)
+#     return datap
 
 
 # NOTE(mareklovci - 2018_05_14): work in progress
@@ -1019,6 +1069,10 @@ def main(turn_on_logging=False):
         "-sdp", "--set_dataset_path", default=None, help="Set standard dataset path"
     )
     parser.add_argument(
+        "-ssdp", "--set_specific_dataset_path", nargs=2, default=None,
+        help="Set specific dataset path. First argument is path (e.g. c:/data), second is key prefix (e.g. bio/flowers)."
+    )
+    parser.add_argument(
         "-gdp",
         "--get_dataset_path",
         default=False,
@@ -1053,6 +1107,12 @@ def main(turn_on_logging=False):
         print(dp)
         # logger.info("Dataset path changed")
         return
+
+    if args.set_specific_dataset_path is not None:
+        set_specific_dataset_path(
+            path=args.set_specific_dataset_path[0],
+            key_path_prefix=args.set_specific_dataset_path[1],
+            get_root=True)
 
     if args.checksum is not None:
         print(checksum(args.checksum))

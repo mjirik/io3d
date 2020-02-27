@@ -100,7 +100,7 @@ class QtTest(unittest.TestCase):
         mw = QMainWindow()
         # mw.show()
 
-    @unittest.skip("waiting for implementation")
+    # @unittest.skip("waiting for implementation")
     def test_fsbrowser_qt_simple_get_selected_path(self):
 
         import pydicom.data
@@ -113,13 +113,13 @@ class QtTest(unittest.TestCase):
         sdp = io3d.datasets.join_path("sample_data")
         dp = io3d.datasets.join_path("sample_data/jatra_5mm/")
         app = QApplication(sys.argv)
-        filedialog = io3d.fsbrowser.DCMage(filepath)
-        path = filedialog.get_path()
-        print(f"selected path: {path}")
+        filedialog = io3d.fsbrowser.DCMage()
         # fd = QFileDialog()
         # fd.getOpenFileName()
         mw = QMainWindow()
-        # app.exec_()
+        path = filedialog.getOpenFileName(filepath)
+        print(f"selected path: {path}")
+        app.exec_()
 
 
 if __name__ == "__main__":
