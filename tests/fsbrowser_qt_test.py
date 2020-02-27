@@ -113,13 +113,16 @@ class QtTest(unittest.TestCase):
         sdp = io3d.datasets.join_path("sample_data")
         dp = io3d.datasets.join_path("sample_data/jatra_5mm/")
         app = QApplication(sys.argv)
-        filedialog = io3d.fsbrowser.DCMage()
+        filedialog = io3d.fsbrowser.DCMage(directory=sdp)
+        # filedialog.show()
+        # path = filedialog.getOpenFileName()
+        # print(f"selected path: {path}")
+
         # fd = QFileDialog()
         # fd.getOpenFileName()
-        mw = QMainWindow()
-        path = filedialog.getOpenFileName(filepath)
-        print(f"selected path: {path}")
-        app.exec_()
+        # mw = QMainWindow()
+        # mw.show()
+        # app.exec_()
 
 
 if __name__ == "__main__":

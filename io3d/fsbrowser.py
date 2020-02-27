@@ -335,6 +335,7 @@ class DCMage(QFileDialog):
             temp_text = "go to dir with dcm files"
             
     def onChange(self, path):
+        self._fileSelected = path
         path_l = path.lower()
         self.onChange_text(path_l)
         if(".dcm" in path_l):
@@ -389,7 +390,9 @@ class DCMage(QFileDialog):
 
 
     def getOpenFileName(self, file):
-        temp = self._fileSelected = file
+        self.show()
+        self.exec_()
+        temp = self._fileSelected
         #print(temp)
         return temp
 
