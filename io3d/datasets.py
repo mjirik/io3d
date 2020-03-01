@@ -296,8 +296,8 @@ def join_path(*path_to_join, **kwargs):
     else:
         # default value
         get_root = False
-    sdp = dataset_path(get_root=get_root, path_to_join=path_to_join)
-    pth = os.path.join(sdp, *path_to_join)
+    sdp, path_to_join = dataset_path(get_root=get_root, path_to_join=path_to_join)
+    pth = os.path.join(sdp, str(Path(path_to_join)).replace("\\", "/"))
     logger.debug("sample_data_path" + str(sdp))
     logger.debug("path " + str(pth))
     return pth
@@ -381,6 +381,7 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
         path_to_join =  sappend_path + path_to_join
 
 
+        new_path_to_join = Path(path_to_join)
         if cache is not None:
             for pth in reversed([pth for pth in Path(path_to_join).parents]):
                 spth = str(pth).replace("\\","/")
@@ -390,6 +391,10 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
                 if val is not None:
                     local_data_dir = val
                     logger.debug(f"found value {val}")
+                    new_path_to_join = Path(path_to_join).relative_to(Path(spth))
+                    new_path_to_join = new_path_to_join.resolve()
+                    new_path_to_join
+        return op.expanduser(local_data_dir), str(new_path_to_join).replace("\\", "/")
 
     return op.expanduser(local_data_dir)
 
