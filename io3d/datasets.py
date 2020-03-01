@@ -1112,7 +1112,7 @@ def main(turn_on_logging=False):
         set_specific_dataset_path(
             path=args.set_specific_dataset_path[0],
             key_path_prefix=args.set_specific_dataset_path[1],
-            get_root=True)
+            )
 
     if args.checksum is not None:
         print(checksum(args.checksum))

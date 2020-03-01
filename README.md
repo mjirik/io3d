@@ -93,5 +93,5 @@ python -m io3d -c directory_path
 ### Specific dataset path
 
 ```shell
-python -m io3d -ssdp c:/data bio/flowers
+python -m io3d -ssdp "g:/Můj disk/data/biology/roots" "biology/roots"
 ```
