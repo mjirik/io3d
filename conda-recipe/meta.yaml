@@ -1,10 +1,10 @@
 package:
   name: io3d
-  version: "2.3.2"
+  version: "2.3.5"
 
 source:
 # this is used for build from git hub
-  git_rev: 2.3.2
+  git_rev: 2.3.5
   git_url: https://github.com/mjirik/io3d.git
 
 # this is used for pypi 
