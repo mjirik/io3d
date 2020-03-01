@@ -297,10 +297,12 @@ def join_path(*path_to_join, **kwargs):
         # default value
         get_root = False
     sdp, path_to_join = dataset_path(get_root=get_root, path_to_join=path_to_join)
-    pth = os.path.join(sdp, str(Path(path_to_join)).replace("\\", "/"))
+    # pth = os.path.join(sdp, str(Path(path_to_join)).replace("\\", "/"))
+    pth = Path(sdp) / Path(path_to_join)
+    # pth = str(Path(pth))
     logger.debug("sample_data_path" + str(sdp))
     logger.debug("path " + str(pth))
-    return pth
+    return str(pth)
 
 
 def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
@@ -313,6 +315,7 @@ def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
     cache.update("local_dataset_dir", path)
+
 
 def set_specific_dataset_path(path, key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"):
     """Sets path to dataset. Warning: function with side effects!
@@ -375,10 +378,11 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
         if type(path_to_join) in(list, tuple):
             path_to_join = "/".join(path_to_join).replace("\\","/")
 
-        sappend_path = "/".join(append_path).replace("\\", "/")
-        if len(sappend_path) > 0 and sappend_path[-1] != "/":
-            sappend_path = sappend_path + "/"
-        path_to_join =  sappend_path + path_to_join
+        if get_root:
+            sappend_path = "/".join(append_path).replace("\\", "/")
+            if len(sappend_path) > 0 and sappend_path[-1] != "/":
+                sappend_path = sappend_path + "/"
+            path_to_join =  sappend_path + path_to_join
 
 
         new_path_to_join = Path(path_to_join)
@@ -394,9 +398,9 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
                     new_path_to_join = Path(path_to_join).relative_to(Path(spth))
                     new_path_to_join = new_path_to_join.resolve()
                     new_path_to_join
-        return op.expanduser(local_data_dir), str(new_path_to_join).replace("\\", "/")
+        return op.expanduser(local_data_dir), str(Path(new_path_to_join)) # .replace("\\", "/")
 
-    return op.expanduser(local_data_dir)
+    return str(Path(op.expanduser(local_data_dir)))
 
 
 # def get_sample_data():
