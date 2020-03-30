@@ -49,7 +49,10 @@ ed.show()
 ### Example 3 - Qt Widget
 
 ```python
+import sys
+from PyQt5 import QtGui
 import io3d.datareaderqt
+
 app = QtGui.QApplication(sys.argv)    
 w = io3d.datereaderqt.DatareaderWidget()
 w.show()
@@ -92,6 +95,22 @@ python -m io3d -c directory_path
 
 ### Specific dataset path
 
+Some parts of dataset can be stored separately. 
+You can set it by command
+
 ```shell
 python -m io3d -ssdp "g:/Můj disk/data/biology/roots" "biology/roots"
 ```
+
+or you can edit `~\.io3d_cache.yaml`
+
+
+### Get by url
+
+Data can be downloaded from url. Just use URL instead of `label`.
+The local path can be specified by adding local path to the end of url separated by colon.'
+
+```bash
+python -m io3d.datasets -l http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:biodur_sample/
+```
+python -m io3d. -l https://downloads.openmicroscopy.org/images/OME-TIFF/2016-06/bioformats-artificial/time-series.ome.tif:biology/orig/roots

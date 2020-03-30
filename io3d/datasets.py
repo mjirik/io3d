@@ -284,19 +284,20 @@ data_urls = {
 # cachefile = "~/io3d_cache.yaml"
 
 
-def join_path(*path_to_join, **kwargs):
+def join_path(*path_to_join, get_root=False, sep_on_end=True):
     """Join input path to sample data path (usually in ~/lisa_data)
 
     :param path_to_join: one or more paths
     :param get_root: return dataset root path. If false, the path would be into "medical/orig"
     :return: joined path
     """
-    if "get_root" in kwargs:
-        get_root = kwargs["get_root"]
-    else:
-        # default value
-        get_root = False
-    sdp, path_to_join = dataset_path(get_root=get_root, path_to_join=path_to_join)
+    # if "get_root" in kwargs:
+    #     get_root = kwargs["get_root"]
+    # else:
+    #     # default value
+    #     get_root = False
+    # if
+    sdp, path_to_join = dataset_path(get_root=get_root, path_to_join=path_to_join, sep_on_end=sep_on_end)
     # pth = os.path.join(sdp, str(Path(path_to_join)).replace("\\", "/"))
     pth = Path(sdp) / Path(path_to_join)
     # pth = str(Path(pth))
@@ -340,7 +341,7 @@ def delete_specific_dataset_path(key_path_prefix, cache=None, cachefile="~/.io3d
     cache.delete_key(__local_dataset_specific_dir_prefix + key_path_prefix)
 
 
-def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path_to_join=None):
+def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path_to_join=None, sep_on_end:bool=True):
     """Get dataset path.
 
     :param cache: CacheFile object
@@ -380,7 +381,7 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 
         if get_root:
             sappend_path = "/".join(append_path).replace("\\", "/")
-            if len(sappend_path) > 0 and sappend_path[-1] != "/":
+            if sep_on_end and len(sappend_path) > 0 and sappend_path[-1] != "/":
                 sappend_path = sappend_path + "/"
             path_to_join =  sappend_path + path_to_join
 
@@ -409,7 +410,7 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 
 
 # noinspection PyUnboundLocalVariable
-def get_dataset_meta(label):
+def get_dataset_meta(label:str):
     """Gives you metadata for dataset chosen via 'label' param
 
     :param label: label = key in data_url dict (that big dict containing all possible datasets)
@@ -417,7 +418,21 @@ def get_dataset_meta(label):
     relative_download_dir says where will be downloaded the file from url and eventually unzipped
 
     """
-    data_url = data_urls[label]
+    # check for url
+    if label.find(":") > 0:
+        logger.info("URL detected")
+        splitted = label.split(":")
+        if len(splitted) > 3:
+            logger.warning("There should be just two ':' symbols in url. <protocol>:<url>:<local path>")
+        if len(splitted) > 2:
+            pth = splitted.pop(-1)
+        else:
+            pth = ""
+        url = ":".join(splitted)
+        data_url = [url, None, ".", pth]
+    else:
+        data_url = data_urls[label]
+
     if type(data_url) == str:
         # back compatibility
         data_url = [data_url]
@@ -428,7 +443,9 @@ def get_dataset_meta(label):
         if hash_path is None:
             hash_path = label
     # elif type(data_url) == dict:
-    return data_url, url, expected_hash, hash_path, relative_donwload_dir
+
+    # return data_url, url, expected_hash, hash_path, relative_donwload_dir
+    return url, expected_hash, hash_path, relative_donwload_dir
 
 
 # noinspection PyTypeChecker
@@ -442,10 +459,16 @@ def _expand_dataset_packages(dataset_label_dict):
     """
     new_dataset_label_dict = []
     for label in dataset_label_dict:
-        dataset_metadata = data_urls[label]
-        if type(dataset_metadata) == dict and "package" in dataset_metadata:
-            new_dataset_label_dict.extend(dataset_metadata["package"])
+        if label in data_urls:
+            dataset_metadata = data_urls[label]
+            if type(dataset_metadata) == dict and "package" in dataset_metadata:
+                # package
+                new_dataset_label_dict.extend(dataset_metadata["package"])
+            else:
+                # standard dataset
+                new_dataset_label_dict.append(label)
         else:
+            # potential url will be checked later
             new_dataset_label_dict.append(label)
     return new_dataset_label_dict
 
@@ -459,12 +482,6 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     :param destination_dir: output dir for data
     :param dry_run: runs function without downloading anything
     """
-    if destination_dir is None:
-        # destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
-        destination_dir = op.join(dataset_path(get_root=True))
-
-    destination_dir = op.expanduser(destination_dir)
-    logger.info("destination dir: {}".format(destination_dir))
 
     if dataset_label is None:
         dataset_label = data_urls.keys()
@@ -474,18 +491,51 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     retval_list_of_output_dist = []
     dataset_label = _expand_dataset_packages(dataset_label)
 
-
     for label in dataset_label:
         # make all data:url have length 3
-        data_url, url, expected_hash, hash_path_suffix, relative_download_dir = get_dataset_meta(
+        # data_url = _
+        url, expected_hash, hash_path_suffix, relative_download_dir = get_dataset_meta(
             label
         )
         logger.debug(f"dataset_label={dataset_label}")
         logger.debug(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
         if relative_download_dir is None:
-            label_destination_dir = op.join(destination_dir, "medical", "orig")
-        else:
-            label_destination_dir = op.join(destination_dir, relative_download_dir)
+            relative_download_dir = "medical/orig"
+            # label_destination_dir = op.join(destination_dir, "medical", "orig")
+            # TODO fix the problem with relative
+            # label_destination_dir0 = join_path("medical", "orig", get_root=True, sep_on_end=False)
+            # if label_destination_dir0 != label_destination_dir:
+            #     logger.debug(f"ptin={relative_download_dir}")
+            #     logger.debug(f"pth0={label_destination_dir0}")
+            #     logger.debug(f"pth ={label_destination_dir}")
+            #     logger.warning("Possible incompatibility in path")
+            #     assert False
+        # else:
+        if True:
+            # if destination_dir is None:
+            #     # destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
+            #     logger.debug("dest dir was None")
+            #     destination_dir2 = op.join(dataset_path(get_root=True))
+            # else:
+            #     destination_dir2 = destination_dir
+            # destination_dir2 = op.expanduser(destination_dir2)
+            #
+            # label_destination_dir0 = op.join(destination_dir2, relative_download_dir)
+
+            if destination_dir is None:
+                label_destination_dir = join_path(relative_download_dir, get_root=True, sep_on_end=False)
+            else:
+                destination_dir = op.expanduser(destination_dir)
+                label_destination_dir = op.join(destination_dir, relative_download_dir)
+            logger.info("destination dir: {}".format(destination_dir))
+            # if label_destination_dir0 != label_destination_dir:
+            #     logger.debug(f"ptds={destination_dir}")
+            #     logger.debug(f"ptin={relative_download_dir}")
+            #     logger.debug(f"pth0={label_destination_dir0}")
+            #     logger.debug(f"pth ={label_destination_dir}")
+            #     logger.warning("Possible incompatibility in path")
+                # assert False
+
         if not op.exists(label_destination_dir):
             logger.debug("creating directory {}".format(label_destination_dir))
             os.makedirs(label_destination_dir)

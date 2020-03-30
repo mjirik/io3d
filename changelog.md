@@ -2,8 +2,11 @@
 
 ## Unreleased
 
-## 2.4
 
+## 2.3
+
+* [Changed] Relative dataset download path implementation
+* [Added] URL can be used to download data
 * [Added] Specific dataset can be stored in different path (download is in plan todo)
 
 ## 2.2

@@ -136,6 +136,9 @@ class DatasetsTest(unittest.TestCase):
         io3d.datasets.download("3Dircadb1.1")
         # io3d.datasets.get_old("3Dircadb1", "*1/P*")
 
+    def test_getold1(self):
+        io3d.datasets.download("http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:test_biodur_sample/")
+
     def test_getold(self):
         pth = io3d.datasets.join_path(
             "medical",
@@ -231,6 +234,27 @@ class DatasetsTest(unittest.TestCase):
         self.assertTrue(np.array_equal(data3d.shape, seeds_porta.shape))
         self.assertTrue(np.array_equal(data3d.shape, seeds_liver.shape))
         self.assertEqual(np.max(segm), 2, "Maximum label is 2")
+
+    def test_get_metadata_from_url(self):
+
+        __url_server = ""
+
+        url_and_path = "http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:biodur_sample/*.tiff"
+        metadata = io3d.datasets.get_dataset_meta(url_and_path)
+        assert metadata[0].startswith("http:")
+        assert metadata[2] == '.'
+        assert metadata[3] == "biodur_sample/*.tiff"
+
+        url_and_path = "http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip"
+        metadata = io3d.datasets.get_dataset_meta(url_and_path)
+        assert metadata[0].startswith("http:")
+        assert metadata[2] == '.'
+        assert metadata[3] == ''
+
+        # # "biodur_sample": [
+        #     "d459dd5b308ca07d10414b3a3a9000ea",
+        #     "biodur_sample/*.tiff"
+        # ],
 
 
 if __name__ == "__main__":
