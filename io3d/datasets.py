@@ -493,7 +493,6 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
 
     for label in dataset_label:
         # make all data:url have length 3
-        # data_url = _
         url, expected_hash, hash_path_suffix, relative_download_dir = get_dataset_meta(
             label
         )
@@ -501,40 +500,13 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         logger.debug(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
         if relative_download_dir is None:
             relative_download_dir = "medical/orig"
-            # label_destination_dir = op.join(destination_dir, "medical", "orig")
-            # TODO fix the problem with relative
-            # label_destination_dir0 = join_path("medical", "orig", get_root=True, sep_on_end=False)
-            # if label_destination_dir0 != label_destination_dir:
-            #     logger.debug(f"ptin={relative_download_dir}")
-            #     logger.debug(f"pth0={label_destination_dir0}")
-            #     logger.debug(f"pth ={label_destination_dir}")
-            #     logger.warning("Possible incompatibility in path")
-            #     assert False
-        # else:
-        if True:
-            # if destination_dir is None:
-            #     # destination_dir = op.join(dataset_path(get_root=True), "medical", "orig")
-            #     logger.debug("dest dir was None")
-            #     destination_dir2 = op.join(dataset_path(get_root=True))
-            # else:
-            #     destination_dir2 = destination_dir
-            # destination_dir2 = op.expanduser(destination_dir2)
-            #
-            # label_destination_dir0 = op.join(destination_dir2, relative_download_dir)
 
-            if destination_dir is None:
-                label_destination_dir = join_path(relative_download_dir, get_root=True, sep_on_end=False)
-            else:
-                destination_dir = op.expanduser(destination_dir)
-                label_destination_dir = op.join(destination_dir, relative_download_dir)
-            logger.info("destination dir: {}".format(destination_dir))
-            # if label_destination_dir0 != label_destination_dir:
-            #     logger.debug(f"ptds={destination_dir}")
-            #     logger.debug(f"ptin={relative_download_dir}")
-            #     logger.debug(f"pth0={label_destination_dir0}")
-            #     logger.debug(f"pth ={label_destination_dir}")
-            #     logger.warning("Possible incompatibility in path")
-                # assert False
+        if destination_dir is None:
+            label_destination_dir = join_path(relative_download_dir, get_root=True, sep_on_end=False)
+        else:
+            destination_dir = op.expanduser(destination_dir)
+            label_destination_dir = op.join(destination_dir, relative_download_dir)
+        logger.info("destination dir: {}".format(destination_dir))
 
         if not op.exists(label_destination_dir):
             logger.debug("creating directory {}".format(label_destination_dir))
