@@ -501,12 +501,14 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         if relative_download_dir is None:
             relative_download_dir = "medical/orig"
 
+        logger.info("input destination dir: {}".format(destination_dir))
         if destination_dir is None:
             label_destination_dir = join_path(relative_download_dir, get_root=True, sep_on_end=False)
         else:
             destination_dir = op.expanduser(destination_dir)
             label_destination_dir = op.join(destination_dir, relative_download_dir)
         logger.info("destination dir: {}".format(destination_dir))
+        logger.info("label destination dir: {}".format(label_destination_dir))
 
         if not op.exists(label_destination_dir):
             logger.debug("creating directory {}".format(label_destination_dir))
