@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [Fixed] Deprecation Warning on `get_slice_location()`
 
 ## 2.3
 
