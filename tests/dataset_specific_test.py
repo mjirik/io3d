@@ -23,7 +23,7 @@ import pytest
 
 
 
-def test_change_specific_dataset(self):
+def test_change_specific_dataset():
     dp_new4 = "~/io3d_test4_dataset_dir/"
 
     dp_specific = str(Path("~/io3d_test3_dataset_dir/").expanduser())
