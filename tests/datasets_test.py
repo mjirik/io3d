@@ -84,7 +84,7 @@ class DatasetsTest(unittest.TestCase):
     def test_change_specific_dataset(self):
         dp_new4 = "~/io3d_test4_dataset_dir/"
 
-        dp_specific = "~/io3d_test3_dataset_dir/"
+        dp_specific = str(Path("~/io3d_test3_dataset_dir/").expanduser())
         dp_specific_prefix = "io3d/test3/"
 
         dp_old = io3d.datasets.join_path(get_root=True)
