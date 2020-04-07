@@ -32,6 +32,7 @@ def test_change_specific_dataset():
     dp_old = io3d.datasets.join_path(get_root=True)
     # io3d.datasets.set_dataset_path(dp_new4)
 
+    logger.info("prepared to search")
     io3d.datasets.set_specific_dataset_path(dp_specific, key_path_prefix=dp_specific_prefix)
 
     dp_joined1 = io3d.datasets.join_path("io3d/test3/something/more", get_root=True)
@@ -40,7 +41,7 @@ def test_change_specific_dataset():
     # check if the specific path is nested in
     assert not Path(dp_old) in Path(dp_joined1).parents, "specific path should not be nested"
     logger.debug(f"dp_specific={dp_specific}")
-    logger.debug(f"dp_joined1.parents={Path(dp_joined1).parents}")
+    logger.debug(f"dp_joined1.parents={list(Path(dp_joined1).parents)}")
     assert Path(dp_specific).expanduser() in Path(dp_joined1).parents, "specific path should nested"
 
     dp_joined12 = io3d.datasets.join_path("io3d/test3/", get_root=True)

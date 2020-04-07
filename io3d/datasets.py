@@ -306,9 +306,12 @@ def join_path(*path_to_join, get_root=False, sep_on_end=True):
     # if
     sdp, path_to_join = dataset_path(get_root=get_root, path_to_join=path_to_join, sep_on_end=sep_on_end)
     # pth = os.path.join(sdp, str(Path(path_to_join)).replace("\\", "/"))
-    pth = Path(sdp) / Path(path_to_join)
+    if path_to_join is not None:
+        pth = Path(sdp) / Path(path_to_join)
+    else:
+        pth = Path(sdp)
     # pth = str(Path(pth))
-    logger.debug("sample_data_path" + str(sdp))
+    logger.debug("sample_data_path=" + str(sdp) + f", path_to_joina={path_to_join}")
     logger.debug("path " + str(pth))
     return str(pth)
 
@@ -405,13 +408,24 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
                     local_data_dir = val
                     logger.debug(f"found value {val}")
                     new_path_to_join = Path(path_to_join).relative_to(Path(spth))
+                    logger.debug(f"path_to_join={path_to_join}")
+                    logger.debug(f"spth={spth}")
+                    logger.debug(f"new_path_to_join={new_path_to_join}, npth.resolve={new_path_to_join.resolve()}")
                     if str(new_path_to_join) == ".":
-                        # because Path(".") resolve is ABSOLUTE actual path
-                        new_path_to_join = ""
+                        # because Path(".") resolve is ABSOLUTE actual path on
+                        # windows
+                        new_path_to_join = None
                     else:
-                        new_path_to_join = new_path_to_join.resolve()
-                    new_path_to_join
-        return op.expanduser(local_data_dir), str(Path(new_path_to_join)) # .replace("\\", "/")
+                        new_path_to_join = str(new_path_to_join.resolve())
+                    if str(new_path_to_join)[0] == "/":
+                        # linux hack
+                        # on linux resolve everytime add absolute prefix to
+                        # path
+                        new_path_to_join = str(Path(new_path_to_join).relative_to(Path("").absolute()))
+                    # new_path_to_join
+        out_local_data_dir = op.expanduser(local_data_dir)
+        logger.debug(f"returning path={out_local_data_dir} , new_path_to_join={new_path_to_join}")
+        return out_local_data_dir,  new_path_to_join # .replace("\\", "/")
 
     return str(Path(op.expanduser(local_data_dir)))
 
