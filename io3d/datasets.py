@@ -280,7 +280,7 @@ data_urls = {
     ],
     "R2D2": [
         # "https://drive.google.com/file/d/1hGeRrU9iOnbwOU-8YqZFx9HiCjvV1y10/view?usp=sharing",
-        __url_server + "data/biology/orig/roots/examples/R2D2-20x1.tif",
+        __url_server + "data/biology/orig/roots/examples/R2D2-20x-1.tif",
         None,
         "R2D2-20x-1.tif",
         "biology/orig/roots/examples/"
