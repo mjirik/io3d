@@ -278,6 +278,12 @@ data_urls = {
         "f2f70fe432bd9dc3c252540313b92df0",
         __hash_path_prefix + "CMU-1.ndpi.ndpa",
     ],
+    "R2D2": [
+        "https://drive.google.com/file/d/1hGeRrU9iOnbwOU-8YqZFx9HiCjvV1y10/view?usp=sharing",
+        None,
+        "R2D2-20x-1.tif",
+        "biology/orig/roots/examples/R2D2-20x-1.tif"
+        ],
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample_data/exp_small.zip",
 }
