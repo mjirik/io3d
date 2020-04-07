@@ -81,41 +81,6 @@ class DatasetsTest(unittest.TestCase):
         # return path back
         io3d.datasets.set_dataset_path(dp_old)
 
-    def test_change_specific_dataset(self):
-        dp_new4 = "~/io3d_test4_dataset_dir/"
-
-        dp_specific = str(Path("~/io3d_test3_dataset_dir/").expanduser())
-        dp_specific_prefix = "io3d/test3/"
-
-        dp_old = io3d.datasets.join_path(get_root=True)
-        # io3d.datasets.set_dataset_path(dp_new4)
-
-
-        io3d.datasets.set_specific_dataset_path(dp_specific, key_path_prefix=dp_specific_prefix)
-
-        dp_joined1 = io3d.datasets.join_path("io3d/test3/something/more", get_root=True)
-        logger.debug(f"dp_joined1: {dp_joined1}")
-
-        # check if the specific path is nested in
-        assert not Path(dp_old) in Path(dp_joined1).parents, "specific path should not be nested"
-        assert Path(dp_specific).expanduser() in Path(dp_joined1).parents, "specific path should nested"
-
-        dp_joined12 = io3d.datasets.join_path("io3d/test3/", get_root=True)
-        logger.debug(f"dp_joined12: {dp_joined12}")
-        assert not Path(dp_specific) in Path(dp_joined12).parents, "specific path should nested"
-
-        io3d.datasets.delete_specific_dataset_path(dp_specific_prefix)
-        dp_joined2 = io3d.datasets.join_path("io3d/test3/something/more", get_root=True)
-        logger.debug(f"dp_joined2: {dp_joined2}")
-        assert Path(dp_old) in Path(dp_joined2).parents, "specific path is now not specific and should be nested"
-
-        # Path(dp_joined1)
-
-
-
-
-        # return path back
-        # io3d.datasets.set_dataset_path(dp_old)
 
     def test_change_dataset_path_with_windows_full_path(self):
         dp_new1 = "c:/io3d_test1_dataset_dir/"
