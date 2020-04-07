@@ -98,7 +98,11 @@ class DatasetsTest(unittest.TestCase):
 
         # check if the specific path is nested in
         assert not Path(dp_old) in Path(dp_joined1).parents, "specific path should not be nested"
-        assert not Path(dp_specific) in Path(dp_joined1).parents, "specific path should nested"
+        assert Path(dp_specific).expanduser() in Path(dp_joined1).parents, "specific path should nested"
+
+        dp_joined12 = io3d.datasets.join_path("io3d/test3/", get_root=True)
+        logger.debug(f"dp_joined12: {dp_joined12}")
+        assert not Path(dp_specific) in Path(dp_joined12).parents, "specific path should nested"
 
         io3d.datasets.delete_specific_dataset_path(dp_specific_prefix)
         dp_joined2 = io3d.datasets.join_path("io3d/test3/something/more", get_root=True)

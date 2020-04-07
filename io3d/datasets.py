@@ -394,7 +394,8 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 
         new_path_to_join = Path(path_to_join)
         if cache is not None:
-            for pth in reversed([pth for pth in Path(path_to_join).parents]):
+            pths = [Path(path_to_join)] + [pth for pth in Path(path_to_join).parents]
+            for pth in reversed(pths):
                 spth = str(pth).replace("\\","/")
                 key = __local_dataset_specific_dir_prefix + spth
                 logger.debug(f"checking for key {key}")
@@ -403,7 +404,11 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
                     local_data_dir = val
                     logger.debug(f"found value {val}")
                     new_path_to_join = Path(path_to_join).relative_to(Path(spth))
-                    new_path_to_join = new_path_to_join.resolve()
+                    if str(new_path_to_join) == ".":
+                        # because Path(".") resolve is ABSOLUTE actual path
+                        new_path_to_join = ""
+                    else:
+                        new_path_to_join = new_path_to_join.resolve()
                     new_path_to_join
         return op.expanduser(local_data_dir), str(Path(new_path_to_join)) # .replace("\\", "/")
 

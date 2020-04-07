@@ -3,6 +3,7 @@
 ## Unreleased
 
 * [Fixed] Deprecation Warning on `get_slice_location()`
+* [Fixed] Shortest specific path now works
 
 ## 2.3
 
