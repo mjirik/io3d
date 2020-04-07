@@ -282,7 +282,7 @@ data_urls = {
         "https://drive.google.com/file/d/1hGeRrU9iOnbwOU-8YqZFx9HiCjvV1y10/view?usp=sharing",
         None,
         "R2D2-20x-1.tif",
-        "biology/orig/roots/examples/R2D2-20x-1.tif"
+        "biology/orig/roots/examples/"
         ],
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample_data/exp_small.zip",
