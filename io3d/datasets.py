@@ -15,6 +15,9 @@ import numpy as np
 import zipfile
 import glob
 import os.path as op
+import csv
+import urllib.request
+import io
 from pathlib import Path
 # import io3d
 from . import cachefile as cachef
@@ -37,6 +40,7 @@ __url_server = "http://home.zcu.cz/~mjirik/lisa/"
 __hash_path_prefix = ""
 __rel_medical_orig_path = "medical/orig/"
 __local_dataset_specific_dir_prefix = "local_dataset_specific_dir_"
+__datasets_csv_url = "https://raw.githubusercontent.com/mjirik/io3d/master/datasets/datasets.csv"
 
 # Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
@@ -315,6 +319,20 @@ def join_path(*path_to_join, get_root=False, sep_on_end=True):
     logger.debug("path " + str(pth))
     return str(pth)
 
+def _update_datasets_url():
+    stream = urllib.request.urlopen(__datasets_csv_url)
+    content = stream.read().decode(
+        "utf-8"
+    )
+    # fieldnames = ['label', 'url', "hash", 'filename_hash_mask', "local_path"]
+
+    csv_reader = csv.DictReader(io.StringIO(content))
+    for row in csv_reader:
+        label = row["label"]
+        metadata = [row["url"], row["hash"], row["filename_hash_mask"], row["local_path"]]
+        data_urls[label] = metadata
+
+
 
 def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     """Sets path to dataset. Warning: function with side effects!
@@ -434,6 +452,16 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 #     keys = imtools.sample_data.data_urls.keys()
 #     imtools.sample_data.get_sample_data(keys, sample_data_path())
 
+def get_data_url(label):
+    """
+    Based on label return raw_metadata from url table
+    :param label:
+    :return:
+    """
+    if label in data_urls:
+        return data_urls[label]
+    else:
+        return None
 
 # noinspection PyUnboundLocalVariable
 def get_dataset_meta(label:str):
@@ -457,7 +485,11 @@ def get_dataset_meta(label:str):
         url = ":".join(splitted)
         data_url = [url, None, ".", pth]
     else:
-        data_url = data_urls[label]
+        # data_url = data_urls[label]
+        data_url = get_data_url(label)
+
+    if data_url is None:
+        raise ValueError(f"Label '{label}' not found.")
 
     if type(data_url) == str:
         # back compatibility
@@ -508,6 +540,7 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
     :param destination_dir: output dir for data
     :param dry_run: runs function without downloading anything
     """
+    _update_datasets_url()
 
     if dataset_label is None:
         dataset_label = data_urls.keys()
@@ -991,6 +1024,7 @@ def remove(local_file_name):
 
 
 def get_labels():
+    _update_datasets_url()
     return list(sorted(data_urls.keys()))
 
 

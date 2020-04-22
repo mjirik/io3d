@@ -225,6 +225,11 @@ class DatasetsTest(unittest.TestCase):
         #     "biodur_sample/*.tiff"
         # ],
 
+def test_dataset_csv():
+    assert 'J7_5_b' not in io3d.datasets.data_urls
+    io3d.datasets._update_datasets_url()
+    assert 'J7_5_b' in io3d.datasets.data_urls
+
 
 if __name__ == "__main__":
     unittest.main()
