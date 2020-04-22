@@ -226,9 +226,13 @@ class DatasetsTest(unittest.TestCase):
         # ],
 
 def test_dataset_csv():
-    assert 'J7_5_b' not in io3d.datasets.data_urls
+    key = "J7_5_b"
+    if key in io3d.datasets.data_urls:
+        # this is applied if the url was added before by calling _update_... from other test.
+        del(io3d.datasets.data_urls[key])
+    assert key not in io3d.datasets.data_urls
     io3d.datasets._update_datasets_url()
-    assert 'J7_5_b' in io3d.datasets.data_urls
+    assert key in io3d.datasets.data_urls
 
 
 if __name__ == "__main__":
