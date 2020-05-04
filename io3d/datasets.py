@@ -295,7 +295,16 @@ data_urls = {
 # cachefile = "~/io3d_cache.yaml"
 
 
-def join_path(*path_to_join, get_root=True, sep_on_end=True, return_as_str=False):
+def join_path(*path_to_join, get_root=False, sep_on_end=True, return_as_str=True):
+    logger.warning("Function deprecated use joinp instead.")
+    return joinp(
+        *path_to_join,
+        get_root=get_root,
+        sep_on_end=sep_on_end,
+        return_as_str=return_as_str
+    )
+
+def joinp(*path_to_join, get_root=True, sep_on_end=True, return_as_str=False):
     """Join input path to sample data path (usually in ~/lisa_data)
 
     :param path_to_join: one or more paths
