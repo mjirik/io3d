@@ -295,11 +295,14 @@ data_urls = {
 # cachefile = "~/io3d_cache.yaml"
 
 
-def join_path(*path_to_join, get_root=False, sep_on_end=True):
+def join_path(*path_to_join, get_root=True, sep_on_end=True, return_as_str=False):
     """Join input path to sample data path (usually in ~/lisa_data)
 
     :param path_to_join: one or more paths
     :param get_root: return dataset root path. If false, the path would be into "medical/orig"
+    For backward compatibility set False.
+    :param sep_on_end True, False or None. Control the separator on the end of path.
+    :param return_as_str: the output can be string or Path (default)
     :return: joined path
     """
     # if "get_root" in kwargs:
@@ -317,7 +320,11 @@ def join_path(*path_to_join, get_root=False, sep_on_end=True):
     # pth = str(Path(pth))
     logger.debug("sample_data_path=" + str(sdp) + f", path_to_joina={path_to_join}")
     logger.debug("path " + str(pth))
-    return str(pth)
+    if return_as_str:
+        pth = str(pth)
+    else:
+        pth = Path(pth)
+    return pth
 
 def _update_datasets_url():
     stream = urllib.request.urlopen(__datasets_csv_url)
@@ -409,8 +416,11 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 
         if get_root:
             sappend_path = "/".join(append_path).replace("\\", "/")
-            if sep_on_end and len(sappend_path) > 0 and sappend_path[-1] != "/":
+            if sep_on_end == True and len(sappend_path) > 0 and sappend_path[-1] != "/":
                 sappend_path = sappend_path + "/"
+
+            elif sep_on_end == False and len(sappend_path) > 0 and sappend_path[-1] == "/":
+                sappend_path = sappend_path[:-1]
             path_to_join =  sappend_path + path_to_join
 
 

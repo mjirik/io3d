@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [Changed] `join_path` return `Path` object as default
 * [Added] Datasets are now stored in `datasets.csv` on github
 * [Fixed] Deprecation Warning on `get_slice_location()`
 * [Fixed] Shortest specific path now works
