@@ -1,4 +1,5 @@
 label,url,hash,filename_hash_mask,local_path
 J7_5_b,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysis-czi/J7_5/J7_5_b.czi,,J7_5_b.czi,medical/orig/scaffan-analysis-czi/J7_5/
-czi_scaffold,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysis-czi/Zeiss-scans/01_2019_11_12__RecognizedCode.czi,,01_2019_11_12__RecognizedCode.czi,medical/orig/scaffan-analysis-czi/Zeiss-scans
+czi_scaffold01,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysis-czi/Zeiss-scans/01_2019_11_12__RecognizedCode.czi,,01_2019_11_12__RecognizedCode.czi,medical/orig/scaffan-analysis-czi/Zeiss-scans
 2channel_r2d2,http://home.zcu.cz/~mjirik/lisa/data/biology/orig/roots/2channel/20200305-r2d2-PRE3.tif,,20200305-r2d2-PRE3.tif,biology/orig/roots/2channel/
+czi_scaffold,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysis-czi/Zeiss-scans/05_2019_11_12__-1-2.czi,,05_2019_11_12__-1-2.czi,medical/orig/scaffan-analysis-czi/Zeiss-scans
