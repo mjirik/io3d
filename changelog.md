@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [Added] `read_dataset()` allow to read different datasets in the same way
 * [Changed] `join_path` return `Path` object as default
 * [Added] Datasets are now stored in `datasets.csv` on github
 * [Fixed] Deprecation Warning on `get_slice_location()`

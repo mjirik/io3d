@@ -167,7 +167,11 @@ data_urls = {
             "3Dircadb1.18",
             "3Dircadb1.19",
             "3Dircadb1.20",
-        ]
+        ],
+        "path_structure":{
+
+        }
+
     },
     "3Dircadb1.1": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
@@ -294,6 +298,17 @@ data_urls = {
 }
 # cachefile = "~/io3d_cache.yaml"
 
+DATASET_PATH_STRUCTURE = {
+    "3Dircadb1": {
+        "_": "medical/orig/3Dircadb1.{id}/MASKS_DICOM/{data_type}/",
+        "data3d": "medical/orig/3Dircadb1.{id}/PATIENT_DICOM/"
+    },
+    "sliver07": {
+        "data3d": "medical/orig/sliver07/training/liver-orig{id:03d}.mhd",
+        "liver": "medical/orig/sliver07/training/liver-seg{id:03d}.mhd",
+    }
+}
+
 
 def join_path(*path_to_join, get_root=False, sep_on_end=True, return_as_str=True):
     logger.warning("Function deprecated use joinp instead.")
@@ -376,6 +391,63 @@ def set_specific_dataset_path(path, key_path_prefix, cache=None, cachefile="~/.i
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
     cache.update(__local_dataset_specific_dir_prefix + key_path_prefix, path)
+
+
+def read_dataset(
+        dataset_label, data_type, id,
+        qt_app=None,
+        dataplus_format=True,
+        gui=False,
+        start=0,
+        stop=None,
+        step=1,
+        convert_to_gray=True,
+        series_number=None,
+        dicom_expected=None,
+        **kwargs
+):
+    """
+    Read data in organised way. You need just dataset name. Name of the subset of the dataset and numeric ID.
+
+    :param dataset_label:
+    :param data_type:
+    :param id:
+    :param qt_app:
+    :param dataplus_format:
+    :param gui:
+    :param start:
+    :param stop:
+    :param step:
+    :param convert_to_gray:
+    :param series_number:
+    :param dicom_expected:
+    :param kwargs:
+    :return:
+    """
+    # meta = get_dataset_meta(dataset_label)
+    selected_dataset = DATASET_PATH_STRUCTURE[dataset_label]
+    pth_fmt_str = selected_dataset[data_type] if data_type in selected_dataset else selected_dataset["_"]
+    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=id)
+    datapath = joinp(pth)
+    # relative_donwload_dir = meta[3]
+    # pth = f"{relative_donwload_dir}/{ds_struct[dataset_label][]}"
+    # data_urls[dataset_label]
+    # datapath
+    dr = datareader.DataReader()
+    return dr.Get3DData(
+        datapath=datapath,
+        qt_app=qt_app,
+        dataplus_format=dataplus_format,
+        gui=gui,
+        start=start,
+        stop=stop,
+        step=step,
+        convert_to_gray=convert_to_gray,
+        series_number=series_number,
+        use_economic_dtype=True,
+        dicom_expected=dicom_expected,
+        **kwargs
+    )
 
 
 def delete_specific_dataset_path(key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"):
@@ -521,6 +593,9 @@ def get_dataset_meta(label:str):
             hash_path = label
     # elif type(data_url) == dict:
 
+    if relative_donwload_dir is None:
+        relative_donwload_dir = "medical/orig"
+
     # return data_url, url, expected_hash, hash_path, relative_donwload_dir
     return url, expected_hash, hash_path, relative_donwload_dir
 
@@ -576,8 +651,6 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         )
         logger.debug(f"dataset_label={dataset_label}")
         logger.debug(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
-        if relative_download_dir is None:
-            relative_download_dir = "medical/orig"
 
         logger.info("input destination dir: {}".format(destination_dir))
         if destination_dir is None:

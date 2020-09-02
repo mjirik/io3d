@@ -8,6 +8,6 @@ from .datawriter import DataWriter
 from .datareader import DataReader
 from .datareader import read
 from .datawriter import write
-from .datasets import download
+from .datasets import download, read_dataset
 from .files import remove_if_exists
 from imma import image_manipulation, dili

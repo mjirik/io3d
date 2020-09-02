@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 import argparse
 
 
-from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton, QLineEdit, QApplication
+from PyQt5.QtWidgets import QGridLayout, QLabel, QPushButton, QLineEdit, QApplication, QDialog
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 

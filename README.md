@@ -41,6 +41,7 @@ import io3d
 import sed3
 dr = io3d.DataReader()
 datap = dr.Get3DData('sample_data/jatra_5mm/', dataplus_format=True)
+print(datap["voxelsize_mm"])
 
 ed = sed3.sed3(datap['data3d'])
 ed.show()
@@ -100,6 +101,7 @@ You can set it by command
 
 ```shell
 python -m io3d -ssdp "g:/Můj disk/data/biology/roots" "biology/roots"
+python -m io3d -ssdp "g:/Můj disk/data/medical/orig/sliver07" "medical/orig/sliver07"
 ```
 
 or you can edit `~\.io3d_cache.yaml`
@@ -113,4 +115,33 @@ The local path can be specified by adding local path to the end of url separated
 ```bash
 python -m io3d.datasets -l http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:biodur_sample/
 ```
-python -m io3d. -l https://downloads.openmicroscopy.org/images/OME-TIFF/2016-06/bioformats-artificial/time-series.ome.tif:biology/orig/roots
+```bash
+python -m io3d.datasets -l https://downloads.openmicroscopy.org/images/OME-TIFF/2016-06/bioformats-artificial/time-series.ome.tif:biology/orig/roots
+```
+
+
+
+# Read datasets coherently
+
+
+```python
+import io3d
+import matplotlib.pyplot as plt
+datap1 = io3d.read_dataset("3Dircadb1", "data3d", 1)
+datap2 = io3d.read_dataset("3Dircadb1", "bone", 1)
+plt.imshow(datap1["data3d"][20,:,:], cmap="gray")
+plt.contour(datap2["data3d"][20,:,:])
+plt.show()
+```
+
+![ircad](imgs/ircadb01.png)
+
+Now you can read the sliver07 dataset in the same way. Just put it in `data/orig/medical/sliver07`
+
+```python
+import io3d
+import matplotlib.pyplot as plt
+datap1 = io3d.read_dataset("sliver07", "data3d", 1)
+plt.imshow(datap1["data3d"][20,:,:], cmap="gray")
+plt.show()
+```

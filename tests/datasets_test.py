@@ -235,5 +235,30 @@ def test_dataset_csv():
     assert key in io3d.datasets.data_urls
 
 
+def test_read_dataset_ircad_data3d():
+    datap = io3d.datasets.read_dataset("3Dircadb1", "data3d", 1)
+    assert datap["data3d"].shape[1] == 512
+
+def test_read_dataset_ircad_bone():
+    datap = io3d.datasets.read_dataset("3Dircadb1", "bone", 1)
+    assert datap["data3d"].shape[1] == 512
+
+
+@unittest.skip("sliver is not available")
+def test_read_dataset_sliver():
+    datap = io3d.datasets.read_dataset("sliver07", "data3d", 1)
+    assert datap["data3d"].shape[1] == 512
+
+
+def test_read_dataset_example():
+    import io3d
+    import matplotlib.pyplot as plt
+    datap1 = io3d.read_dataset("3Dircadb1", "data3d", 1)
+    datap2 = io3d.read_dataset("3Dircadb1", "bone", 1)
+    plt.imshow(datap1["data3d"][20, :, :], cmap="gray")
+    plt.contour(datap2["data3d"][20, :, :])
+    # plt.title(datap1["voxelsize_mm"])
+    # plt.show()
+
 if __name__ == "__main__":
     unittest.main()

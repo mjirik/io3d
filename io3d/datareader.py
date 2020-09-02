@@ -62,6 +62,9 @@ def read(
     )
 
 
+
+
+
 # NOTE(mareklovci): The same code was used in two functions, so according to DRY principle I cleaned it up.
 def _metadata(image, datapath):
     """Function which returns metadata dict.
