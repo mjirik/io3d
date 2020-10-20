@@ -39,31 +39,30 @@ requirements:
     - numpy >=1.12
     - scipy
     - pydicom=1
-#    - pyyaml
     - ruamel.yaml
-    # - simpleitk
     - scikit-image
-#    - imma
-#    - {{ pin_subpackage('imma', max_pin='x.x') }}
-#    - {{ pin_compatible('imma', 'min_pin': 'x.x', 'max_pin': 'x') }}
-    - imma >=0.11
     - loguru
+#    - imma >=0.11
+###########################
+    # - simpleitk
+  #    - imma
+  #    - {{ pin_subpackage('imma', max_pin='x.x') }}
+  #    - {{ pin_compatible('imma', 'min_pin': 'x.x', 'max_pin': 'x') }}
   run:
     - python
     - numpy >=1.12
     - scipy
     - pydicom =1
-#    - pyyaml
     - ruamel.yaml
     - h5py
-    - checksumdir # i have to build this package for conda
-    # - simpleitk # version0.9.* is ok for python2.7
     - scikit-image
-#    - imma
-#    - {{ pin_subpackage('imma', max_pin='x.x') }}
-#    - {{ pin_compatible('imma', 'min_pin': 'x.x', 'max_pin': 'x') }}
     - loguru
     - imma >=0.11
+    - checksumdir # i have to build this package for conda
+###########################
+    # - simpleitk # version0.9.* is ok for python2.7
+#    - {{ pin_subpackage('imma', max_pin='x.x') }}
+#    - {{ pin_compatible('imma', 'min_pin': 'x.x', 'max_pin': 'x') }}
 
 test:
   # Python imports
