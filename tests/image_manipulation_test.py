@@ -25,18 +25,18 @@ class ImageManipulationTest(unittest.TestCase):
         data = np.random.rand(3, 4, 5)
         new_shape = [5, 6, 6]
         data_out = io3d.misc.resize_to_shape(data, new_shape)
-        self.assertEquals(new_shape[0], data_out.shape[0])
-        self.assertEquals(new_shape[1], data_out.shape[1])
-        self.assertEquals(new_shape[2], data_out.shape[2])
+        self.assertEqual(new_shape[0], data_out.shape[0])
+        self.assertEqual(new_shape[1], data_out.shape[1])
+        self.assertEqual(new_shape[2], data_out.shape[2])
 
     def test_resize_to_shape_with_dtype_orig(self):
 
         data = 10 * np.random.rand(3, 4, 5).astype(dtype=np.uint8)
         new_shape = [5, 6, 6]
         data_out = io3d.misc.resize_to_shape(data, new_shape, dtype="orig")
-        self.assertEquals(new_shape[0], data_out.shape[0])
-        self.assertEquals(new_shape[1], data_out.shape[1])
-        self.assertEquals(new_shape[2], data_out.shape[2])
+        self.assertEqual(new_shape[0], data_out.shape[0])
+        self.assertEqual(new_shape[1], data_out.shape[1])
+        self.assertEqual(new_shape[2], data_out.shape[2])
         assert data_out.dtype == np.uint8
         assert np.array_equal(np.unique(data), np.unique(data_out))
 
@@ -45,9 +45,9 @@ class ImageManipulationTest(unittest.TestCase):
         data = 10 * np.random.rand(3, 4, 5).astype(dtype=np.uint8)
         new_shape = [5, 6, 6]
         data_out = io3d.misc.resize_to_shape(data, new_shape, dtype="orig", check_seeds=True)
-        self.assertEquals(new_shape[0], data_out.shape[0])
-        self.assertEquals(new_shape[1], data_out.shape[1])
-        self.assertEquals(new_shape[2], data_out.shape[2])
+        self.assertEqual(new_shape[0], data_out.shape[0])
+        self.assertEqual(new_shape[1], data_out.shape[1])
+        self.assertEqual(new_shape[2], data_out.shape[2])
         assert data_out.dtype == np.uint8
         assert np.array_equal(np.unique(data), np.unique(data_out))
 
@@ -61,9 +61,9 @@ class ImageManipulationTest(unittest.TestCase):
 
         assert np.array_equal(np.unique(data), np.unique(data_out))
 
-        self.assertEquals(new_shape[0], data_out.shape[0])
-        self.assertEquals(new_shape[1], data_out.shape[1])
-        self.assertEquals(new_shape[2], data_out.shape[2])
+        self.assertEqual(new_shape[0], data_out.shape[0])
+        self.assertEqual(new_shape[1], data_out.shape[1])
+        self.assertEqual(new_shape[2], data_out.shape[2])
 
     def test_resize_to_mm(self):
 
@@ -75,9 +75,9 @@ class ImageManipulationTest(unittest.TestCase):
         # print(data_out.shape)
         # print data
         # print data_out
-        self.assertEquals(expected_shape[0], data_out.shape[0])
-        self.assertEquals(expected_shape[1], data_out.shape[1])
-        self.assertEquals(expected_shape[2], data_out.shape[2])
+        self.assertEqual(expected_shape[0], data_out.shape[0])
+        self.assertEqual(expected_shape[1], data_out.shape[1])
+        self.assertEqual(expected_shape[2], data_out.shape[2])
 
 
     def test_store_to_SparseMatrix_and_back(self):
@@ -127,9 +127,9 @@ class ImageManipulationTest(unittest.TestCase):
 
         crinfo_expected = [[0, 99], [20, 99], [45, 99]]
 
-        self.assertEquals(crinfo_auto1, crinfo_expected)
-        self.assertEquals(crinfo_auto1, crinfo_auto2)
-        self.assertEquals(crinfo_auto1, crinfo_auto3)
+        self.assertEqual(crinfo_auto1, crinfo_expected)
+        self.assertEqual(crinfo_auto1, crinfo_auto2)
+        self.assertEqual(crinfo_auto1, crinfo_auto3)
 
     def test_multiple_crop_and_uncrop(self):
         """
@@ -150,7 +150,7 @@ class ImageManipulationTest(unittest.TestCase):
         img_uncropped = ima.uncrop(img_cropped, crinfo_combined, shape)
 
         self.assertTrue(img_uncropped[4, 4, 3] == img_in[4, 4, 3])
-        self.assertEquals(img_in.shape, img_uncropped.shape)
+        self.assertEqual(img_in.shape, img_uncropped.shape)
 
     @unittest.skip("crinfo_combine should be tested in different way")
     def test_random_multiple_crop_and_uncrop(self):
@@ -184,7 +184,7 @@ class ImageManipulationTest(unittest.TestCase):
         logger.debug("img_cropped.shape" + str(img_cropped.shape))
         logger.debug("img_uncropped.shape" + str(img_uncropped.shape))
 
-        self.assertEquals(img_in.shape, img_uncropped.shape)
+        self.assertEqual(img_in.shape, img_uncropped.shape)
         # sonda indexes inside cropped area
         # cr_com = np.asarray(crinfo_combined)
         # if np.all((cr_com[:, 1] - cr_com[:, 0]) > 1):
@@ -199,7 +199,7 @@ class ImageManipulationTest(unittest.TestCase):
             )
             sonda_intensity_uncropped = img_uncropped[sonda[0], sonda[1], sonda[2]]
             sonda_intensity_in = img_in[sonda[0], sonda[1], sonda[2]]
-            self.assertEquals(sonda_intensity_in, sonda_intensity_uncropped)
+            self.assertEqual(sonda_intensity_in, sonda_intensity_uncropped)
 
     def test_resize_to_shape(self):
 
@@ -408,7 +408,7 @@ class ImageManipulationTest(unittest.TestCase):
         # self.assertTrue(img_uncropped[crinfo1[0][1], 5 , 3] == img_uncropped[0, 5, 3], msg="pixels over crop")
         # self.assertTrue(img_uncropped[crinfo1[1][1], 5 , 3] == img_uncropped[1, 5, 3], msg="pixels over crop")
         # self.assertTrue(img_uncropped[crinfo1[2][1], 5 , 3] == img_uncropped[2, 5, 3], msg="pixels over crop")
-        self.assertEquals(img_in.shape, img_uncropped.shape)
+        self.assertEqual(img_in.shape, img_uncropped.shape)
 
     def test_uncrop_with_none_crinfo(self):
         shape = [10, 10, 5]

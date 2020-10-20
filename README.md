@@ -28,6 +28,14 @@ pip install sed3
 
 ## Examples
 
+
+### Get sample data
+
+command line:
+```shell
+python -m io3d -l 3Dircadb1.1
+```
+
 ### Example 1
 
 ```shell
@@ -40,6 +48,7 @@ python io3d/datareader.py -i ./sample_data/jatra_5mm/
 import io3d
 import sed3
 dr = io3d.DataReader()
+pth = io3d.joinp()
 datap = dr.Get3DData('sample_data/jatra_5mm/', dataplus_format=True)
 print(datap["voxelsize_mm"])
 
@@ -47,7 +56,7 @@ ed = sed3.sed3(datap['data3d'])
 ed.show()
 ```
 
-### Example 3 - Qt Widget
+### Example 3 - Use it in your application - Qt Widget
 
 ```python
 import sys
