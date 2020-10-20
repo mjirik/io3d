@@ -36,7 +36,7 @@ requirements:
   build:
     - python
     - setuptools
-    - numpy
+    - numpy >=1.12
     - scipy
     - pydicom=1
 #    - pyyaml
@@ -46,13 +46,13 @@ requirements:
 #    - imma
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
 #    - {{ pin_compatible('imma', 'min_pin': 'x.x', 'max_pin': 'x') }}
-    - imma>=0.11
+    - imma >=0.11
     - loguru
   run:
     - python
-    - numpy
+    - numpy >=1.12
     - scipy
-    - pydicom=1
+    - pydicom =1
 #    - pyyaml
     - ruamel.yaml
     - h5py
@@ -63,7 +63,7 @@ requirements:
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
 #    - {{ pin_compatible('imma', 'min_pin': 'x.x', 'max_pin': 'x') }}
     - loguru
-    - imma>=0.11
+    - imma >=0.11
 
 test:
   # Python imports
