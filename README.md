@@ -36,27 +36,43 @@ command line:
 python -m io3d -l 3Dircadb1.1
 ```
 
-### Example 1
+### Read data and see one slice
 
-```shell
-python io3d/datareader.py -i ./sample_data/jatra_5mm/
+```python
+import io3d
+from matplotlib import pyplot as plt
+
+# get path the data stored in default data directory
+pth = io3d.datasets.joinp("medical/orig/3Dircadb1.1/MASKS_DICOM/")
+datap = io3d.read(pth)
+print(datap["voxelsize_mm"])
+
+# see slice 10
+plt.imshow(datap["data3d"][10,:,:], cmap='gray')
+plt.show()
 ```
 
-### Example 2
+### Use object DataReader and see data in simple viewer
 
 ```python
 import io3d
 import sed3
+
+pth = io3d.datasets.joinp("medical/orig/3Dircadb1.1/MASKS_DICOM/")
 dr = io3d.DataReader()
-pth = io3d.joinp()
-datap = dr.Get3DData('sample_data/jatra_5mm/', dataplus_format=True)
-print(datap["voxelsize_mm"])
+datap = dr.Get3DData(pth, dataplus_format=True)
 
 ed = sed3.sed3(datap['data3d'])
 ed.show()
 ```
 
-### Example 3 - Use it in your application - Qt Widget
+### Use CLI
+
+```shell
+python io3d/datareader.py -i ./sample_data/jatra_5mm/
+```
+
+### Use it in your application - Qt Widget
 
 ```python
 import sys
