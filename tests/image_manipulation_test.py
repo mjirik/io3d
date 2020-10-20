@@ -3,6 +3,7 @@
 
 from loguru import logger
 
+logger.enable("io3d")
 # import funkcí z jiného adresáře
 import os.path
 
@@ -44,7 +45,9 @@ class ImageManipulationTest(unittest.TestCase):
 
         data = 10 * np.random.rand(3, 4, 5).astype(dtype=np.uint8)
         new_shape = [5, 6, 6]
-        data_out = io3d.misc.resize_to_shape(data, new_shape, dtype="orig", check_seeds=True)
+        data_out = io3d.misc.resize_to_shape(
+            data, new_shape, dtype="orig", check_seeds=True
+        )
         self.assertEqual(new_shape[0], data_out.shape[0])
         self.assertEqual(new_shape[1], data_out.shape[1])
         self.assertEqual(new_shape[2], data_out.shape[2])
@@ -78,7 +81,6 @@ class ImageManipulationTest(unittest.TestCase):
         self.assertEqual(expected_shape[0], data_out.shape[0])
         self.assertEqual(expected_shape[1], data_out.shape[1])
         self.assertEqual(expected_shape[2], data_out.shape[2])
-
 
     def test_store_to_SparseMatrix_and_back(self):
         data = np.zeros([4, 4, 4])

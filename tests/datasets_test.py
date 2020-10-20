@@ -11,12 +11,14 @@ Module for testing format rawiv
 """
 from loguru import logger
 
+logger.enable("io3d")
 import unittest
 import os.path as op
 import shutil
 import sys
 import numpy as np
 import io3d
+
 # from pathlib import Path
 
 import pytest
@@ -81,7 +83,6 @@ class DatasetsTest(unittest.TestCase):
         # return path back
         io3d.datasets.set_dataset_path(dp_old)
 
-
     def test_change_dataset_path_with_windows_full_path(self):
         dp_new1 = "c:/io3d_test1_dataset_dir/"
         dp_new2 = "c:/io3d_test2_dataset_dir/"
@@ -106,7 +107,9 @@ class DatasetsTest(unittest.TestCase):
         # io3d.datasets.get_old("3Dircadb1", "*1/P*")
 
     def test_getold1(self):
-        io3d.datasets.download("http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:test_biodur_sample/")
+        io3d.datasets.download(
+            "http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:test_biodur_sample/"
+        )
 
     def test_getold(self):
         pth = io3d.datasets.join_path(
@@ -195,9 +198,14 @@ class DatasetsTest(unittest.TestCase):
         )
 
     def test_generate_synghetic_liver(self):
-        data3d, segm, voxelsize_mm, slab, seeds_liver, seeds_porta = (
-            io3d.datasets.generate_synthetic_liver()
-        )
+        (
+            data3d,
+            segm,
+            voxelsize_mm,
+            slab,
+            seeds_liver,
+            seeds_porta,
+        ) = io3d.datasets.generate_synthetic_liver()
 
         self.assertTrue(np.array_equal(data3d.shape, segm.shape))
         self.assertTrue(np.array_equal(data3d.shape, seeds_porta.shape))
@@ -211,25 +219,26 @@ class DatasetsTest(unittest.TestCase):
         url_and_path = "http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip:biodur_sample/*.tiff"
         metadata = io3d.datasets.get_dataset_meta(url_and_path)
         assert metadata[0].startswith("http:")
-        assert metadata[2] == '.'
+        assert metadata[2] == "."
         assert metadata[3] == "biodur_sample/*.tiff"
 
         url_and_path = "http://home.zcu.cz/~mjirik/lisa/sample_data/biodur_sample.zip"
         metadata = io3d.datasets.get_dataset_meta(url_and_path)
         assert metadata[0].startswith("http:")
-        assert metadata[2] == '.'
-        assert metadata[3] == ''
+        assert metadata[2] == "."
+        assert metadata[3] == ""
 
         # # "biodur_sample": [
         #     "d459dd5b308ca07d10414b3a3a9000ea",
         #     "biodur_sample/*.tiff"
         # ],
 
+
 def test_dataset_csv():
     key = "J7_5_b"
     if key in io3d.datasets.data_urls:
         # this is applied if the url was added before by calling _update_... from other test.
-        del(io3d.datasets.data_urls[key])
+        del io3d.datasets.data_urls[key]
     assert key not in io3d.datasets.data_urls
     io3d.datasets._update_datasets_url()
     assert key in io3d.datasets.data_urls
@@ -238,6 +247,7 @@ def test_dataset_csv():
 def test_read_dataset_ircad_data3d():
     datap = io3d.datasets.read_dataset("3Dircadb1", "data3d", 1)
     assert datap["data3d"].shape[1] == 512
+
 
 def test_read_dataset_ircad_bone():
     datap = io3d.datasets.read_dataset("3Dircadb1", "bone", 1)
@@ -259,6 +269,7 @@ def test_read_dataset_example():
     # plt.title(datap1["voxelsize_mm"])
     # plt.show()
     assert datap2["data3d"].shape[0] == datap1["data3d"].shape[0]
+
 
 if __name__ == "__main__":
     unittest.main()

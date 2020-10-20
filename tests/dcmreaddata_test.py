@@ -4,6 +4,8 @@
 
 from loguru import logger
 
+logger.enable("io3d")
+
 # import funkcí z jiného adresáře
 # import sys
 import os.path

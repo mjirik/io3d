@@ -3,6 +3,8 @@
 
 from loguru import logger
 
+logger.enable("io3d")
+
 # import funkcí z jiného adresáře
 import unittest
 import os

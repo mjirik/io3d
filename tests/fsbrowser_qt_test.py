@@ -62,6 +62,7 @@ class QtTest(unittest.TestCase):
 
         fsw = io3d.fsbrowser.FilePathInfoWidget()
         fsw.refresh_path(filepath)
+
     #
     # def test_fsbrowser_qt_simple(self):
     #     import pydicom.data

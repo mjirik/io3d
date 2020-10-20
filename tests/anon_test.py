@@ -4,6 +4,8 @@
 
 from loguru import logger
 
+logger.enable("io3d")
+
 try:
     import pydicom
 except ImportError:
