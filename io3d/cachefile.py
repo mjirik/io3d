@@ -30,17 +30,21 @@ class CacheFile:
     def __update(self):
         if op.exists(self.filename):
             import ruamel.yaml
+
             try:
                 self.data = misc.obj_from_file(self.filename, yaml_typ="safe")
             except ruamel.yaml.scanner.ScannerError as e:
                 import traceback
 
-                backup_fn = files.unique_path(str(self.filename) + ".{:03d}.backup" )
+                backup_fn = files.unique_path(str(self.filename) + ".{:03d}.backup")
                 exc = traceback.format_exc()
                 logger.debug(exc)
-                logger.warning(f"Problem with reading chache file '{self.filename}'. " +
-                               f"Creating new one and saving copy to '{backup_fn}'")
+                logger.warning(
+                    f"Problem with reading chache file '{self.filename}'. "
+                    + f"Creating new one and saving copy to '{backup_fn}'"
+                )
                 import os
+
                 os.rename(self.filename, backup_fn)
         else:
             self.data = {}

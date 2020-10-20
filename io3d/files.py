@@ -9,6 +9,7 @@ def remove_if_exists(filename):
     if os.path.exists(filename):
         os.remove(filename)
 
+
 def unique_path(name_pattern):
     """
     path = unique_path(pathlib.Path.cwd(), 'test{:03d}.txt')
@@ -19,12 +20,11 @@ def unique_path(name_pattern):
     """
 
     # path = pathlib.Path(directory)
- #    directory = \
- # \
+    #    directory = \
+    # \
     counter = 0
     while True:
         counter += 1
         path = pathlib.Path(str(name_pattern).format(counter))
         if not path.exists():
             return path
-

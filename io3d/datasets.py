@@ -5,6 +5,7 @@ Module is used for visualization of segmentation stored in pkl, dcm and other fi
 """
 
 from loguru import logger
+
 # import logging
 #
 # logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ import csv
 import urllib.request
 import io
 from pathlib import Path
+
 # import io3d
 from . import cachefile as cachef
 from . import datareader
@@ -40,7 +42,9 @@ __url_server = "http://home.zcu.cz/~mjirik/lisa/"
 __hash_path_prefix = ""
 __rel_medical_orig_path = "medical/orig/"
 __local_dataset_specific_dir_prefix = "local_dataset_specific_dir_"
-__datasets_csv_url = "https://raw.githubusercontent.com/mjirik/io3d/master/datasets/datasets.csv"
+__datasets_csv_url = (
+    "https://raw.githubusercontent.com/mjirik/io3d/master/datasets/datasets.csv"
+)
 
 # Tenhle hash znamená prázdný seznam souborů 'd41d8cd98f00b204e9800998ecf8427e'
 data_urls = {
@@ -76,7 +80,7 @@ data_urls = {
     "biodur_sample": [
         __url_server + "sample_data/biodur_sample.zip",
         "d459dd5b308ca07d10414b3a3a9000ea",
-        "biodur_sample/*.tiff"
+        "biodur_sample/*.tiff",
     ],
     "gensei_slices": [
         __url_server + "sample_data/gensei_slices.zip",
@@ -85,10 +89,10 @@ data_urls = {
     ],
     "arina": [
         __url_server + "anwa/arina.mp4",
-        '913b49be5aa27b8519aa101b5df869bb',
+        "913b49be5aa27b8519aa101b5df869bb",
         "arina.mp4",
         "animals/orig/",
-        ],
+    ],
     "exp_small": [
         __url_server + "sample_data/exp_small.zip",
         "0526ba8ea363fe8b5227f5807b7aaca7",
@@ -129,7 +133,11 @@ data_urls = {
         __rel_medical_orig_path + "sample_data/",
     ],
     # "io3d_sample_data": [__url_server + "sample-extra-data/io3d_sample_data.zip"],
-    "io3d_sample_data": [__url_server + "sample_data/io3d_sample_data.zip", None, __hash_path_prefix],
+    "io3d_sample_data": [
+        __url_server + "sample_data/io3d_sample_data.zip",
+        None,
+        __hash_path_prefix,
+    ],
     "lisa": {
         "package": [
             "donut",
@@ -168,10 +176,7 @@ data_urls = {
             "3Dircadb1.19",
             "3Dircadb1.20",
         ],
-        "path_structure":{
-
-        }
-
+        "path_structure": {},
     },
     "3Dircadb1.1": [
         "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
@@ -291,8 +296,8 @@ data_urls = {
         __url_server + "data/biology/orig/roots/examples/R2D2-20x-1.tif",
         None,
         "R2D2-20x-1.tif",
-        "biology/orig/roots/examples/"
-        ],
+        "biology/orig/roots/examples/",
+    ],
     # není nutné pole, stačí jen string
     # "exp_small": "http://147.228.240.61/queetech/sample_data/exp_small.zip",
 }
@@ -301,12 +306,12 @@ data_urls = {
 DATASET_PATH_STRUCTURE = {
     "3Dircadb1": {
         "_": "medical/orig/3Dircadb1.{id}/MASKS_DICOM/{data_type}/",
-        "data3d": "medical/orig/3Dircadb1.{id}/PATIENT_DICOM/"
+        "data3d": "medical/orig/3Dircadb1.{id}/PATIENT_DICOM/",
     },
     "sliver07": {
         "data3d": "medical/orig/sliver07/training/liver-orig{id:03d}.mhd",
         "liver": "medical/orig/sliver07/training/liver-seg{id:03d}.mhd",
-    }
+    },
 }
 
 
@@ -316,8 +321,9 @@ def join_path(*path_to_join, get_root=False, sep_on_end=True, return_as_str=True
         *path_to_join,
         get_root=get_root,
         sep_on_end=sep_on_end,
-        return_as_str=return_as_str
+        return_as_str=return_as_str,
     )
+
 
 def joinp(*path_to_join, get_root=True, sep_on_end=True, return_as_str=False):
     """Join input path to sample data path (usually in ~/lisa_data)
@@ -335,7 +341,9 @@ def joinp(*path_to_join, get_root=True, sep_on_end=True, return_as_str=False):
     #     # default value
     #     get_root = False
     # if
-    sdp, path_to_join = dataset_path(get_root=get_root, path_to_join=path_to_join, sep_on_end=sep_on_end)
+    sdp, path_to_join = dataset_path(
+        get_root=get_root, path_to_join=path_to_join, sep_on_end=sep_on_end
+    )
     # pth = os.path.join(sdp, str(Path(path_to_join)).replace("\\", "/"))
     if path_to_join is not None:
         pth = Path(sdp) / Path(path_to_join)
@@ -350,19 +358,22 @@ def joinp(*path_to_join, get_root=True, sep_on_end=True, return_as_str=False):
         pth = Path(pth)
     return pth
 
+
 def _update_datasets_url():
     stream = urllib.request.urlopen(__datasets_csv_url)
-    content = stream.read().decode(
-        "utf-8"
-    )
+    content = stream.read().decode("utf-8")
     # fieldnames = ['label', 'url', "hash", 'filename_hash_mask', "local_path"]
 
     csv_reader = csv.DictReader(io.StringIO(content))
     for row in csv_reader:
         label = row["label"]
-        metadata = [row["url"], row["hash"], row["filename_hash_mask"], row["local_path"]]
+        metadata = [
+            row["url"],
+            row["hash"],
+            row["filename_hash_mask"],
+            row["local_path"],
+        ]
         data_urls[label] = metadata
-
 
 
 def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
@@ -377,7 +388,9 @@ def set_dataset_path(path, cache=None, cachefile="~/.io3d_cache.yaml"):
     cache.update("local_dataset_dir", path)
 
 
-def set_specific_dataset_path(path, key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"):
+def set_specific_dataset_path(
+    path, key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"
+):
     """Sets path to dataset. Warning: function with side effects!
 
     :param path: path you want to store dataset
@@ -394,17 +407,19 @@ def set_specific_dataset_path(path, key_path_prefix, cache=None, cachefile="~/.i
 
 
 def read_dataset(
-        dataset_label, data_type, id,
-        qt_app=None,
-        dataplus_format=True,
-        gui=False,
-        start=0,
-        stop=None,
-        step=1,
-        convert_to_gray=True,
-        series_number=None,
-        dicom_expected=None,
-        **kwargs
+    dataset_label,
+    data_type,
+    id,
+    qt_app=None,
+    dataplus_format=True,
+    gui=False,
+    start=0,
+    stop=None,
+    step=1,
+    convert_to_gray=True,
+    series_number=None,
+    dicom_expected=None,
+    **kwargs,
 ):
     """
     Read data in organised way. You need just dataset name. Name of the subset of the dataset and numeric ID.
@@ -426,7 +441,11 @@ def read_dataset(
     """
     # meta = get_dataset_meta(dataset_label)
     selected_dataset = DATASET_PATH_STRUCTURE[dataset_label]
-    pth_fmt_str = selected_dataset[data_type] if data_type in selected_dataset else selected_dataset["_"]
+    pth_fmt_str = (
+        selected_dataset[data_type]
+        if data_type in selected_dataset
+        else selected_dataset["_"]
+    )
     pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=id)
     datapath = joinp(pth)
     # relative_donwload_dir = meta[3]
@@ -446,18 +465,26 @@ def read_dataset(
         series_number=series_number,
         use_economic_dtype=True,
         dicom_expected=dicom_expected,
-        **kwargs
+        **kwargs,
     )
 
 
-def delete_specific_dataset_path(key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"):
+def delete_specific_dataset_path(
+    key_path_prefix, cache=None, cachefile="~/.io3d_cache.yaml"
+):
     key_path_prefix = str(Path(key_path_prefix)).replace("\\", "/")
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
     cache.delete_key(__local_dataset_specific_dir_prefix + key_path_prefix)
 
 
-def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path_to_join=None, sep_on_end:bool=True):
+def dataset_path(
+    cache=None,
+    cachefile="~/.io3d_cache.yaml",
+    get_root=None,
+    path_to_join=None,
+    sep_on_end: bool = True,
+):
     """Get dataset path.
 
     :param cache: CacheFile object
@@ -472,8 +499,10 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 
     if get_root is None:
         get_root = False
-        logger.warning("Deprecated call without get_root. The actual value "
-                       "get_root=False will be changed to get_root=True in the future.")
+        logger.warning(
+            "Deprecated call without get_root. The actual value "
+            "get_root=False will be changed to get_root=True in the future."
+        )
     if get_root:
         append_path = []
     else:
@@ -492,24 +521,27 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
     if path_to_join is not None:
 
         # convert to string
-        if type(path_to_join) in(list, tuple):
-            path_to_join = "/".join(path_to_join).replace("\\","/")
+        if type(path_to_join) in (list, tuple):
+            path_to_join = "/".join(path_to_join).replace("\\", "/")
 
         if get_root:
             sappend_path = "/".join(append_path).replace("\\", "/")
             if sep_on_end == True and len(sappend_path) > 0 and sappend_path[-1] != "/":
                 sappend_path = sappend_path + "/"
 
-            elif sep_on_end == False and len(sappend_path) > 0 and sappend_path[-1] == "/":
+            elif (
+                sep_on_end == False
+                and len(sappend_path) > 0
+                and sappend_path[-1] == "/"
+            ):
                 sappend_path = sappend_path[:-1]
-            path_to_join =  sappend_path + path_to_join
-
+            path_to_join = sappend_path + path_to_join
 
         new_path_to_join = Path(path_to_join)
         if cache is not None:
             pths = [Path(path_to_join)] + [pth for pth in Path(path_to_join).parents]
             for pth in reversed(pths):
-                spth = str(pth).replace("\\","/")
+                spth = str(pth).replace("\\", "/")
                 key = __local_dataset_specific_dir_prefix + spth
                 logger.debug(f"checking for key {key}")
                 val = cache.get_or_none(key)
@@ -519,7 +551,9 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
                     new_path_to_join = Path(path_to_join).relative_to(Path(spth))
                     logger.debug(f"path_to_join={path_to_join}")
                     logger.debug(f"spth={spth}")
-                    logger.debug(f"new_path_to_join={new_path_to_join}, npth.resolve={new_path_to_join.resolve()}")
+                    logger.debug(
+                        f"new_path_to_join={new_path_to_join}, npth.resolve={new_path_to_join.resolve()}"
+                    )
                     if str(new_path_to_join) == ".":
                         # because Path(".") resolve is ABSOLUTE actual path on
                         # windows
@@ -530,11 +564,15 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
                         # linux hack
                         # on linux resolve everytime add absolute prefix to
                         # path
-                        new_path_to_join = str(Path(new_path_to_join).relative_to(Path("").absolute()))
+                        new_path_to_join = str(
+                            Path(new_path_to_join).relative_to(Path("").absolute())
+                        )
                     # new_path_to_join
         out_local_data_dir = op.expanduser(local_data_dir)
-        logger.debug(f"returning path={out_local_data_dir} , new_path_to_join={new_path_to_join}")
-        return out_local_data_dir,  new_path_to_join # .replace("\\", "/")
+        logger.debug(
+            f"returning path={out_local_data_dir} , new_path_to_join={new_path_to_join}"
+        )
+        return out_local_data_dir, new_path_to_join  # .replace("\\", "/")
 
     return str(Path(op.expanduser(local_data_dir)))
 
@@ -542,6 +580,7 @@ def dataset_path(cache=None, cachefile="~/.io3d_cache.yaml", get_root=None, path
 # def get_sample_data():
 #     keys = imtools.sample_data.data_urls.keys()
 #     imtools.sample_data.get_sample_data(keys, sample_data_path())
+
 
 def get_data_url(label):
     """
@@ -554,8 +593,9 @@ def get_data_url(label):
     else:
         return None
 
+
 # noinspection PyUnboundLocalVariable
-def get_dataset_meta(label:str):
+def get_dataset_meta(label: str):
     """Gives you metadata for dataset chosen via 'label' param
 
     :param label: label = key in data_url dict (that big dict containing all possible datasets)
@@ -568,7 +608,9 @@ def get_dataset_meta(label:str):
         logger.info("URL detected")
         splitted = label.split(":")
         if len(splitted) > 3:
-            logger.warning("There should be just two ':' symbols in url. <protocol>:<url>:<local path>")
+            logger.warning(
+                "There should be just two ':' symbols in url. <protocol>:<url>:<local path>"
+            )
         if len(splitted) > 2:
             pth = splitted.pop(-1)
         else:
@@ -650,11 +692,15 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
             label
         )
         logger.debug(f"dataset_label={dataset_label}")
-        logger.debug(f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}")
+        logger.debug(
+            f"hash_path_suffix={hash_path_suffix}, relative_download_dir={relative_download_dir}"
+        )
 
         logger.info("input destination dir: {}".format(destination_dir))
         if destination_dir is None:
-            label_destination_dir = join_path(relative_download_dir, get_root=True, sep_on_end=False)
+            label_destination_dir = join_path(
+                relative_download_dir, get_root=True, sep_on_end=False
+            )
         else:
             destination_dir = op.expanduser(destination_dir)
             label_destination_dir = op.join(destination_dir, relative_download_dir)
@@ -683,7 +729,9 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
         logger.info("expected hash:   '" + str(expected_hash) + "'")
         if expected_hash == "d41d8cd98f00b204e9800998ecf8427e":
             logger.warning("Expected hash is equal to hash of empty file list.")
-        logger.info("initial hash:    '" + str(computed_hash) + f"' in path: {path_to_hash}")
+        logger.info(
+            "initial hash:    '" + str(computed_hash) + f"' in path: {path_to_hash}"
+        )
         if computed_hash == "d41d8cd98f00b204e9800998ecf8427e":
             logger.warning("Computed hash is equal to hash of empty file list.")
         if (computed_hash is not None) and (expected_hash == computed_hash):
@@ -696,10 +744,12 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
                 logger.debug(f"label_destination_dir={label_destination_dir}")
                 logger.debug(f"hash_path_suffix= {hash_path_suffix}")
                 new_hash_path = os.path.join(label_destination_dir, hash_path_suffix)
-                downloaded_hash = checksum(
-                    new_hash_path
+                downloaded_hash = checksum(new_hash_path)
+                logger.info(
+                    f"downloaded hash: '"
+                    + str(downloaded_hash)
+                    + f"' in path: {new_hash_path}"
                 )
-                logger.info(f"downloaded hash: '" + str(downloaded_hash) + f"' in path: {new_hash_path}")
                 if downloaded_hash != expected_hash:
                     logger.warning(
                         "downloaded hash is different from expected hash\n"
@@ -714,7 +764,6 @@ def download(dataset_label=None, destination_dir=None, dry_run=False):
                 logger.debug("dry run")
         retval_list_of_output_dist.append(label_destination_dir)
     return retval_list_of_output_dist
-
 
 
 # # NOTE(mareklovci): I suppose, this isn't working at all
@@ -1254,8 +1303,11 @@ def main(turn_on_logging=False):
         "-sdp", "--set_dataset_path", default=None, help="Set standard dataset path"
     )
     parser.add_argument(
-        "-ssdp", "--set_specific_dataset_path", nargs=2, default=None,
-        help="Set specific dataset path. First argument is path (e.g. c:/data), second is key prefix (e.g. bio/flowers)."
+        "-ssdp",
+        "--set_specific_dataset_path",
+        nargs=2,
+        default=None,
+        help="Set specific dataset path. First argument is path (e.g. c:/data), second is key prefix (e.g. bio/flowers).",
     )
     parser.add_argument(
         "-gdp",
@@ -1287,7 +1339,7 @@ def main(turn_on_logging=False):
 
     if args.get_dataset_path:
         # dp = dataset_path()
-        dp = (op.join(dataset_path(get_root=True)))
+        dp = op.join(dataset_path(get_root=True))
         logger.info(dp)
         print(dp)
         # logger.info("Dataset path changed")
@@ -1297,7 +1349,7 @@ def main(turn_on_logging=False):
         set_specific_dataset_path(
             path=args.set_specific_dataset_path[0],
             key_path_prefix=args.set_specific_dataset_path[1],
-            )
+        )
 
     if args.checksum is not None:
         print(checksum(args.checksum))

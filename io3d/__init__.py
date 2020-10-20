@@ -12,4 +12,5 @@ from .datawriter import write
 from .datasets import download, read_dataset, joinp
 from .files import remove_if_exists
 from imma import image_manipulation, dili
-logger.disable('io3d')
+
+logger.disable("io3d")

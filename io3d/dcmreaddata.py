@@ -168,7 +168,10 @@ class DicomReader:
         # else:
 
     def set_series_number(self, series_number):
-        self.files_in_serie, self.files_in_serie_with_info = self.dicomdirectory.get_sorted_series_files(
+        (
+            self.files_in_serie,
+            self.files_in_serie_with_info,
+        ) = self.dicomdirectory.get_sorted_series_files(
             series_number=series_number, return_files_with_info=True
         )
         if len(self.files_in_serie) == 0:

@@ -79,9 +79,25 @@ def read_iv(filename):
     with open(filename, "rb") as f:
         head = __iv_read_header(f)
 
-        minX, minY, minZ, maxX, maxY, maxZ, numVerts, numCells, dimX, dimY, dimZ, originX, originY, originZ, spanX, spanY, spanZ = (
-            head
-        )
+        (
+            minX,
+            minY,
+            minZ,
+            maxX,
+            maxY,
+            maxZ,
+            numVerts,
+            numCells,
+            dimX,
+            dimY,
+            dimZ,
+            originX,
+            originY,
+            originZ,
+            spanX,
+            spanY,
+            spanZ,
+        ) = head
         # check
 
         data = f.read()

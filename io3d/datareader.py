@@ -5,6 +5,7 @@
 from loguru import logger
 
 import argparse
+
 # import numpy as np
 # import h5py
 
@@ -60,9 +61,6 @@ def read(
         dicom_expected=dicom_expected,
         **kwargs
     )
-
-
-
 
 
 # NOTE(mareklovci): The same code was used in two functions, so according to DRY principle I cleaned it up.
@@ -387,5 +385,3 @@ class DataReader:
 def get_datapath_qt(qt_app):
     # just call function from dcmr
     return dcmr.get_datapath_qt(qt_app)
-
-

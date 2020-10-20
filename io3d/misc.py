@@ -18,6 +18,7 @@ from .dili_subset import ndarray_to_list_in_structure
 
 # from imma.image import resize_to_mm, resize_to_shape
 
+
 def old_str_format_to_new(string):
     """
     convert old format style to new style. Works for digits only
@@ -126,7 +127,14 @@ def read_pkl_and_pklz(filename):
     return fcontent
 
 
-def obj_to_file(obj, filename, filetype="auto", ndarray_to_list=False, squeeze=True, yaml_typ="unsafe"):
+def obj_to_file(
+    obj,
+    filename,
+    filetype="auto",
+    ndarray_to_list=False,
+    squeeze=True,
+    yaml_typ="unsafe",
+):
     """Writes annotation in file.
 
     :param filetype:
