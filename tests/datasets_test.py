@@ -17,7 +17,7 @@ import shutil
 import sys
 import numpy as np
 import io3d
-from pathlib import Path
+# from pathlib import Path
 
 import pytest
 
@@ -251,14 +251,14 @@ def test_read_dataset_sliver():
 
 
 def test_read_dataset_example():
-    import io3d
-    import matplotlib.pyplot as plt
+    # import matplotlib.pyplot as plt
     datap1 = io3d.read_dataset("3Dircadb1", "data3d", 1)
     datap2 = io3d.read_dataset("3Dircadb1", "bone", 1)
-    plt.imshow(datap1["data3d"][20, :, :], cmap="gray")
-    plt.contour(datap2["data3d"][20, :, :])
+    # plt.imshow(datap1["data3d"][20, :, :], cmap="gray")
+    # plt.contour(datap2["data3d"][20, :, :])
     # plt.title(datap1["voxelsize_mm"])
     # plt.show()
+    assert datap2["data3d"].shape[0] == datap1["data3d"].shape[0]
 
 if __name__ == "__main__":
     unittest.main()
