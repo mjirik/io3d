@@ -205,13 +205,14 @@ class DataReader:
             logger.debug("Getting list of readable files...")
             flist = []
             try:
-                import SimpleITK as Sitk
+                import SimpleITK
 
             except ImportError as e:
                 logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
+                raise e
             for f in os.listdir(datapath):
                 try:
-                    Sitk.ReadImage(os.path.join(datapath, f))
+                    SimpleITK.ReadImage(os.path.join(datapath, f))
                 except Exception as e:
                     logger.warning("Cant load file: " + str(f))
                     logger.warning(e)
@@ -220,9 +221,9 @@ class DataReader:
             flist.sort()
 
             logger.debug("Reading image data...")
-            image = Sitk.ReadImage(flist)
+            image = SimpleITK.ReadImage(flist)
             logger.debug("Getting numpy array from image data...")
-            data3d = Sitk.GetArrayFromImage(image)
+            data3d = SimpleITK.GetArrayFromImage(image)
             metadata = _metadata(image, datapath)
         return data3d, metadata
 
@@ -300,15 +301,17 @@ class DataReader:
         :return: tuple (data3d, metadata), where data3d is array of pixels
         """
         try:
-            import SimpleITK as Sitk
+            import SimpleITK
 
         except ImportError as e:
             logger.error("Unable to import SimpleITK. On Windows try version 1.0.1")
-        image = Sitk.ReadImage(datapath)
+            raise e
+        image = SimpleITK.ReadImage(datapath)
         data3d = dcmtools.get_pixel_array_from_sitk(image)
         # data3d, original_dtype = dcmreaddata.get_pixel_array_from_dcmobj(image)
         metadata = _metadata(image, datapath)
         return data3d, metadata
+
 
     @staticmethod
     def _fix_sitk_bug(path, metadata):
