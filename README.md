@@ -146,7 +146,7 @@ python -m io3d.datasets -l https://downloads.openmicroscopy.org/images/OME-TIFF/
 
 
 
-# Read datasets coherently
+### Read datasets coherently
 
 
 ```python

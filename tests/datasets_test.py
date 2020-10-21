@@ -18,6 +18,7 @@ import shutil
 import sys
 import numpy as np
 import io3d
+import os
 
 # from pathlib import Path
 
@@ -254,7 +255,9 @@ def test_read_dataset_ircad_bone():
     assert datap["data3d"].shape[1] == 512
 
 
-@unittest.skip("sliver is not available")
+# @unittest.skip("sliver is not available")
+skip_on_local = False
+@unittest.skipIf(os.environ.get("TRAVIS", skip_on_local), "Skip on Travis-CI")
 def test_read_dataset_sliver():
     datap = io3d.datasets.read_dataset("sliver07", "data3d", 1)
     assert datap["data3d"].shape[1] == 512
