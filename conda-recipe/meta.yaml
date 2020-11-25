@@ -17,6 +17,8 @@ source:
 
 build:
   noarch: python
+  ignore_run_exports:
+    - python_abi
   # noarch_python: True
   # preserve_egg_dir: True
   # entry_points:
