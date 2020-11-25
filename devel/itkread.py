@@ -15,8 +15,8 @@ def readim(pth):
 
     print(f"shape={imnp.shape}")
     mx =np.max(imnp)
-    print(f"{mx=}")
-    print(f"{np.min(imnp)=}")
+    print(f"max={mx}")
+    print(f"min={np.min(imnp)}")
 
 
 pth1 = r"h:\medical\orig\sliver07\training\liver-orig001.mhd"
