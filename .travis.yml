@@ -18,6 +18,7 @@ env:
     - CONDA_PYTHON_VERSION=3.6
     - CONDA_PYTHON_VERSION=3.7
     - CONDA_PYTHON_VERSION=3.8
+    - CONDA_PYTHON_VERSION=3.9
 
 matrix:
   include:
@@ -32,10 +33,13 @@ matrix:
       env:
         - CONDA_PYTHON_VERSION=3.7
   allow_failures:
+    # failures are because of h5py
     - env: CONDA_PYTHON_VERSION=2.7
+    - env: CONDA_PYTHON_VERSION=3.6
     - env: CONDA_PYTHON_VERSION=3.7
-    - env: CONDA_PYTHON_VERSION=3.8
+#    - env: CONDA_PYTHON_VERSION=3.8
     - name: "osx python37"
+    - name: "osx python36"
   fast_finish: true
 before_install:
     # We do this conditionally because it saves us some downloading if the
