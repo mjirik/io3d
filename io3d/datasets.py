@@ -311,6 +311,7 @@ DATASET_PATH_STRUCTURE = {
     "sliver07": {
         "data3d": "medical/orig/sliver07/training/liver-orig{id:03d}.mhd",
         "liver": "medical/orig/sliver07/training/liver-seg{id:03d}.mhd",
+        "_": "medical/orig/sliver07/training_extra/{data_type}-{id:03d}.mhd",
     },
 }
 
