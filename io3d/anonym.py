@@ -22,7 +22,7 @@ class Anonymizer:
         self.filename = filename
         self.output_filename = output_filename
         if self.output_filename is None:
-            self.output_filename = "D:\jatra_test"
+            self.output_filename = r"D:\jatra_test"
         if self.whitelist is None:
             self.setWhitelistDefault()
 
