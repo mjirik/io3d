@@ -9,7 +9,7 @@ ruamel.yaml
 scikit-image
 imma
 loguru
-SimpleITK=1.*
+SimpleITK
 # SimpleITK=1.0 # safe for python 3.6 on all versions but no package for python 3.7 and 3.8
 # SimpleITK=0.9.* # does not exists for py36-linux
 # SimpleITK=1.0.* # problem with dicom write
