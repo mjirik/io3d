@@ -313,6 +313,10 @@ DATASET_PATH_STRUCTURE = {
         "liver": "medical/orig/sliver07/training/liver-seg{id:03d}.mhd",
         "_": "medical/orig/sliver07/training_extra/{data_type}-{id:03d}.mhd",
     },
+    "pilsen_pigs": {
+        "_": "medical/orig/Tx{id:03d}D_{subtype}/MASKS_DICOM/{data_type}/",
+        "data3d": "medical/orig/Tx{id:03d}D_{subtype}/PATIENT_DICOM/",
+    },
 }
 
 
@@ -420,6 +424,7 @@ def read_dataset(
     convert_to_gray=True,
     series_number=None,
     dicom_expected=None,
+    subtype="Ven",
     **kwargs,
 ):
     """
@@ -447,7 +452,7 @@ def read_dataset(
         if data_type in selected_dataset
         else selected_dataset["_"]
     )
-    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=id)
+    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=id, subtype=subtype)
     datapath = joinp(pth)
     # relative_donwload_dir = meta[3]
     # pth = f"{relative_donwload_dir}/{ds_struct[dataset_label][]}"
