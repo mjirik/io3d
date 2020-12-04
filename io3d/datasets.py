@@ -314,8 +314,8 @@ DATASET_PATH_STRUCTURE = {
         "_": "medical/orig/sliver07/training_extra/{data_type}-{id:03d}.mhd",
     },
     "pilsen_pigs": {
-        "_": "medical/orig/Tx{id:03d}D_{subtype}/MASKS_DICOM/{data_type}/",
-        "data3d": "medical/orig/Tx{id:03d}D_{subtype}/PATIENT_DICOM/",
+        "_": "medical/orig/pilsen_pigs/Tx{id:03d}D_{subtype}/MASKS_DICOM/{data_type}/",
+        "data3d": "medical/orig/pisen_pigs/Tx{id:03d}D_{subtype}/PATIENT_DICOM/",
     },
 }
 
