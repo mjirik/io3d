@@ -315,7 +315,7 @@ DATASET_PATH_STRUCTURE = {
     },
     "pilsen_pigs": {
         "_": "medical/orig/pilsen_pigs/Tx{id:03d}D_{subtype}/MASKS_DICOM/{data_type}/",
-        "data3d": "medical/orig/pisen_pigs/Tx{id:03d}D_{subtype}/PATIENT_DICOM/",
+        "data3d": "medical/orig/pilsen_pigs/Tx{id:03d}D_{subtype}/PATIENT_DICOM/",
     },
 }
 
