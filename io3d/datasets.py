@@ -431,7 +431,7 @@ def read_dataset(
     Read data in organised way. You need just dataset name. Name of the subset of the dataset and numeric ID.
 
     :param dataset_label:
-    :param data_type:
+    :param data_type: label with datatype ('data3d', 'liver', 'rightkindey')
     :param id:
     :param qt_app:
     :param dataplus_format:
