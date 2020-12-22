@@ -459,7 +459,7 @@ def read_dataset(
     # data_urls[dataset_label]
     # datapath
     dr = datareader.DataReader()
-    return dr.Get3DData(
+    output = dr.Get3DData(
         datapath=datapath,
         qt_app=qt_app,
         dataplus_format=dataplus_format,
@@ -473,6 +473,9 @@ def read_dataset(
         dicom_expected=dicom_expected,
         **kwargs,
     )
+    if output is None:
+        logger.warning(f"Problem reading the path: '{str(datapath)}'")
+    return output
 
 
 def delete_specific_dataset_path(
