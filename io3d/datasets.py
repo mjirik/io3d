@@ -20,10 +20,12 @@ import csv
 import urllib.request
 import io
 from pathlib import Path
+from typing import Optional
 
 # import io3d
 from . import cachefile as cachef
 from . import datareader
+# from type import Number
 
 # if sys.version_info < (3, 0):
 #     import urllib as urllibr
@@ -410,29 +412,52 @@ def set_specific_dataset_path(
         cache = cachef.CacheFile(cachefile)
     cache.update(__local_dataset_specific_dir_prefix + key_path_prefix, path)
 
+def get_dataset_path(
+        dataset_label:str,
+        data_type:str,
+        data_id:int
+):
+    """
+
+    :param dataset_label: like '3Dircadb1'
+    :param data_type: label with datatype ('data3d', 'liver', 'rightkindey')
+    :param data_id: numeric ID of the image in dataset
+
+    :return: path of dataset
+    """
+    selected_dataset = DATASET_PATH_STRUCTURE[dataset_label]
+    pth_fmt_str = (
+        selected_dataset[data_type]
+        if data_type in selected_dataset
+        else selected_dataset["_"]
+    )
+    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=data_id, subtype=subtype)
+    datapath = joinp(pth)
+    return datapath
+
 
 def read_dataset(
-    dataset_label,
-    data_type,
-    id,
-    qt_app=None,
-    dataplus_format=True,
-    gui=False,
-    start=0,
-    stop=None,
-    step=1,
-    convert_to_gray=True,
-    series_number=None,
-    dicom_expected=None,
-    subtype="Ven",
+    dataset_label:str,
+    data_type:str,
+    data_id:int,
+    qt_app:"PyQt5.QtGuiApplication"=None,
+    dataplus_format:bool=True,
+    gui:bool=False,
+    start:int=0,
+    stop:Optional[int]=None,
+    step:int=1,
+    convert_to_gray:bool=True,
+    series_number:Optional[int]=None,
+    dicom_expected:Optional[bool]=None,
+    subtype:str="Ven",
     **kwargs,
 ):
     """
     Read data in organised way. You need just dataset name. Name of the subset of the dataset and numeric ID.
 
-    :param dataset_label:
+    :param dataset_label: like '3Dircadb1'
     :param data_type: label with datatype ('data3d', 'liver', 'rightkindey')
-    :param id:
+    :param data_id: numeric ID of the image in dataset
     :param qt_app:
     :param dataplus_format:
     :param gui:
@@ -445,19 +470,7 @@ def read_dataset(
     :param kwargs:
     :return:
     """
-    # meta = get_dataset_meta(dataset_label)
-    selected_dataset = DATASET_PATH_STRUCTURE[dataset_label]
-    pth_fmt_str = (
-        selected_dataset[data_type]
-        if data_type in selected_dataset
-        else selected_dataset["_"]
-    )
-    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=id, subtype=subtype)
-    datapath = joinp(pth)
-    # relative_donwload_dir = meta[3]
-    # pth = f"{relative_donwload_dir}/{ds_struct[dataset_label][]}"
-    # data_urls[dataset_label]
-    # datapath
+    datapath = get_dataset_path(dataset_label=dataset_label, data_type=data_type, data_id=data_id)
     dr = datareader.DataReader()
     output = dr.Get3DData(
         datapath=datapath,
