@@ -45,12 +45,16 @@ from matplotlib import pyplot as plt
 # get path the data stored in default data directory
 pth = io3d.datasets.joinp("medical/orig/3Dircadb1.1/MASKS_DICOM/")
 datap = io3d.read(pth)
-print(datap["voxelsize_mm"])
+print(datap.voxelsize_mm)
+# size of voxel can be accessed also by datap["voxelsize_mm"]
 
 # see slice 10
-plt.imshow(datap["data3d"][10,:,:], cmap='gray')
+plt.imshow(datap.data3d[10,:,:], cmap='gray')
 plt.show()
 ```
+
+Intensity image `data3d` and `voxelsize_mm` can be accessed easier through the datap properies
+
 
 ### Use object DataReader and see data in simple viewer
 

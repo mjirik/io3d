@@ -10,6 +10,7 @@ import sys
 import os.path
 import numpy as np
 from io import open
+from .image import DataPlus
 
 path_to_script = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(path_to_script, "./extern/sPickle"))
@@ -149,6 +150,9 @@ def obj_to_file(
     # import json
     # with open(filename, mode='w') as f:
     #    json.dump(annotation,f)
+    if type(obj) == DataPlus:
+        obj = dict(obj)
+
     if ndarray_to_list:
         obj = ndarray_to_list_in_structure(obj, squeeze=squeeze)
 

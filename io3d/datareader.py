@@ -11,6 +11,7 @@ import argparse
 
 import os.path
 import sys
+from .image import DataPlus
 
 try:
     import dicom
@@ -169,7 +170,7 @@ class DataReader:
             datap = metadata
             datap["data3d"] = data3d
             logger.debug("datap keys () : " + str(datap.keys()))
-            return datap
+            return DataPlus(datap)
         else:
             return data3d, metadata
 
