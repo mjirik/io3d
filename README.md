@@ -170,3 +170,11 @@ datap1 = io3d.read_dataset("sliver07", "data3d", 1)
 plt.imshow(datap1["data3d"][20,:,:], cmap="gray")
 plt.show()
 ```
+
+The path where the datafiles are looked for can be checked by `get_dataset_path` function.
+
+```python
+import io3d.datasets
+pth = io3d.datasets.get_dataset_path("sliver07", "data3d", 1)
+```
+
