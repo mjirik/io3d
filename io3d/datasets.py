@@ -415,7 +415,9 @@ def set_specific_dataset_path(
 def get_dataset_path(
         dataset_label:str,
         data_type:str,
-        data_id:int
+        data_id:int,
+        subtype: str = "Ven",
+
 ):
     """
 
@@ -470,7 +472,10 @@ def read_dataset(
     :param kwargs:
     :return:
     """
-    datapath = get_dataset_path(dataset_label=dataset_label, data_type=data_type, data_id=data_id)
+    datapath = get_dataset_path(
+        dataset_label=dataset_label, data_type=data_type, data_id=data_id,
+        subtype=subtype
+    )
     dr = datareader.DataReader()
     output = dr.Get3DData(
         datapath=datapath,
