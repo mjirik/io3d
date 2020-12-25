@@ -24,6 +24,7 @@ import io3d.datasets_create
 import glob
 
 
+@unittest.skipIf(os.environ.get("TRAVIS", False), "Skip on Travis-CI")
 def test_export_to_jpg():
     expected_output_path = "./test_export_to_jpg/"
     output_name = "img_"
