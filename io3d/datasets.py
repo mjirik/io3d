@@ -416,7 +416,7 @@ def get_dataset_path(
         dataset_label:str,
         data_type:str,
         data_id:int,
-        subtype: str = "Ven",
+        subtype:str="Ven",
 
 ):
     """
@@ -424,6 +424,7 @@ def get_dataset_path(
     :param dataset_label: like '3Dircadb1'
     :param data_type: label with datatype ('data3d', 'liver', 'rightkindey')
     :param data_id: numeric ID of the image in dataset
+    :param subtype: "Ven" for venous phase
 
     :return: path of dataset
     """
