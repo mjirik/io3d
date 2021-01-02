@@ -764,5 +764,49 @@ class DicomReaderTest(unittest.TestCase):
         self.assertEqual(dct[-1]["name"], "bob")
 
 
+def test_orientations_axcodes():
+    # import SimpleITK as sitk
+    input_axcodes = "SPL"
+    output_axcodes = "LPS"
+    # pth = str(io3d.datasets.get_dataset_path("3Dircadb1", "data3d", 1))
+    # im = sitk.ReadImage(pth)
+    # data3d = sitk.GetArrayFromImage(im)
+
+    datap = io3d.read_dataset("3Dircadb1", "data3d", 1)
+    data3d = datap.data3d
+    data3d_ornt = io3d.image.transform_orientation(data3d, input_axcodes, output_axcodes)
+
+    assert ~_check_low_density_on_first_and_last_slide(data3d, ax_orto=0), "there should be axial slide"
+    assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=1)
+    assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=2)
+
+    assert _check_low_density_on_first_and_last_slide( data3d_ornt, ax_orto=0)
+    assert _check_low_density_on_first_and_last_slide( data3d_ornt, ax_orto=1)
+    assert ~_check_low_density_on_first_and_last_slide(data3d_ornt, ax_orto=2), "there should be axial slide"
+
+    # from matplotlib import pyplot as plt
+    # plt.figure(figsize=(15, 8))
+    # plt.title(output_axcodes)
+    # ax = plt.subplot(131)
+    # ax.set_title("1st axis fixed")
+    # plt.imshow(data3d_ornt[int(data3d_ornt.shape[0] / 2), :, :], cmap='gray', vmin=-160, vmax=240)
+    # ax = plt.subplot(132)
+    # ax.set_title("2nd axis fixed")
+    # plt.imshow(data3d_ornt[:, int(data3d_ornt.shape[1] / 2), :], cmap='gray', vmin=-160, vmax=240)
+    # ax = plt.subplot(133)
+    # ax.set_title("3rd axis fixed")
+    # plt.imshow(data3d_ornt[:, :, int(data3d_ornt.shape[2] / 2)], cmap='gray', vmin=-160, vmax=240)
+    # plt.show()
+
+def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, threshold=-900):
+    slices_first = [slice(None), slice(None), slice(None)]
+    slices_last = [slice(None), slice(None), slice(None)]
+    slices_first[ax_orto] = 0
+    slices_last[ax_orto] = data3d.shape[ax_orto] - 1
+    mn1 = np.mean(data3d[tuple(slices_first)])
+    mn2 = np.mean(data3d[tuple(slices_last)])
+    return (mn1 < threshold) & (mn2 < threshold)
+
+
 if __name__ == "__main__":
     unittest.main()

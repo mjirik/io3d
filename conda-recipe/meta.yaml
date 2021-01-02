@@ -44,6 +44,7 @@ requirements:
     - ruamel.yaml
     - scikit-image
     - loguru
+    - nibabel
 #    - imma >=0.11
 ###########################
     # - simpleitk
@@ -61,6 +62,7 @@ requirements:
     - loguru
     - imma >=0.11
     - checksumdir # i have to build this package for conda
+    - nibabel
 ###########################
     # - simpleitk # version0.9.* is ok for python2.7
 #    - {{ pin_subpackage('imma', max_pin='x.x') }}
