@@ -774,31 +774,19 @@ def test_orientations_axcodes():
 
     datap = io3d.read_dataset("3Dircadb1", "data3d", 1)
     data3d = datap.data3d
-    data3d_ornt = io3d.image.transform_orientation(data3d, input_axcodes, output_axcodes)
+    voxelsize_mm = datap.voxelsize_mm
 
-    assert ~_check_low_density_on_first_and_last_slide(data3d, ax_orto=0), "there should be axial slide"
-    assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=1)
-    assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=2)
 
-    assert _check_low_density_on_first_and_last_slide( data3d_ornt, ax_orto=0)
-    assert _check_low_density_on_first_and_last_slide( data3d_ornt, ax_orto=1)
-    assert ~_check_low_density_on_first_and_last_slide(data3d_ornt, ax_orto=2), "there should be axial slide"
+    # check the input
+    check_densities_on_image_border(data3d, voxelsize_mm, input_axcodes)
+    # check the output
+    for axcodes in ["LPS", "RIA"]:
+        data3d_ornt = io3d.image.transform_orientation(data3d, input_axcodes, axcodes)
+        voxelsize_mm_ornt = io3d.image.transform_orientation_voxelsize(voxelsize_mm, input_axcodes, axcodes)
+        check_densities_on_image_border(data3d_ornt, voxelsize_mm_ornt, axcodes)
 
-    # from matplotlib import pyplot as plt
-    # plt.figure(figsize=(15, 8))
-    # plt.title(output_axcodes)
-    # ax = plt.subplot(131)
-    # ax.set_title("1st axis fixed")
-    # plt.imshow(data3d_ornt[int(data3d_ornt.shape[0] / 2), :, :], cmap='gray', vmin=-160, vmax=240)
-    # ax = plt.subplot(132)
-    # ax.set_title("2nd axis fixed")
-    # plt.imshow(data3d_ornt[:, int(data3d_ornt.shape[1] / 2), :], cmap='gray', vmin=-160, vmax=240)
-    # ax = plt.subplot(133)
-    # ax.set_title("3rd axis fixed")
-    # plt.imshow(data3d_ornt[:, :, int(data3d_ornt.shape[2] / 2)], cmap='gray', vmin=-160, vmax=240)
-    # plt.show()
 
-def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, threshold=-900):
+def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, threshold=-800):
     slices_first = [slice(None), slice(None), slice(None)]
     slices_last = [slice(None), slice(None), slice(None)]
     slices_first[ax_orto] = 0
@@ -807,6 +795,36 @@ def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, thr
     mn2 = np.mean(data3d[tuple(slices_last)])
     return (mn1 < threshold) & (mn2 < threshold)
 
+def _find_superior_inferior_axis(axcode:str):
+    return np.max([
+        axcode.find("S"), # superior
+        axcode.find("I"), # inferior
+        axcode.find("U"), # up
+        axcode.find("D"), # down
+    ])
+
+def check_densities_on_image_border(data3d:np.ndarray, voxelsize_mm, input_axcodes):
+    from matplotlib import pyplot as plt
+    plt.figure(figsize=(15, 8))
+    ax = plt.subplot(131)
+    ax.set_title(f"{input_axcodes} 1st axis fixed")
+    plt.imshow(data3d[int(data3d.shape[0] / 2), :, :], cmap='gray', vmin=-160, vmax=240)
+    ax = plt.subplot(132)
+    ax.set_title(f"{input_axcodes} 2nd axis fixed")
+    plt.imshow(data3d[:, int(data3d.shape[1] / 2), :], cmap='gray', vmin=-160, vmax=240)
+    ax = plt.subplot(133)
+    ax.set_title(f"{input_axcodes} 3rd axis fixed")
+    plt.imshow(data3d[:, :, int(data3d.shape[2] / 2)], cmap='gray', vmin=-160, vmax=240)
+    # plt.title(input_axcodes)
+    plt.show()
+    sup_inf_ax = _find_superior_inferior_axis(input_axcodes)
+    other_ax = [0,1,2]
+    other_ax.pop(sup_inf_ax)
+    assert ~_check_low_density_on_first_and_last_slide(data3d, ax_orto=sup_inf_ax), "there should be axial slide"
+    assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=other_ax[0])
+    assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=other_ax[1])
+    assert voxelsize_mm[sup_inf_ax] > voxelsize_mm[other_ax[0]], "sup-inf axis should have higher voxelsize"
+    assert voxelsize_mm[sup_inf_ax] > voxelsize_mm[other_ax[1]], "sup-inf axis should have higher voxelsize"
 
 if __name__ == "__main__":
     unittest.main()

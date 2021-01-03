@@ -11,7 +11,7 @@ import argparse
 
 import os.path
 import sys
-from .image import DataPlus
+from .image import DataPlus, transform_orientation
 
 try:
     import dicom
@@ -96,6 +96,7 @@ class DataReader:
         series_number=None,
         use_economic_dtype=True,
         dicom_expected=None,
+        orientation_axcodes='original',
         **kwargs
     ):
         """Returns 3D data and its metadata.
@@ -156,6 +157,13 @@ class DataReader:
             # datapath, start, stop, step, gui=gui, **kwargs)
         else:
             logger.error("Data path {} not found".format(datapath))
+
+        if orientation_axcodes:
+            if orientation_axcodes == "original":
+                logger.warning("orientation_axcodes default value will be changed in the furture to 'LPS'")
+            else:
+                data3d = transform_orientation(data3d, metadata["orientation_axcodes"], orientation_axcodes)
+                metadata["orientation_axcodes"] = orientation_axcodes
 
         if convert_to_gray:
             if len(data3d.shape) > 3:

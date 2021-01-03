@@ -49,6 +49,7 @@ class DataPlus(dict):
         # if "orientations_axcodes" in self.keys():
         input_axcodes = self["orientation_axcodes"]
         self["data3d"] = transform_orientation(self["data3d"], input_axcodes, axcodes)
+        self["voxelsize_mm"] = transform_orientation_voxelsize(self["voxelsize_mm"], input_axcodes, axcodes)
         self["orientation_axcodes"] = axcodes
 
     # def __getattr__(self, attr):
@@ -107,3 +108,18 @@ def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
     ornt = nibabel.orientations.ornt_transform(ornt_my, ornt_ras)
     data3d_ornt = nibabel.orientations.apply_orientation(arr, ornt)
     return data3d_ornt
+
+def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_axcodes):
+    import nibabel
+    ornt_my = nibabel.orientations.axcodes2ornt(input_axcodes)
+    ornt_ras = nibabel.orientations.axcodes2ornt(output_axcodes)
+    voxelsize_mid = [0,0,0]
+    voxelsize_mid[int(ornt_my[0][0])] = voxelsize[0]
+    voxelsize_mid[int(ornt_my[1][0])] = voxelsize[1]
+    voxelsize_mid[int(ornt_my[2][0])] = voxelsize[2]
+    voxelsize_out = [
+        voxelsize_mid[int(ornt_ras[0][0])],
+        voxelsize_mid[int(ornt_ras[1][0])],
+        voxelsize_mid[int(ornt_ras[2][0])],
+    ]
+    return voxelsize_out
