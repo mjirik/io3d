@@ -4,6 +4,8 @@ Latest version 2.6.0
 
 ## Unreleased
 
+## 2.6
+
 * [Added] Orientation codes support
 * [Added] Data can be accessed by the property (e.g. `datap.data3d`)
 
