@@ -572,6 +572,7 @@ class DicomDirectory:
             "voxelsize_mm": voxelsize_mm,
             "Modality": data1.Modality,
             "SeriesNumber": series_number,
+            "orientation_axcodes": "SPL"
         }
 
         try:
@@ -1078,7 +1079,7 @@ def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no co
 
 
 def get_dcmdir_qt(app=False, directory=""):  # pragma: no cover
-    from PyQt5.QtGui import QFileDialog, QApplication
+    from PyQt5.QtWidgets import QFileDialog, QApplication
 
     if app:
         dcmdir = QFileDialog.getExistingDirectory(

@@ -41,11 +41,22 @@ class DataPlus(dict):
     def orientation_axcodes(self):
         return self["orientation_axcodes"]
 
-    @slab.setter
+    @orientation_axcodes.setter
     def orientation_axcodes(self, value):
         self["orientation_axcodes"] = value
 
-    def transform_orientation(self, axcodes):
+    def transform_orientation(self, axcodes:str):
+        """
+        Change the orientation of data3d and voxelsize_mm.
+
+        NiBabel package is used internally (https://nipy.org/nibabel/reference/nibabel.orientations.html)
+
+        :param axcodes: Three letter code. Most used axcodes are LPS (Left, Posterior and Superior) and RAS (Right,
+        Anterior and Superior).  First letters of words Left, Right, Superior,
+        Inferior, Anterior and Posterior can be used to describe anatomical orientation.
+        To describe common orientation can be used words Left, Right, Up, Down, Front and Back.
+        Left means from right to left, Superior means from inferior to superior.
+        """
         # if "orientations_axcodes" in self.keys():
         input_axcodes = self["orientation_axcodes"]
         self["data3d"] = transform_orientation(self["data3d"], input_axcodes, axcodes)
@@ -110,6 +121,20 @@ def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
     return data3d_ornt
 
 def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_axcodes):
+    """
+    Change the orientation of the array. Most used axcodes are LPS (Left, Posterior and Superior) and RAS (Right,
+                                                                                                           Anterior and Superior).  First letters of words Left, Right, Superior,
+    Inferior, Anterior and Posterior can be used to describe anatomical orientation.
+    To describe common orientation can be used words Left, Right, Up, Down, Front and Back.
+    Left means from right to left, Superior means from inferior to superior.
+
+    NiBabel package is used internally (https://nipy.org/nibabel/reference/nibabel.orientations.html)
+
+    :param voxelsize: input voxelsize
+    :param input_axcodes: Three letters describing the axis orientation. 'LPS' and 'RAS' are most common codes.
+    :param output_axcodes:Three letters describing the axis orientation. 'LPS' and 'RAS' are most common codes.
+    :return: transformed array
+    """
     import nibabel
     ornt_my = nibabel.orientations.axcodes2ornt(input_axcodes)
     ornt_ras = nibabel.orientations.axcodes2ornt(output_axcodes)

@@ -765,9 +765,7 @@ class DicomReaderTest(unittest.TestCase):
 
 
 def test_orientations_axcodes():
-    # import SimpleITK as sitk
     input_axcodes = "SPL"
-    output_axcodes = "LPS"
     # pth = str(io3d.datasets.get_dataset_path("3Dircadb1", "data3d", 1))
     # im = sitk.ReadImage(pth)
     # data3d = sitk.GetArrayFromImage(im)
@@ -785,6 +783,17 @@ def test_orientations_axcodes():
         voxelsize_mm_ornt = io3d.image.transform_orientation_voxelsize(voxelsize_mm, input_axcodes, axcodes)
         check_densities_on_image_border(data3d_ornt, voxelsize_mm_ornt, axcodes)
 
+def test_orientations_axcodes_with_dataplus():
+    """
+    Change orientation of the same data multiple times.
+    :return:
+    """
+    # input_axcodes = "SPL"
+
+    datap = io3d.read_dataset("3Dircadb1", "data3d", 1)
+    for axcodes in ["LPS", "RIA", "SPL"]:
+        datap.transform_orientation(axcodes)
+        check_densities_on_image_border(datap.data3d, datap.voxelsize_mm, axcodes)
 
 def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, threshold=-800):
     slices_first = [slice(None), slice(None), slice(None)]
@@ -803,20 +812,21 @@ def _find_superior_inferior_axis(axcode:str):
         axcode.find("D"), # down
     ])
 
-def check_densities_on_image_border(data3d:np.ndarray, voxelsize_mm, input_axcodes):
-    from matplotlib import pyplot as plt
-    plt.figure(figsize=(15, 8))
-    ax = plt.subplot(131)
-    ax.set_title(f"{input_axcodes} 1st axis fixed")
-    plt.imshow(data3d[int(data3d.shape[0] / 2), :, :], cmap='gray', vmin=-160, vmax=240)
-    ax = plt.subplot(132)
-    ax.set_title(f"{input_axcodes} 2nd axis fixed")
-    plt.imshow(data3d[:, int(data3d.shape[1] / 2), :], cmap='gray', vmin=-160, vmax=240)
-    ax = plt.subplot(133)
-    ax.set_title(f"{input_axcodes} 3rd axis fixed")
-    plt.imshow(data3d[:, :, int(data3d.shape[2] / 2)], cmap='gray', vmin=-160, vmax=240)
-    # plt.title(input_axcodes)
-    plt.show()
+def check_densities_on_image_border(data3d:np.ndarray, voxelsize_mm, input_axcodes, debug_imshow=False):
+    if debug_imshow:
+        from matplotlib import pyplot as plt
+        plt.figure(figsize=(15, 8))
+        ax = plt.subplot(131)
+        ax.set_title(f"{input_axcodes} 1st axis fixed")
+        plt.imshow(data3d[int(data3d.shape[0] / 2), :, :], cmap='gray', vmin=-160, vmax=240)
+        ax = plt.subplot(132)
+        ax.set_title(f"{input_axcodes} 2nd axis fixed")
+        plt.imshow(data3d[:, int(data3d.shape[1] / 2), :], cmap='gray', vmin=-160, vmax=240)
+        ax = plt.subplot(133)
+        ax.set_title(f"{input_axcodes} 3rd axis fixed")
+        plt.imshow(data3d[:, :, int(data3d.shape[2] / 2)], cmap='gray', vmin=-160, vmax=240)
+        # plt.title(input_axcodes)
+        plt.show()
     sup_inf_ax = _find_superior_inferior_axis(input_axcodes)
     other_ax = [0,1,2]
     other_ax.pop(sup_inf_ax)

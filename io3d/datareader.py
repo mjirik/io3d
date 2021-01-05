@@ -11,7 +11,7 @@ import argparse
 
 import os.path
 import sys
-from .image import DataPlus, transform_orientation
+from .image import DataPlus, transform_orientation, transform_orientation_voxelsize
 
 try:
     import dicom
@@ -163,6 +163,8 @@ class DataReader:
                 logger.warning("orientation_axcodes default value will be changed in the furture to 'LPS'")
             else:
                 data3d = transform_orientation(data3d, metadata["orientation_axcodes"], orientation_axcodes)
+                metadata["voxelsize_mm"] = transform_orientation_voxelsize(
+                    metadata["voxelsize_mm"], metadata["orientation_axcodes"], orientation_axcodes)
                 metadata["orientation_axcodes"] = orientation_axcodes
 
         if convert_to_gray:
@@ -207,6 +209,7 @@ class DataReader:
             metadata = reader.get_metaData()
             metadata["series_number"] = reader.series_number
             metadata["datadir"] = datapath
+            # metadata["orientation_axcodes"] # inserted in dicomreader
             self.overlay_fcn = reader.get_overlay
         else:  # reading image sequence
             logger.debug("Dir - Image sequence")
@@ -234,6 +237,7 @@ class DataReader:
             logger.debug("Getting numpy array from image data...")
             data3d = SimpleITK.GetArrayFromImage(image)
             metadata = _metadata(image, datapath)
+            metadata["orientation_axcodes"] = "SPL"
         return data3d, metadata
 
     @staticmethod
@@ -300,6 +304,8 @@ class DataReader:
             logger.debug('file format "' + str(ext) + '"')
             # reading raw file
             data3d, metadata = self._read_with_sitk(datapath)
+        if "orientation_axcodes" not in metadata.keys():
+            metadata["orientation_axcodes"] = "SPL"
         return data3d, metadata
 
     @staticmethod
@@ -319,6 +325,7 @@ class DataReader:
         data3d = dcmtools.get_pixel_array_from_sitk(image)
         # data3d, original_dtype = dcmreaddata.get_pixel_array_from_dcmobj(image)
         metadata = _metadata(image, datapath)
+        metadata["orientation_axcodes"] = "IPL"
         return data3d, metadata
 
 

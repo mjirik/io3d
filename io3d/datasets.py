@@ -53,7 +53,7 @@ data_urls = {
     "head": [
         __url_server + "sample_data/head.zip",
         "89e9b60fd23257f01c4a1632ff7bb800",
-        __hash_path_prefix + "/matlab",
+        __hash_path_prefix + "matlab",
     ],
     "jatra_06mm_jenjatra": [
         __url_server + "sample_data/jatra_06mm_jenjatra.zip",
@@ -120,7 +120,7 @@ data_urls = {
     ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample_data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
-    "donut": [__url_server + "sample_data/donut.zip", None, __hash_path_prefix],
+    "donut": [__url_server + "sample_data/donut.zip", None, __hash_path_prefix + "/sample_data/donut/*.*"],
     # alternative linux hash nrn4 'd41d8cd98f00b204e9800998ecf8427e'
     "nrn4": [
         __url_server + "sample_data/nrn4.pklz",

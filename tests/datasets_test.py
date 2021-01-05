@@ -33,7 +33,7 @@ class DatasetsTest(unittest.TestCase):
         path = op.join(io3d.datasets.dataset_path(get_root=True), "medical", "orig")
         self.assertEqual(type(path), str)
 
-    def test_download_package_dry_run(self):
+    def test_expand_dataset_package(self):
         dataset_labels = ["lisa"]
         new_dataset_labels = io3d.datasets._expand_dataset_packages(dataset_labels)
         assert len(dataset_labels) <= len(new_dataset_labels)

@@ -8,6 +8,7 @@
 * [Added] Datasets are now stored in `datasets.csv` on github
 * [Fixed] Deprecation Warning on `get_slice_location()`
 * [Fixed] Shortest specific path now works
+* [Added] Orientation codes support
 
 ## 2.3
 
