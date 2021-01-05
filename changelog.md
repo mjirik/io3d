@@ -1,6 +1,6 @@
 # Changelog
 
-Latest version 2.5.11
+Latest version 2.6.0
 
 ## Unreleased
 
