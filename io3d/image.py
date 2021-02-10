@@ -122,8 +122,9 @@ def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
 
 def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_axcodes):
     """
-    Change the orientation of the array. Most used axcodes are LPS (Left, Posterior and Superior) and RAS (Right,
-                                                                                                           Anterior and Superior).  First letters of words Left, Right, Superior,
+    Change the orientation of the array. We use 'SPL'. Most used axcodes are LPS (Left, Posterior and Superior) and
+    RAS (Right, Anterior and Superior).  First letters of words Left, Right, Superior,
+
     Inferior, Anterior and Posterior can be used to describe anatomical orientation.
     To describe common orientation can be used words Left, Right, Up, Down, Front and Back.
     Left means from right to left, Superior means from inferior to superior.
@@ -131,8 +132,8 @@ def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_
     NiBabel package is used internally (https://nipy.org/nibabel/reference/nibabel.orientations.html)
 
     :param voxelsize: input voxelsize
-    :param input_axcodes: Three letters describing the axis orientation. 'LPS' and 'RAS' are most common codes.
-    :param output_axcodes:Three letters describing the axis orientation. 'LPS' and 'RAS' are most common codes.
+    :param input_axcodes: Three letters describing the axis orientation. We use 'SPL'. 'LPS' and 'RAS' are most common codes.
+    :param output_axcodes:Three letters describing the axis orientation. We use 'SPL'. 'LPS' and 'RAS' are most common codes.
     :return: transformed array
     """
     import nibabel

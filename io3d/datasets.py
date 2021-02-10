@@ -412,12 +412,59 @@ def set_specific_dataset_path(
         cache = cachef.CacheFile(cachefile)
     cache.update(__local_dataset_specific_dir_prefix + key_path_prefix, path)
 
+
+def add_dataset_path_structure(
+    dct_dataset_path_structure, cache=None, cachefile="~/.io3d_cache.yaml"
+):
+    """
+
+    :param dct_dataset_path_structure: dict or json string. Key is name of the dataset, value is other dict with paths to
+    specific labels (i.e. data3d, liver and '_' for general label )
+    Example
+    {
+        'sliver07': {
+            'data3d': 'medical/orig/sliver07/training/liver-orig{id:03d}.mhd',
+            'liver': 'medical/orig/sliver07/training/liver-seg{id:03d}.mhd',
+            '_': 'medical/orig/sliver07/training_extra/{data_type}-{id:03d}.mhd',
+        }
+    },
+    :param cache:
+    :param cachefile:
+    :return:
+    """
+    dps_in_cache_file = {}
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+        dps = cache.get_or_none("$DATASET_PATH_STRUCTURE")
+        if dps:
+            dps_in_cache_file = dps
+    if type(dct_dataset_path_structure) == str:
+        import json
+        dct_dataset_path_structure = json.loads(dct_dataset_path_structure)
+    dps_in_cache_file.update(dct_dataset_path_structure)
+    cache.update('$DATASET_PATH_STRUCTURE', dps_in_cache_file)
+
+def delete_dataset_path_structure(
+            key, cache=None, cachefile="~/.io3d_cache.yaml"
+    ):
+    dps_in_cache_file = {}
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+        dps = cache.get_or_none("$DATASET_PATH_STRUCTURE")
+        if dps:
+            dps_in_cache_file = dps
+
+    if key in dps_in_cache_file:
+        dps_in_cache_file.pop(key)
+    cache.update('$DATASET_PATH_STRUCTURE', dps_in_cache_file)
+
+
 def get_dataset_path(
         dataset_label:str,
         data_type:str,
         data_id:int,
         subtype:str="Ven",
-
+        cachefile="~/.io3d_cache.yaml"
 ):
     """
 
@@ -428,7 +475,17 @@ def get_dataset_path(
 
     :return: path of dataset
     """
-    selected_dataset = DATASET_PATH_STRUCTURE[dataset_label]
+    dps0 = {}
+    dps0.update(DATASET_PATH_STRUCTURE)
+
+    if cachefile is not None:
+        cache = cachef.CacheFile(cachefile)
+        dps = cache.get_or_none("$DATASET_PATH_STRUCTURE")
+        if dps:
+            dps0.update(dps)
+    selected_dataset = dps0[dataset_label]
+
+
     pth_fmt_str = (
         selected_dataset[data_type]
         if data_type in selected_dataset

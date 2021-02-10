@@ -68,3 +68,31 @@ def test_change_specific_dataset():
 
     # return path back
     # io3d.datasets.set_dataset_path(dp_old)
+
+
+def test_change_specific_dataset():
+    key = 'test'
+
+    io3d.datasets.delete_dataset_path_structure(key)
+    dataset_path_structure = {key: {
+        "data3d": "medical/orig/sliver07/training/liver-orig{id:03d}.mhd",
+        "liver": "medical/orig/sliver07/training/liver-seg{id:03d}.mhd",
+        "_": "medical/orig/sliver07/training_extra/{data_type}-{id:03d}.mhd",
+    }}
+    io3d.datasets.add_dataset_path_structure(dataset_path_structure)
+
+
+    dps = io3d.datasets.get_dataset_path(
+        dataset_label=key,
+        data_type='data3d',
+        data_id=3
+    )
+    assert str(dps).find('medical') > 0
+    # Remove key
+    io3d.datasets.delete_dataset_path_structure(key)
+    with pytest.raises(KeyError):
+        dps = io3d.datasets.get_dataset_path(
+            dataset_label=key,
+            data_type='data3d',
+            data_id=3
+        )
