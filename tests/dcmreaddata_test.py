@@ -739,7 +739,12 @@ class DicomReaderTest(unittest.TestCase):
         data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
         data[0:5, 20:60, 60:70] += 30
         data[5, 10, 15] = 20
-        metadata = {"voxelsize_mm": [1, 2, 3], 'slab':{'nothing':0, 'liver': 1, 'porta': 2}}
+        metadata = {
+            "voxelsize_mm": [1, 2, 3],
+            'slab':{'nothing':0, 'liver': 1, 'porta': 2},
+            'int_value': 19,
+            'float_value': 3.14,
+        }
         dwriter.write(data, filename, filetype="hdf5", metadata=metadata)
 
         fi = h5py.File(filename, "r")
@@ -752,6 +757,8 @@ class DicomReaderTest(unittest.TestCase):
         assert datap["voxelsize_mm"][1] == 2
         assert datap["voxelsize_mm"][2] == 3
         assert datap['slab']['liver'] == 1
+        assert datap['int_value'] == 19
+        assert datap['float_value'] == 3.14
         # print(datap)
 
     def test_idx_data(self):

@@ -24,9 +24,9 @@ def save_dict_to_hdf5(dic, filename):
         # h5_rf = h5file.create_group("_reconstruction_key_flags")
         print("reconstruction_flags:")
         for k, v in rf.items():
-            print(f'{k} {v}')
+            # print(f'{k} {v}')
             h5_rf.create_dataset(delimiter + "_reconstruction_flags" + k, data=v)
-            print('created')
+            # print('created')
         # for k, v in rfk.items():
         #     h5_rf.create_dataset("/_reconstruction_key_flags" + k, data=v)
 
@@ -36,11 +36,11 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
     ....
     """
     delimiter = '/'
-    print(f"saving {path}, type={type(dic)}, {list(dic.keys())}")
+    # print(f"saving {path}, type={type(dic)}, {list(dic.keys())}")
     reconstruction_flags = {}
     # reconstruction_key_flags = {}
     for key, item in dic.items():
-        print(f"   {key}, type={type(item)}")
+        # print(f"   {key}, type={type(item)}")
         if type(key) is not str:
             # import pickle
             # key = pickle.dumps(key).decode("ascii")
@@ -150,13 +150,13 @@ def recursively_load_dict_contents_from_group(h5file, path):
             elif flag == b"json_value":
                 import json
 
-                ans[dest_key] = json.loads(item.value)
+                ans[dest_key] = json.loads(item[()])
                 continue
             elif flag == b"float":
-                ans[dest_key] = float(item.value)
+                ans[dest_key] = float(item[()])
                 continue
             elif flag == b"int":
-                ans[dest_key] = int(item.value)
+                ans[dest_key] = int(item[()])
                 continue
 
         if isinstance(item, h5py._hl.dataset.Dataset):
