@@ -710,6 +710,26 @@ class DicomReaderTest(unittest.TestCase):
     #
     #
     #
+    def test_write_read_hdf5_toyexample(self):
+        import h5py
+        fn = "pokus.h5"
+        with h5py.File(fn, 'w') as h5file:
+            dt = np.zeros([3,4,5], dtype='uint8')
+            dt[1,2,3] = 4
+            h5file.create_dataset("nparr", data=dt)
+            h5file.create_dataset("|pokus|adfas|", shape=[1], data=[5])
+            # h5file.create_group('gr')
+            h5file.create_dataset("/gr/grin", data=[7])
+            # h5file.create_dataset("/gr/grin", shape=[1], data=[7])
+
+        with h5py.File(fn, 'r') as h5file:
+            # h5file.create_dataset("nparr", data=np.zeros([3,4,5], dtype='uint8'))
+            assert h5file['nparr'][1,2,3] == 4
+            assert h5file['nparr'][0,0,0] == 0
+            assert h5file["/gr/grin"][0] == 7
+
+
+    import h5py
     def test_write_read_hdf5(self):
         import io3d.datawriter as dwriter
         import io3d.datareader as dreader
@@ -718,7 +738,8 @@ class DicomReaderTest(unittest.TestCase):
         filename = "test_file.hdf5"
         data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
         data[0:5, 20:60, 60:70] += 30
-        metadata = {"voxelsize_mm": [1, 2, 3]}
+        data[5, 10, 15] = 20
+        metadata = {"voxelsize_mm": [1, 2, 3], 'slab':{'nothing':0, 'liver': 1, 'porta': 2}}
         dwriter.write(data, filename, filetype="hdf5", metadata=metadata)
 
         fi = h5py.File(filename, "r")
@@ -726,7 +747,12 @@ class DicomReaderTest(unittest.TestCase):
             fi[key]
 
         datap = dreader.read(filename, dataplus_format=True)
-        print(datap)
+        assert datap["data3d"][5,10,15] == 20
+        assert datap["voxelsize_mm"][0] == 1
+        assert datap["voxelsize_mm"][1] == 2
+        assert datap["voxelsize_mm"][2] == 3
+        assert datap['slab']['liver'] == 1
+        # print(datap)
 
     def test_idx_data(self):
         io3d.read(
