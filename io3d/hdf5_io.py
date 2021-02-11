@@ -124,8 +124,8 @@ def recursively_load_dict_contents_from_group(h5file, path):
         kkey = key + "_key_"
         tkey = key + "_typ_"
         if kkey in rf:
-            flag = rf[kkey]
-            if flag.value == "json_key":
+            flag = rf[kkey][()]
+            if flag == "json_key":
                 import json
 
                 dest_key = json.loads(key)
