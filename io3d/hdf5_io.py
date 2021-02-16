@@ -72,7 +72,9 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             h5file[path + key] = item
             reconstruction_flags[wholekey] = "int"
         elif isinstance(item, dict):
-            rf = recursively_save_dict_contents_to_group(h5file, path + key + delimiter, item)
+            # reconstruction_flags[wholekey] = "dict"
+            rf = recursively_save_dict_contents_to_group(
+                h5file, path + key + delimiter, item)
             reconstruction_flags.update(rf)
             # reconstruction_key_flags.update(rkf)
         elif isinstance(item, list):
@@ -120,14 +122,18 @@ def recursively_load_dict_contents_from_group(h5file, path):
     """
     ....
     """
-    rf = h5file["/_reconstruction_flags" + path]
+    reconstruction_flags_key = "/_reconstruction_flags" + path
+    if reconstruction_flags_key in h5file:
+        rf = h5file[reconstruction_flags_key]
+    else:
+        rf = {}
     # rkf = h5file["_reconstruction_key_flags"]
     delimiter = '/'
     ans = {}
     for key, item in h5file[path].items():
         dest_key = key
         # if key in ("_reconstruction_flags", "_reconstruction_key_flags"):
-        if key in "_reconstruction_flags":
+        if key == "_reconstruction_flags":
             continue
         kkey = key + "_key_"
         tkey = key + "_typ_"
@@ -149,7 +155,7 @@ def recursively_load_dict_contents_from_group(h5file, path):
                 )
                 ans[dest_key] = list(dict_to_output.values())
                 continue
-            if flag == b"tuple":
+            elif flag == b"tuple":
                 dict_to_output = recursively_load_dict_contents_from_group(
                     h5file, path + key + delimiter
                 )
@@ -175,9 +181,11 @@ def recursively_load_dict_contents_from_group(h5file, path):
         if isinstance(item, h5py._hl.dataset.Dataset):
             ans[dest_key] = item[()]
         elif isinstance(item, h5py._hl.group.Group):
-            ans[dest_key] = recursively_load_dict_contents_from_group(
+            val = recursively_load_dict_contents_from_group(
                 h5file, path + key + delimiter
             )
+            ans[dest_key] = val
+
     return ans
 
 

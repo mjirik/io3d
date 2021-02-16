@@ -6,6 +6,7 @@ from loguru import logger
 import unittest
 import numpy as np
 import io3d.hdf5_io as hp
+from pathlib import Path
 
 
 class Hdf5Test(unittest.TestCase):
@@ -13,7 +14,10 @@ class Hdf5Test(unittest.TestCase):
         data = {
             "x": "astring",
             "y": np.arange(10),
-            "d": {"z": np.ones((2, 3)), "b": b"bytestring"},
+            "d": {"z": np.zeros((2, 3)), "b": b"bytestring"},
+            'f': 1.1,
+            # "e": {"z": np.zeros((2, 3)), "b": b"bytestring"},
+            "e": {"o": np.ones((2, 3)), "l": [1,2]},
             "none": None,
             1: 1,
             "tuple": (5, 7),
@@ -22,6 +26,10 @@ class Hdf5Test(unittest.TestCase):
         }
 
         fn = "hdf5_testfile.h5"
+        # if Path(fn).exists():
+        #     Path(fn).unlink()
+        #     print(Path(fn).exists())
+
         hp.save_dict_to_hdf5(data, fn)
 
         data2 = hp.load_dict_from_hdf5(fn)
@@ -37,3 +45,4 @@ class Hdf5Test(unittest.TestCase):
         self.assertEqual(data[5], data2[5])
         self.assertEqual(type(data["float"]), type(data2["float"]))
         self.assertEqual(type(data[1]), type(data2[1]))
+        self.assertEqual(data["e"]["l"][0], data2["e"]["l"][0])
