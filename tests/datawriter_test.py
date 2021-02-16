@@ -195,7 +195,7 @@ class DicomWriterTest(unittest.TestCase):
         data[0:5, 20:60, 60:70] += 30
         metadata = {"voxelsize_mm": [1, 2, 3]}
         metadata[5] = "not a number"
-        metadata[7] = ["not a number"]
+        metadata[7] = ["list with not a number"]
         dwriter.write(data, filename, filetype="hdf5", metadata=metadata)
 
         newdata, newmetadata = dreader.read(filename, dataplus_format=False)
@@ -204,7 +204,7 @@ class DicomWriterTest(unittest.TestCase):
         self.assertEqual(data[10, 10, 10], newdata[10, 10, 10])
         self.assertEqual(data[2, 10, 1], newdata[2, 10, 1])
         self.assertEqual(newmetadata["voxelsize_mm"][0], newmetadata["voxelsize_mm"][0])
-        self.assertEqual(newmetadata[7][0], newmetadata[7][0])
+        self.assertEqual(metadata[7][0], newmetadata[7][0])
         # @TODO there is a bug in SimpleITK. slice voxel size must be same
         # self. assertEqual(metadata['voxelsize_mm'][1],
         #                   newmetadata['voxelsize_mm'][1])

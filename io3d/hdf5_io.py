@@ -41,6 +41,7 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
     # reconstruction_key_flags = {}
     for key, item in dic.items():
         # print(f"   {key}, type={type(item)}")
+        # Process Key
         if type(key) is not str:
             # import pickle
             # key = pickle.dumps(key).decode("ascii")
@@ -54,13 +55,15 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
 
         # wholekey = path + key + "_typ_" + delimiter
         wholekey = path + key + "_typ_"
+
+        # Process Value
         if item is None:
             import json
 
             jitem = json.dumps(item)
             h5file[path + key] = jitem
             reconstruction_flags[wholekey] = "json_value"
-        elif isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes)):
+        elif isinstance(item, (np.ndarray, np.int64, np.float64, bytes)):
             h5file[path + key] = item
         elif isinstance(item, (float)):
             h5file[path + key] = item
@@ -89,6 +92,11 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
                 h5file, path + key + delimiter, item_dict
             )
             reconstruction_flags.update(rf)
+        elif isinstance(item, str):
+            import json
+            jitem = json.dumps(item)
+            h5file[path + key] = jitem
+            reconstruction_flags[wholekey] = "str"
         else:
             logger.info("Saving type {} with json".format(type(item)))
             import json
@@ -112,7 +120,7 @@ def recursively_load_dict_contents_from_group(h5file, path):
     """
     ....
     """
-    rf = h5file["_reconstruction_flags"]
+    rf = h5file["/_reconstruction_flags" + path]
     # rkf = h5file["_reconstruction_key_flags"]
     delimiter = '/'
     ans = {}
@@ -125,7 +133,7 @@ def recursively_load_dict_contents_from_group(h5file, path):
         tkey = key + "_typ_"
         if kkey in rf:
             flag = rf[kkey][()]
-            if flag == "json_key":
+            if flag == b"json_key":
                 import json
 
                 dest_key = json.loads(key)
@@ -157,6 +165,11 @@ def recursively_load_dict_contents_from_group(h5file, path):
                 continue
             elif flag == b"int":
                 ans[dest_key] = int(item[()])
+                continue
+            elif flag == b"str":
+                import json
+                ans[dest_key] = str(json.loads(item[()]))
+                # ans[dest_key] = str(item[()])
                 continue
 
         if isinstance(item, h5py._hl.dataset.Dataset):
