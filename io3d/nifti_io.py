@@ -6,7 +6,7 @@ from typing import Tuple, Union
 
 def read_nifti(filename: Union[Path, str]) -> Tuple[np.ndarray, dict]:
     img = nib.load(filename)
-    data3d = img.dataobj
+    data3d = np.asarray(img.dataobj)
     voxelsize_mm = img.header.get_zooms()
     metadata = {
         'voxelsize_mm': voxelsize_mm,
