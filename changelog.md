@@ -4,6 +4,8 @@ Latest version 2.6.0
 
 ## Unreleased
 
+* [Added] Nifti support
+
 ## 2.6
 
 * [Added] Orientation codes support

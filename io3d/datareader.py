@@ -289,6 +289,10 @@ class DataReader:
             metadata = _create_meta(datapath)
             metadata.update(datap)
 
+        elif str(datapath).endswith(".nii.gz"):
+            from . import nifti_io
+            data3d, metadata = nifti_io.read_nifti(datapath)
+
         elif ext in ["idx"]:
             from . import idxformat
 
