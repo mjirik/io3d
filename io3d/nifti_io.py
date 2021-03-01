@@ -11,7 +11,7 @@ def read_nifti(filename: Union[Path, str]) -> Tuple[np.ndarray, dict]:
     metadata = {
         'voxelsize_mm': voxelsize_mm,
         'affine': img.affine,
-        'orientations_axcodes': nib.orientations.aff2axcodes(img.affine)
+        'orientation_axcodes': nib.orientations.aff2axcodes(img.affine)
     }
     return data3d, metadata
 
