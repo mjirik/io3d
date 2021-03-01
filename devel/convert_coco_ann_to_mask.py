@@ -9,6 +9,9 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.draw import polygon
+import sys
+from pathlib import Path
+
 
 class AnnotationTOmask:
     def __init__(self, annotation_file):
@@ -133,13 +136,20 @@ class AnnotationTOmask:
          return M
 
 
-import sys
-#coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC
-#output_dir is used for controll output direction (location) in your PC
-#output_type - type of "Save fail" of our program| results
-def CocoToMask(coco_filename, output_dir, voxelsize_mm=None, output_type="JPG"):
+def CocoToMask(coco_filename, label, output_dir, voxelsize_mm=None, output_type="JPG", show=False):
+    """
+
+    :param coco_filename: coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC
+    :param label: segmentation mask label
+    :param output_dir: output_dir is used for controll output direction (location) in your PC
+    :param voxelsize_mm:
+    :param output_type: output_type - type of "Save fail" of our program| results
+    :return:
+    """
     #file_path = 'task_cell track 20200226-dii-30las-2pre1-2020_10_26_13_28_36-coco 1.0/annotations/instances_default.json'
 
+    # create dir if not exists
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
     file_path = coco_filename
     cv_an = AnnotationTOmask(file_path)
     cv_an1=cv_an.getImgIds()
