@@ -9,6 +9,8 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.draw import polygon
+from pathlib import Path
+from loguru import logger
 
 class AnnotationTOmask:
     def __init__(self, annotation_file):
@@ -153,24 +155,33 @@ def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type=
     #catIds = cv_an.getCatIds(catNms=['Left Kidney'])
 
     print('catIds', catIds)
-    imgIds = cv_an.getImgIds(catIds=catIds )
+    imgIds = cv_an.getImgIds(catIds=catIds)
+    if len(imgIds) == 0:
+        logger.warning(f"Label '{organ}' not found.")
     print('imgIds',imgIds)
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
 
+    # create empty files
     for imgName in cv_an.dataset['images']:
         print('imgName', imgName)
         M = np.zeros([imgName['width'], imgName['height']])
-        plt.imsave(output_dir+'/MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type,np.uint8(M), cmap = 'gray')
+        image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
+        logger.debug(image_path)
+        plt.imsave(image_path, np.uint8(M), cmap = 'gray')
 
+    # rewrite images with label
     for im in imgIds:
         print("iM", im)
-        img = cv_an.loadImgs(im)[0]
-        anns_ids = cv_an.getAnnIds(imgIds=img['id'], catIds=catIds)
+        imgName = cv_an.loadImgs(im)[0]
+        anns_ids = cv_an.getAnnIds(imgIds=imgName['id'], catIds=catIds)
         anns = cv_an.loadAnns(anns_ids)
         S = cv_an.getSeg(anns)
-        M = cv_an.segToMask(S,img['width'], img['height'])
+        M = cv_an.segToMask(S, imgName['width'], imgName['height'])
         plt.figure()
         plt.imshow(M)
         if show:
             plt.show()
-        plt.imsave(output_dir+'/MaskOfPIG_'+str(img['file_name'])+'.'+output_type,np.uint8(M), cmap = 'gray')
+        image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
+        logger.debug(image_path)
+        plt.imsave(image_path, np.uint8(M), cmap = 'gray')
     print('DOne')
