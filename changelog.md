@@ -1,8 +1,10 @@
 # Changelog
 
-Latest version 2.6.0
+Latest version 2.9.0
 
 ## Unreleased
+
+* [Added] Nifti support
 
 ## 2.6
 

@@ -44,9 +44,13 @@ def read(
     convert_to_gray=True,
     series_number=None,
     dicom_expected=None,
+    orientation_axcodes='original',
     **kwargs
 ):
-    """Simple read function. Internally calls DataReader.Get3DData()"""
+    """Simple read function. Internally calls DataReader.Get3DData()
+
+        :param orientation_axcodes: 'LPS' right to Left, anterior to Posetrior, inferior to Superior. We use 'SPL'.
+    """
     dr = DataReader()
     return dr.Get3DData(
         datapath=datapath,
@@ -60,6 +64,7 @@ def read(
         series_number=series_number,
         use_economic_dtype=True,
         dicom_expected=dicom_expected,
+        orientation_axcodes=orientation_axcodes,
         **kwargs
     )
 
@@ -115,6 +120,7 @@ class DataReader:
         :param int series_number: used in DicomReader, essential in metadata
         :param use_economic_dtype: if True, casts 3D data array to less space consuming dtype
         :param dicom_expected: set true if it is known that data is in dicom format. Set False to suppress
+        :param orientation_axcodes: 'LPS' right to Left, anterior to Posetrior, inferior to Superior
         dicom warnings.
         :return: tuple (data3d, metadata)
         """
@@ -227,6 +233,7 @@ class DataReader:
                     SimpleITK.ReadImage(os.path.join(datapath, f))
                 except Exception as e:
                     logger.warning("Cant load file: " + str(f))
+
                     logger.warning(e)
                     continue
                 flist.append(os.path.join(datapath, f))
@@ -288,6 +295,10 @@ class DataReader:
             # metadata must have series_number
             metadata = _create_meta(datapath)
             metadata.update(datap)
+
+        elif str(datapath).endswith(".nii.gz"):
+            from . import nifti_io
+            data3d, metadata = nifti_io.read_nifti(datapath)
 
         elif ext in ["idx"]:
             from . import idxformat
