@@ -9,9 +9,6 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.draw import polygon
-import sys
-from pathlib import Path
-
 
 class AnnotationTOmask:
     def __init__(self, annotation_file):
@@ -136,20 +133,14 @@ class AnnotationTOmask:
          return M
 
 
-def CocoToMask(coco_filename, label, output_dir, voxelsize_mm=None, output_type="JPG", show=False):
-    """
-
-    :param coco_filename: coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC
-    :param label: segmentation mask label
-    :param output_dir: output_dir is used for controll output direction (location) in your PC
-    :param voxelsize_mm:
-    :param output_type: output_type - type of "Save fail" of our program| results
-    :return:
-    """
+import sys
+#coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC
+#output_dir is used for controll output direction (location) in your PC
+#output_type - type of "Save fail" of our program| results]
+#organ - name of segmentation part rom what we want have mask ""
+def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type="JPG", show=False):
     #file_path = 'task_cell track 20200226-dii-30las-2pre1-2020_10_26_13_28_36-coco 1.0/annotations/instances_default.json'
 
-    # create dir if not exists
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
     file_path = coco_filename
     cv_an = AnnotationTOmask(file_path)
     cv_an1=cv_an.getImgIds()
@@ -157,7 +148,7 @@ def CocoToMask(coco_filename, label, output_dir, voxelsize_mm=None, output_type=
     # extract the region we want to mask ( Right Kidny,  Liver)
 
     #catIds = cv_an.getCatIds(catNms=['cell'])
-    catIds = cv_an.getCatIds(catNms=['Right Kidney'])
+    catIds = cv_an.getCatIds(catNms=[organ])
     #catIds = cv_an.getCatIds(catNms=['Liver'])
     #catIds = cv_an.getCatIds(catNms=['Left Kidney'])
 
@@ -179,6 +170,7 @@ def CocoToMask(coco_filename, label, output_dir, voxelsize_mm=None, output_type=
         M = cv_an.segToMask(S,img['width'], img['height'])
         plt.figure()
         plt.imshow(M)
-        plt.show()
+        if show:
+            plt.show()
         plt.imsave(output_dir+'/MaskOfPIG_'+str(img['file_name'])+'.'+output_type,np.uint8(M), cmap = 'gray')
     print('DOne')
