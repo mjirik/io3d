@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from typing import Union
 import numpy as np
+from pathlib import Path
+from loguru import logger
 
 class DataPlus(dict):
 
@@ -45,6 +47,14 @@ class DataPlus(dict):
     def orientation_axcodes(self, value):
         self["orientation_axcodes"] = value
 
+    @property
+    def affine(self):
+        return self["affine"]
+
+    @affine.setter
+    def affine(self, value):
+        self["affine"] = value
+
     def transform_orientation(self, axcodes:str):
         """
         Change the orientation of data3d and voxelsize_mm.
@@ -62,6 +72,13 @@ class DataPlus(dict):
         self["data3d"] = transform_orientation(self["data3d"], input_axcodes, axcodes)
         self["voxelsize_mm"] = transform_orientation_voxelsize(self["voxelsize_mm"], input_axcodes, axcodes)
         self["orientation_axcodes"] = axcodes
+        if "affine" in self:
+            logger.warning("Affine transfomation is not implemented.")
+
+    def write(self, path:Union[str, Path], *args, **kwargs):
+        import io3d.datawriter
+        return io3d.datawriter.write(self["data3d"], path=path, *args, **kwargs)
+
 
     # def __getattr__(self, attr):
     #     print(f"attr: {attr}")
@@ -119,6 +136,7 @@ def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
     ornt = nibabel.orientations.ornt_transform(ornt_my, ornt_ras)
     data3d_ornt = nibabel.orientations.apply_orientation(arr, ornt)
     return data3d_ornt
+
 
 def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_axcodes):
     """

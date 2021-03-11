@@ -296,7 +296,7 @@ class DataReader:
             metadata = _create_meta(datapath)
             metadata.update(datap)
 
-        elif str(datapath).endswith(".nii.gz"):
+        elif str(datapath).lower().endswith(".nii.gz"):# or ext == 'nii':
             from . import nifti_io
             data3d, metadata = nifti_io.read_nifti(datapath)
 
