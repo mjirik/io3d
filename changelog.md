@@ -1,6 +1,6 @@
 # Changelog
 
-Latest version 2.9.0
+Latest version 2.9.1
 
 ## 2.9
 
