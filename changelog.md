@@ -2,9 +2,9 @@
 
 Latest version 2.9.0
 
-## Unreleased
+## 2.9
 
-* [Added] Nifti support
+* [Added] Nifti support for '.ni.gz' extension
 
 ## 2.6
 

@@ -22,14 +22,17 @@ except:
     dicom.config.debug(False)
 
 import os.path as op
+from typing import Union
+from pathlib import Path
 from . import rawN
 from . import misc
 
 # from sys import argv
 from . import dcmtools
+from . import image
 
 
-def write(data3d, path, filetype="auto", metadata=None):
+def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str], filetype="auto", metadata:dict=None):
     """
 
     :param data3d: input ndarray
@@ -39,6 +42,14 @@ def write(data3d, path, filetype="auto", metadata=None):
     :param metadata: metadata f.e. {'voxelsize_mm': [3,2,2]}
     :return:
     """
+    # if (type(data3d) == dict) or (type(data3d == image.DataPlus)):
+    #     if metadata == None:
+    #         metadata = data3d
+    #         data3d = data3d.pop('data3d')
+    #     else:
+    #         logger.error("Cannot use first argument of type dict or DataPlus together with metadata.")
+    #         raise ValueError("Cannot use first argument of type dict or DataPlus together with")
+
     dw = DataWriter()
     dw.Write3DData(data3d, path, filetype, metadata)
 
@@ -133,6 +144,13 @@ class DataWriter:
             self.save_image_stack(data3d, path, metadata)
         elif filetype in ["hdf5", "hdf", "h5", "he5"]:
             self.save_hdf5(data3d, path, metadata)
+        elif str(path).lower().endswith(".nii.gz") or ext == 'nii':
+            import io3d.nifti_io
+
+            metadata["data3d"] = data3d
+            datap = metadata
+            logger.debug(f'orientation_axcodes={datap["orientation_axcodes"]}')
+            io3d.nifti_io.write_nifti(datap, path)
         elif filetype in ["pkl", "pklz"]:
             from . import misc
 
