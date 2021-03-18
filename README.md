@@ -28,6 +28,8 @@ pip install sed3
 
 ## Examples
 
+[Check the tutorial](examples/tutorial_read_dataset_and_see_with_sed3.ipynb)
+
 
 ### Get sample data
 
