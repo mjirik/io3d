@@ -35,7 +35,7 @@ from . import image
 def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str], filetype="auto", metadata:dict=None):
     """
 
-    :param data3d: input ndarray
+    :param data3d: input ndarray or DataPlus
     :param path: output path, if braces are in the name ("dir/file{:04d}.dcm"), image stack is produced .
     Check function filename_format() for more details.
     :param filetype: dcm, png, h5, ... "image_stack"
@@ -133,6 +133,12 @@ class DataWriter:
             if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, metadata)
         elif filetype in ["dcm", "DCM", "dicom"]:
+            if data3d.dtype in (np.uint8, np.int8, np.uint16, np.uint16):
+                pass
+            else:
+                logger.warning(
+                    f"Datatype {data3d.dtype} is not supported by io3d due to SimpleITK. Changed to np.int16)")
+                data3d = data3d.astype(np.int16)
             self._write_with_sitk(path, data3d, metadata)
             self._fix_sitk_bug(path, metadata)
             if sfin and segmentation is not None:
@@ -171,7 +177,13 @@ class DataWriter:
 
         dim = dcmtools.get_sitk_image_from_ndarray(data3d)
         vsz = metadata["voxelsize_mm"]
-        dim.SetSpacing([vsz[1], vsz[2], vsz[0]])
+
+        # simple itk does not work with np.float32
+        dim.SetSpacing([
+            float(vsz[1]),
+            float(vsz[2]),
+            float(vsz[0])
+        ])
         sitk.WriteImage(dim, path)
 
     def _fix_sitk_bug(self, path, metadata):
