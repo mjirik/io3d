@@ -71,8 +71,8 @@ def is_dicom_dir(datapath):
         # except pydicom.errors.InvalidDicomError:
         #     logger.debug("Invalid Dicom while reading file " + str(f))
         except Exception as e:
-            logger.warning("Unable to read dicom file " + str(f))
-            logger.warning(e)
+            logger.trace("Unable to read dicom file " + str(f))
+            logger.trace(e)
             # import traceback
             # traceback.print_exc()
 

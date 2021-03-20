@@ -4,6 +4,7 @@ Latest version 2.9.2
 
 ## 2.9
 
+* [Changed] Dicom files uint are stored directly. The int dtype in 3D can be stored with intercept in metadata.
 * [Added] Nifti support for '.ni.gz' extension
 
 ## 2.6

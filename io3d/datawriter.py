@@ -32,7 +32,7 @@ from . import dcmtools
 from . import image
 
 
-def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str], filetype="auto", metadata:dict=None):
+def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str], filetype="auto", metadata:dict=None, allow_rescale_intercept:bool=False):
     """
 
     :param data3d: input ndarray or DataPlus
@@ -40,6 +40,9 @@ def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str],
     Check function filename_format() for more details.
     :param filetype: dcm, png, h5, ... "image_stack"
     :param metadata: metadata f.e. {'voxelsize_mm': [3,2,2]}
+    :param allow_rescale_intercept: SimpleITK does not allow to write 3D files with negative values int dicom. With this
+    rescale_intercept option turned on, the unsigned data type will be used and rescale parameter in dicom metadata
+    will be set.
     :return:
     """
     # if (type(data3d) == dict) or (type(data3d == image.DataPlus)):
@@ -51,7 +54,7 @@ def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str],
     #         raise ValueError("Cannot use first argument of type dict or DataPlus together with")
 
     dw = DataWriter()
-    dw.Write3DData(data3d, path, filetype, metadata)
+    dw.Write3DData(data3d, path, filetype, metadata, allow_rescale_intercept=allow_rescale_intercept)
 
 
 class DataWriter:
@@ -77,6 +80,7 @@ class DataWriter:
         metadata=None,
         progress_callback=None,
         sfin=True,
+        allow_rescale_intercept=False
     ):
         """
         :param data3d: input ndarray data
@@ -86,6 +90,9 @@ class DataWriter:
         :param filetype: dcm, vtk, rawiv, image_stack
         :param progress_callback: fuction for progressbar f.e. callback(value, minimum, maximum)
         :param sfin: Use separate file for segmentation if necessary
+        :param allow_rescale_intercept: SimpleITK does not allow to write 3D files with negative values in dicom. With this
+        rescale_intercept option turned on, the unsigned data type will be used and rescale parameter in dicom metadata
+        will be set.
 
 
         """
@@ -129,7 +136,7 @@ class DataWriter:
         # def _all_in_one_file(self, data3d, path, filetype, metadata):
 
         if filetype in ["vtk", "tiff", "tif", "mhd", "nii", "raw"]:
-            self._write_with_sitk(path, data3d, metadata)
+            self._write_with_sitk(path, data3d, metadata, allow_rescale_intercept)
             if sfin and segmentation is not None:
                 self._write_with_sitk(segmentation_path, segmentation, metadata)
         elif filetype in ["dcm", "DCM", "dicom"]:
@@ -139,10 +146,10 @@ class DataWriter:
                 logger.warning(
                     f"Datatype {data3d.dtype} is not supported by io3d due to SimpleITK. Changed to np.int16)")
                 data3d = data3d.astype(np.int16)
-            self._write_with_sitk(path, data3d, metadata)
+            self._write_with_sitk(path, data3d, metadata, allow_rescale_intercept)
             self._fix_sitk_bug(path, metadata)
             if sfin and segmentation is not None:
-                self._write_with_sitk(segmentation_path, segmentation, metadata)
+                self._write_with_sitk(segmentation_path, segmentation, metadata, allow_rescale_intercept)
                 self._fix_sitk_bug(segmentation_path, metadata)
         elif filetype in ["rawiv"]:
             rawN.write(path, data3d, metadata)
@@ -171,11 +178,11 @@ class DataWriter:
 
             # data = dicom.read_file(onefile)
 
-    def _write_with_sitk(self, path, data3d, metadata):
+    def _write_with_sitk(self, path, data3d, metadata, allow_rescale_intercept=False):
         self._makedirs(path)
         import SimpleITK as sitk
 
-        dim = dcmtools.get_sitk_image_from_ndarray(data3d)
+        dim = dcmtools.get_sitk_image_from_ndarray(data3d, allow_rescale_intercept=allow_rescale_intercept)
         vsz = metadata["voxelsize_mm"]
 
         # simple itk does not work with np.float32
@@ -400,6 +407,9 @@ class DataWriter:
             if metadata is not None:
                 vsz = np.asarray(metadata["voxelsize_mm"]).astype("double")
                 dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
+                if dataext in (".dcm", ".DCM"):
+                    dim.SetMetaData("0020|1041", str(z_position))
+                    dim.SetMetaData("0020|0011", str(series_number))
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
             z_position += z_vs

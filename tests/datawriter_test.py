@@ -10,6 +10,7 @@ import unittest
 import os
 import os.path as op
 import warnings
+from pathlib import Path
 
 # path_to_script = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.join(path_to_script, "../extern/pyseg_base/src/"))
@@ -20,16 +21,8 @@ import shutil
 
 
 import numpy as np
-
-
-try:
-    import dicom
-
-    dicom.debug(False)
-except:
-    import pydicom as dicom
-
-    dicom.config.debug(False)
+import pydicom as dicom
+dicom.config.debug(False)
 
 #
 import io3d
@@ -99,14 +92,14 @@ class DicomWriterTest(unittest.TestCase):
     #        reader = dcmr.DicomReader(self.dcmdir)
     #        self.data3d = reader.get_3Ddata()
     #        self.metadata = reader.get_metaData()
-    def test_write_and_read(self):
+    def test_write_and_read_int16(self):
         filename = "test_file.dcm"
         data = (np.random.random([30, 100, 120]) * 30).astype(np.int16)
         data[0:5, 20:60, 60:70] += 30
         metadata = {"voxelsize_mm": [1, 2, 3]}
         dw = dwriter.DataWriter()
         logger.debug(filename)
-        dw.Write3DData(data, filename, filetype="dcm", metadata=metadata)
+        dw.Write3DData(data, filename, filetype="dcm", metadata=metadata, allow_rescale_intercept=True)
 
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData(filename, dataplus_format=False)
@@ -219,7 +212,102 @@ class DicomWriterTest(unittest.TestCase):
         data3d[3:, 2:7, 4] = 60
 
         io3d.write(data3d, filename)
+        assert Path(filename).exists()
         os.remove(filename)
+
+    def test_write_single_dicom_dtypes(self):
+        voxelsize_mm = [1.5, 1., 1.]
+
+        # one_file = "file.dcm"
+        # multi_files = "dir/file{:04d}.dcm"
+        # multi_files_dir = "dir/"
+        one_file = True
+        multi_files = False
+        # multi_files_dir = "dir/"
+        for args in [
+            (10, 150, np.uint8, 10, multi_files),
+            (10, 150, np.uint8, 10, one_file),
+            (10, 150, np.uint8, 1, one_file),
+            # (10, 150, np.uint8, 1, multi_files),
+            # (10, 100, np.int8), # fail
+            (-10, 100, np.int8, 1, one_file),
+            (-10, 100, np.int8, 10, multi_files), # fail
+            # (-10, 100, np.int8, 10), # fail
+            # (-1010, 100, np.int16),
+            # (-5010, 100, np.int16), # fail
+            # (10, 100, np.int16),
+        ]:
+            data3d = self.make_data10(*args[:-1])
+            logger.debug(f"{args}")
+            if args[-1]: # one file
+                self.write_and_read_dicom(data3d, voxelsize_mm, "test_file.dcm")
+                self.write_and_read_dicom_directly_with_simpleitk(data3d, voxelsize_mm)
+            else:
+                self.write_and_read_dicom(data3d, voxelsize_mm, "test_dir", "test_dir/file{:04d}.dcm")
+
+    def make_data10(self, mini, maxi, dtype, zshape):
+        data3d = np.zeros([zshape, 10, 10], dtype=dtype)
+        data3d[0:, 8, 3:9] = maxi
+        data3d[0:, 2:7, 4] = mini
+        return data3d
+
+    def write_and_read_dicom(self, data3d, voxelsize_mm, filename, filename_write=None):
+        filename = Path(filename)
+        if filename.exists():
+            if filename.is_file():
+                filename.unlink()
+            else:
+                shutil.rmtree(filename)
+
+        # filename.parent.mkdir(parents=True, exist_ok=True)
+        if filename_write is None:
+            filename_write = filename
+        io3d.write(data3d, filename_write, metadata=dict(voxelsize_mm=voxelsize_mm))
+        assert Path(filename).exists()
+        logger.debug(f"reading path {filename}")
+        datap = io3d.read(filename)
+        assert np.array_equal(datap.data3d, data3d)
+        assert datap.data3d.dtype == data3d.dtype
+        # filename.unlink()
+
+    def write_and_read_dicom_directly_with_simpleitk(self, data3d, voxelsize_mm):
+
+        filename = Path("tests_outputs/rw_simpleitk.dcm")
+        if filename.exists():
+            filename.unlink()
+        import SimpleITK as sitk
+        from scipy.stats import describe
+        logger.debug(data3d.dtype)
+        logger.debug(describe(data3d.ravel()))
+        sitkim = sitk.GetImageFromArray(data3d)
+        sitk.WriteImage(sitkim, str(filename))
+        # logger.debug(sitkim.GetMetaData("0028|1052"))
+        # logger.debug(sitkim.GetMetaData("0028|1053"))
+        sitkim = sitk.ReadImage(str(filename))
+        sitkd3d = sitk.GetArrayFromImage(sitkim)
+        assert np.array_equal(sitkd3d, data3d)
+        assert sitkd3d.dtype == data3d.dtype
+        filename.unlink()
+
+
+    def test_read_and_write_dicom(self):
+        import SimpleITK as sitk
+        from scipy.stats import describe
+
+        filename = io3d.joinp(r"medical\orig\3Dircadb1.1\PATIENT_DICOM\image_50")
+        # filename = Path(r"H:\medical\orig\3Dircadb1.1\PATIENT_DICOM\image_50")
+        sitkim = sitk.ReadImage(str(filename))
+        data3d = sitk.GetArrayFromImage(sitkim)
+        logger.debug(data3d.dtype)
+        logger.debug(data3d.shape)
+        logger.debug(describe(data3d.ravel()))
+
+        # data3d = self.make_data10(-10,50, np.int16)
+        # data3d = np.zeros([5,10,10], dtype=np.int16)
+
+        fno = Path("test.dcm")
+        sitkim = sitk.GetImageFromArray(data3d)
+        sitk.WriteImage(sitkim, str(fno))
 
     def test_add_overlay_and_read_one_file_with_overlay(self):
         logger.info("test started")
