@@ -45,13 +45,6 @@ def write(
     will be set.
     :return:
     """
-    # if (type(data3d) == dict) or (type(data3d == image.DataPlus)):
-    #     if metadata == None:
-    #         metadata = data3d
-    #         data3d = data3d.pop('data3d')
-    #     else:
-    #         logger.error("Cannot use first argument of type dict or DataPlus together with metadata.")
-    #         raise ValueError("Cannot use first argument of type dict or DataPlus together with")
 
     dw = DataWriter()
     dw.Write3DData(
@@ -107,11 +100,15 @@ class DataWriter:
         path = os.path.expanduser(path)
 
         tp = type(data3d)
-        if tp in (image.DataPlus, np.ndarray):
+        if tp in (image.DataPlus, dict):
             # copy
             datap = dict(data3d)
             data3d = datap.pop("data3d")
             metadata = datap
+        elif tp == np.ndarray:
+            pass
+        else:
+            logger.warning(f"Type '{tp}' may not be compatible with datawriter.")
 
         if progress_callback is not None:
             self.progress_callback = progress_callback
