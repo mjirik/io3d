@@ -137,7 +137,7 @@ class AnnotationTOmask:
          return M
 
 
-def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type="JPG", show=False):
+def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type="JPG", show=False):
     """
 
     :param coco_filename: coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC

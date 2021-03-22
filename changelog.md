@@ -5,6 +5,7 @@ Latest version 2.10.0
 ## 2.10
 
 * [Added] Read by url
+* [Added] Export masks from COCO annotation files
 
 ## 2.9
 

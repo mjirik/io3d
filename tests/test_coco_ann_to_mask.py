@@ -9,7 +9,7 @@ import numpy as np
 import shutil
 
 
-import convert_coco_ann_to_mask
+from io3d import convert_coco_ann_to_mask
 
 
 def test_coco_ann_to_mask():
@@ -22,7 +22,7 @@ def test_coco_ann_to_mask():
     if output_path.exists():
         shutil.rmtree(output_path)
 
-    convert_coco_ann_to_mask.CocoToMask(input_path, output_path, "Vena Cava", output_type=output_type)
+    convert_coco_ann_to_mask.coco_to_mask(input_path, output_path, "Vena Cava", output_type=output_type)
     fnlist = output_path.glob(f"*.{output_type}")
     assert len(list(fnlist)) > 0
     dp = io3d.read(output_path)
