@@ -453,7 +453,7 @@ class DataWriter:
                         dim, metadata, "PixelSpacing", f"{vsz[1]}\\{vsz[2]}"
                     )  # 0028|0030
                     self._set_dicom_tag(
-                        dim, metadata, "Modality", f"{metadata['Modality']}"
+                        dim, metadata, "Modality", f""
                     )
 
             # import ipdb; ipdb.set_trace()
