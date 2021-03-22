@@ -528,7 +528,7 @@ class DicomWriterTest(unittest.TestCase):
         self.assertEqual(np.sum(np.abs(data3d - data3dnew)), 0)
         shutil.rmtree(testdatadir)
 
-    def test_write_dicom(self):
+    def test_write_dicom_twice_with_datap(self):
         path1 = "new_dcmfile1.dcm"
         path2 = "new_dcmfile2.dcm"
         data3d = np.zeros([10, 15, 20], dtype="uint16")
