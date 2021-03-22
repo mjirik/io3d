@@ -1248,6 +1248,24 @@ def remove(local_file_name):
         )
         print(e)
 
+def fetch_file(url, dest=None, filename=None):
+    """
+    Download file from url if necessary.
+    :param url:
+    :param dest:
+    :param filename:
+    :return:
+    """
+    from . import network
+    if dest is not None:
+        dest = joinp("/downloads/")
+    filename = network.get_filename(url, dest, filename)
+    if not Path(filename).exists():
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)
+        network.download_file(url, dest=dest, filename=filename)
+
+    return Path(filename)
+
 
 def get_labels():
     _update_datasets_url()

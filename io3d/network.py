@@ -3,6 +3,8 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import sys, os, tempfile, logging
+from pathlib import Path
+from typing import Union
 
 if sys.version_info >= (3,):
     import urllib.request as urllib2
@@ -11,6 +13,16 @@ else:
     import urllib2
     import urlparse
 
+
+def get_filename(url, dest=None, filename:Union[str, Path]=None):
+    scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
+    if filename is None:
+        filename = os.path.basename(path)
+    if not filename:
+        filename = "downloaded.file"
+    if dest:
+        filename = os.path.join(dest, filename)
+    return Path(filename)
 
 def download_file(url, dest=None, filename=None):
     """
@@ -22,13 +34,8 @@ def download_file(url, dest=None, filename=None):
     """
     u = urllib2.urlopen(url)
 
-    scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
-    if filename is None:
-        filename = os.path.basename(path)
-    if not filename:
-        filename = "downloaded.file"
-    if dest:
-        filename = os.path.join(dest, filename)
+
+    filename = get_filename(url, dest, filename)
 
     with open(filename, "wb") as f:
         meta = u.info()
@@ -54,3 +61,21 @@ def download_file(url, dest=None, filename=None):
                 status += "   [{0:6.2f}%]".format(file_size_dl * 100 / file_size)
             status += chr(13)
             print(status, end="")
+
+
+def is_url(url):
+    """
+    Check if string is url. From django.
+    :param url:
+    :return:
+    """
+    import re
+    regex = re.compile(
+        r'^(?:http|ftp)s?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+    return re.match(regex, str(url)) is not None
