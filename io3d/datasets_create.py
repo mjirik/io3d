@@ -7,14 +7,13 @@ from typing import TypeVar, Union
 from numbers import Number
 
 
-
 def export_to_jpg(
-        input_path:Union[Path, str],
-        output_path:Union[Path, str],
-        window_center:Number,
-        window_width:Number,
-        output_name:str="image_",
-        cmap='gray'
+    input_path: Union[Path, str],
+    output_path: Union[Path, str],
+    window_center: Number,
+    window_width: Number,
+    output_name: str = "image_",
+    cmap="gray",
 ):
     """
     Read volumetric data form dir, apply intnsity windowing and store the output to the series of JPGs.

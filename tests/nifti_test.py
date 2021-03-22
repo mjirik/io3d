@@ -11,13 +11,15 @@ from io3d import nifti_io
 
 # @unittest.skipIf(os.environ.get("TRAVIS", True), "Skip on Travis-CI")
 def test_read_nifti():
-    pth = io3d.datasets.fetch_file(r"https://nifti.nimh.nih.gov/pub/dist/data/nifti2/avg152T1_LR_nifti2.nii.gz")
+    pth = io3d.datasets.fetch_file(
+        r"https://nifti.nimh.nih.gov/pub/dist/data/nifti2/avg152T1_LR_nifti2.nii.gz"
+    )
 
     # pth = Path('~/Downloads/avg152T1_LR_nifti2.nii.gz').expanduser()
     img = nib.load(pth)
     data3d = img.dataobj
     img.shape
-    plt.imshow(data3d[:,:, 50])
+    plt.imshow(data3d[:, :, 50])
     plt.show()
 
     logger.debug(img.header.get_zooms())
@@ -27,9 +29,7 @@ def test_read_nifti():
 
     data = np.arange(4 * 4 * 3).reshape(4, 4, 3)
 
-
-
-    voxelsize_mm = [1., 2., 3.]
+    voxelsize_mm = [1.0, 2.0, 3.0]
 
     diag = np.ones([4])
     diag[:3] = voxelsize_mm[:]
@@ -49,13 +49,12 @@ def test_read_nifti():
 
 def test_write_and_read_nifi():
     shape = [5, 6, 7]
-    voxelsize_mm = [1., 2., 3.]
-    fn = 'test.nii'
+    voxelsize_mm = [1.0, 2.0, 3.0]
+    fn = "test.nii"
     data3d = np.array(range(np.prod(shape))).reshape(shape)
 
     nifti_io.write_nifti(
-        dict(data3d=data3d, voxelsize_mm=voxelsize_mm, orientation_axcodes='RAS'),
-        fn
+        dict(data3d=data3d, voxelsize_mm=voxelsize_mm, orientation_axcodes="RAS"), fn
     )
 
     new_data3d, metadata = nifti_io.read_nifti(fn)
@@ -70,12 +69,13 @@ def test_write_and_read_nifi():
 
 def test_write_and_read_nifi_with_datap():
     shape = [5, 6, 7]
-    voxelsize_mm = [1., 2., 3.]
-    fn = 'test.nii.gz'
+    voxelsize_mm = [1.0, 2.0, 3.0]
+    fn = "test.nii.gz"
     data3d = np.array(range(np.prod(shape))).reshape(shape)
 
     datap = io3d.image.DataPlus(
-        dict(data3d=data3d, voxelsize_mm=voxelsize_mm, orientation_axcodes='RAS'))
+        dict(data3d=data3d, voxelsize_mm=voxelsize_mm, orientation_axcodes="RAS")
+    )
     logger.debug(datap.orientation_axcodes)
     io3d.write(datap, fn)
 
@@ -92,5 +92,3 @@ def test_write_and_read_nifi_with_datap():
     assert voxelsize_mm[0] == new_datap["voxelsize_mm"][0]
     assert voxelsize_mm[1] == new_datap["voxelsize_mm"][1]
     assert voxelsize_mm[2] == new_datap["voxelsize_mm"][2]
-
-

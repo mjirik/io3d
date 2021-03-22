@@ -15,6 +15,7 @@ import sys
 from .image import DataPlus, transform_orientation, transform_orientation_voxelsize
 
 import pydicom as dicom
+
 dicom.config.debug(False)
 
 # NOTE(mareklovci - 2018_05_13): Absolute imports are prefered in Python, so eg. "from io3d import tgz" should be used.
@@ -50,7 +51,7 @@ def read(
     series_number=None,
     use_economic_dtype=True,
     dicom_expected=None,
-    orientation_axcodes='original',
+    orientation_axcodes="original",
     **kwargs
 ):
     """Returns 3D data and its metadata.
@@ -115,7 +116,7 @@ class DataReader:
     # noinspection PyAttributeOutsideInit,PyUnboundLocalVariable,PyPep8Naming
     def Get3DData(
         self,
-        datapath:Union[str,Path],
+        datapath: Union[str, Path],
         qt_app=None,
         dataplus_format=True,
         gui=False,
@@ -126,7 +127,7 @@ class DataReader:
         series_number=None,
         use_economic_dtype=True,
         dicom_expected=None,
-        orientation_axcodes='original',
+        orientation_axcodes="original",
         **kwargs
     ):
         """Returns 3D data and its metadata.
@@ -193,11 +194,18 @@ class DataReader:
 
         if orientation_axcodes:
             if orientation_axcodes == "original":
-                logger.warning("orientation_axcodes default value will be changed in the furture to 'LPS'")
+                logger.warning(
+                    "orientation_axcodes default value will be changed in the furture to 'LPS'"
+                )
             else:
-                data3d = transform_orientation(data3d, metadata["orientation_axcodes"], orientation_axcodes)
+                data3d = transform_orientation(
+                    data3d, metadata["orientation_axcodes"], orientation_axcodes
+                )
                 metadata["voxelsize_mm"] = transform_orientation_voxelsize(
-                    metadata["voxelsize_mm"], metadata["orientation_axcodes"], orientation_axcodes)
+                    metadata["voxelsize_mm"],
+                    metadata["orientation_axcodes"],
+                    orientation_axcodes,
+                )
                 metadata["orientation_axcodes"] = orientation_axcodes
 
         if convert_to_gray:
@@ -323,8 +331,9 @@ class DataReader:
             metadata = _create_meta(datapath)
             metadata.update(datap)
 
-        elif str(datapath).lower().endswith(".nii.gz"):# or ext == 'nii':
+        elif str(datapath).lower().endswith(".nii.gz"):  # or ext == 'nii':
             from . import nifti_io
+
             data3d, metadata = nifti_io.read_nifti(datapath)
 
         elif ext in ["idx"]:

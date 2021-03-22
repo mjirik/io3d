@@ -31,7 +31,7 @@ def test_export_to_jpg():
 
     # get the expected path fo file
     dataset_label = "3Dircadb1"
-    data_type = 'data3d'
+    data_type = "data3d"
     data_id = 1
     selected_dataset = io3d.datasets.DATASET_PATH_STRUCTURE[dataset_label]
     pth_fmt_str = (
@@ -39,16 +39,22 @@ def test_export_to_jpg():
         if data_type in selected_dataset
         else selected_dataset["_"]
     )
-    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=data_id)
+    pth = pth_fmt_str.format(
+        dataset_label=dataset_label, data_type=data_type, id=data_id
+    )
     datapath = io3d.joinp(pth)
     assert Path(datapath).exists()
 
-    io3d.datasets_create.export_to_jpg(datapath, expected_output_path, window_center=40, window_width=400,
-                                       output_name=output_name)
+    io3d.datasets_create.export_to_jpg(
+        datapath,
+        expected_output_path,
+        window_center=40,
+        window_width=400,
+        output_name=output_name,
+    )
 
     jpg_files = f"{expected_output_path}/{output_name}*.jpg"
     jpg_files_list = glob.glob(jpg_files)
 
     # are there any files in expected_output_path
     assert len(jpg_files_list) > 0
-

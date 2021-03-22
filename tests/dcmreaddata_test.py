@@ -712,24 +712,25 @@ class DicomReaderTest(unittest.TestCase):
     #
     def test_write_read_hdf5_toyexample(self):
         import h5py
+
         fn = "pokus.h5"
-        with h5py.File(fn, 'w') as h5file:
-            dt = np.zeros([3,4,5], dtype='uint8')
-            dt[1,2,3] = 4
+        with h5py.File(fn, "w") as h5file:
+            dt = np.zeros([3, 4, 5], dtype="uint8")
+            dt[1, 2, 3] = 4
             h5file.create_dataset("nparr", data=dt)
             h5file.create_dataset("|pokus|adfas|", shape=[1], data=[5])
             # h5file.create_group('gr')
             h5file.create_dataset("/gr/grin", data=[7])
             # h5file.create_dataset("/gr/grin", shape=[1], data=[7])
 
-        with h5py.File(fn, 'r') as h5file:
+        with h5py.File(fn, "r") as h5file:
             # h5file.create_dataset("nparr", data=np.zeros([3,4,5], dtype='uint8'))
-            assert h5file['nparr'][1,2,3] == 4
-            assert h5file['nparr'][0,0,0] == 0
+            assert h5file["nparr"][1, 2, 3] == 4
+            assert h5file["nparr"][0, 0, 0] == 0
             assert h5file["/gr/grin"][0] == 7
 
-
     import h5py
+
     def test_write_read_hdf5(self):
         import io3d.datawriter as dwriter
         import io3d.datareader as dreader
@@ -741,9 +742,9 @@ class DicomReaderTest(unittest.TestCase):
         data[5, 10, 15] = 20
         metadata = {
             "voxelsize_mm": [1, 2, 3],
-            'slab':{'nothing':0, 'liver': 1, 'porta': 2},
-            'int_value': 19,
-            'float_value': 3.14,
+            "slab": {"nothing": 0, "liver": 1, "porta": 2},
+            "int_value": 19,
+            "float_value": 3.14,
         }
         dwriter.write(data, filename, filetype="hdf5", metadata=metadata)
 
@@ -752,13 +753,13 @@ class DicomReaderTest(unittest.TestCase):
             fi[key]
 
         datap = dreader.read(filename, dataplus_format=True)
-        assert datap["data3d"][5,10,15] == 20
+        assert datap["data3d"][5, 10, 15] == 20
         assert datap["voxelsize_mm"][0] == 1
         assert datap["voxelsize_mm"][1] == 2
         assert datap["voxelsize_mm"][2] == 3
-        assert datap['slab']['liver'] == 1
-        assert datap['int_value'] == 19
-        assert datap['float_value'] == 3.14
+        assert datap["slab"]["liver"] == 1
+        assert datap["int_value"] == 19
+        assert datap["float_value"] == 3.14
         # print(datap)
 
     def test_idx_data(self):
@@ -807,14 +808,16 @@ def test_orientations_axcodes():
     data3d = datap.data3d
     voxelsize_mm = datap.voxelsize_mm
 
-
     # check the input
     check_densities_on_image_border(data3d, voxelsize_mm, input_axcodes)
     # check the output
     for axcodes in ["LPS", "RIA"]:
         data3d_ornt = io3d.image.transform_orientation(data3d, input_axcodes, axcodes)
-        voxelsize_mm_ornt = io3d.image.transform_orientation_voxelsize(voxelsize_mm, input_axcodes, axcodes)
+        voxelsize_mm_ornt = io3d.image.transform_orientation_voxelsize(
+            voxelsize_mm, input_axcodes, axcodes
+        )
         check_densities_on_image_border(data3d_ornt, voxelsize_mm_ornt, axcodes)
+
 
 def test_orientations_axcodes_with_dataplus():
     """
@@ -828,7 +831,10 @@ def test_orientations_axcodes_with_dataplus():
         datap.transform_orientation(axcodes)
         check_densities_on_image_border(datap.data3d, datap.voxelsize_mm, axcodes)
 
-def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, threshold=-800):
+
+def _check_low_density_on_first_and_last_slide(
+    data3d: np.array, ax_orto: int, threshold=-800
+):
     slices_first = [slice(None), slice(None), slice(None)]
     slices_last = [slice(None), slice(None), slice(None)]
     slices_first[ax_orto] = 0
@@ -837,37 +843,57 @@ def _check_low_density_on_first_and_last_slide(data3d:np.array, ax_orto:int, thr
     mn2 = np.mean(data3d[tuple(slices_last)])
     return (mn1 < threshold) & (mn2 < threshold)
 
-def _find_superior_inferior_axis(axcode:str):
-    return np.max([
-        axcode.find("S"), # superior
-        axcode.find("I"), # inferior
-        axcode.find("U"), # up
-        axcode.find("D"), # down
-    ])
 
-def check_densities_on_image_border(data3d:np.ndarray, voxelsize_mm, input_axcodes, debug_imshow=False):
+def _find_superior_inferior_axis(axcode: str):
+    return np.max(
+        [
+            axcode.find("S"),  # superior
+            axcode.find("I"),  # inferior
+            axcode.find("U"),  # up
+            axcode.find("D"),  # down
+        ]
+    )
+
+
+def check_densities_on_image_border(
+    data3d: np.ndarray, voxelsize_mm, input_axcodes, debug_imshow=False
+):
     if debug_imshow:
         from matplotlib import pyplot as plt
+
         plt.figure(figsize=(15, 8))
         ax = plt.subplot(131)
         ax.set_title(f"{input_axcodes} 1st axis fixed")
-        plt.imshow(data3d[int(data3d.shape[0] / 2), :, :], cmap='gray', vmin=-160, vmax=240)
+        plt.imshow(
+            data3d[int(data3d.shape[0] / 2), :, :], cmap="gray", vmin=-160, vmax=240
+        )
         ax = plt.subplot(132)
         ax.set_title(f"{input_axcodes} 2nd axis fixed")
-        plt.imshow(data3d[:, int(data3d.shape[1] / 2), :], cmap='gray', vmin=-160, vmax=240)
+        plt.imshow(
+            data3d[:, int(data3d.shape[1] / 2), :], cmap="gray", vmin=-160, vmax=240
+        )
         ax = plt.subplot(133)
         ax.set_title(f"{input_axcodes} 3rd axis fixed")
-        plt.imshow(data3d[:, :, int(data3d.shape[2] / 2)], cmap='gray', vmin=-160, vmax=240)
+        plt.imshow(
+            data3d[:, :, int(data3d.shape[2] / 2)], cmap="gray", vmin=-160, vmax=240
+        )
         # plt.title(input_axcodes)
         plt.show()
     sup_inf_ax = _find_superior_inferior_axis(input_axcodes)
-    other_ax = [0,1,2]
+    other_ax = [0, 1, 2]
     other_ax.pop(sup_inf_ax)
-    assert ~_check_low_density_on_first_and_last_slide(data3d, ax_orto=sup_inf_ax), "there should be axial slide"
+    assert ~_check_low_density_on_first_and_last_slide(
+        data3d, ax_orto=sup_inf_ax
+    ), "there should be axial slide"
     assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=other_ax[0])
     assert _check_low_density_on_first_and_last_slide(data3d, ax_orto=other_ax[1])
-    assert voxelsize_mm[sup_inf_ax] > voxelsize_mm[other_ax[0]], "sup-inf axis should have higher voxelsize"
-    assert voxelsize_mm[sup_inf_ax] > voxelsize_mm[other_ax[1]], "sup-inf axis should have higher voxelsize"
+    assert (
+        voxelsize_mm[sup_inf_ax] > voxelsize_mm[other_ax[0]]
+    ), "sup-inf axis should have higher voxelsize"
+    assert (
+        voxelsize_mm[sup_inf_ax] > voxelsize_mm[other_ax[1]]
+    ), "sup-inf axis should have higher voxelsize"
+
 
 if __name__ == "__main__":
     unittest.main()

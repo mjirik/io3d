@@ -25,6 +25,7 @@ from typing import Optional
 # import io3d
 from . import cachefile as cachef
 from . import datareader
+
 # from type import Number
 
 # if sys.version_info < (3, 0):
@@ -120,7 +121,11 @@ data_urls = {
     ],
     "SCP003": {"package": ["SCP003-ndpi", "SCP003-ndpa"]},
     # "SCP003": [__url_server + "sample_data/SCP003.zip", "001a3ff3831eb87dccc2aa3a55f96152", "SCP0003/SCP003*.ndp?"],
-    "donut": [__url_server + "sample_data/donut.zip", None, __hash_path_prefix + "/sample_data/donut/*.*"],
+    "donut": [
+        __url_server + "sample_data/donut.zip",
+        None,
+        __hash_path_prefix + "/sample_data/donut/*.*",
+    ],
     # alternative linux hash nrn4 'd41d8cd98f00b204e9800998ecf8427e'
     "nrn4": [
         __url_server + "sample_data/nrn4.pklz",
@@ -440,13 +445,13 @@ def add_dataset_path_structure(
             dps_in_cache_file = dps
     if type(dct_dataset_path_structure) == str:
         import json
+
         dct_dataset_path_structure = json.loads(dct_dataset_path_structure)
     dps_in_cache_file.update(dct_dataset_path_structure)
-    cache.update('$DATASET_PATH_STRUCTURE', dps_in_cache_file)
+    cache.update("$DATASET_PATH_STRUCTURE", dps_in_cache_file)
 
-def delete_dataset_path_structure(
-            key, cache=None, cachefile="~/.io3d_cache.yaml"
-    ):
+
+def delete_dataset_path_structure(key, cache=None, cachefile="~/.io3d_cache.yaml"):
     dps_in_cache_file = {}
     if cachefile is not None:
         cache = cachef.CacheFile(cachefile)
@@ -456,15 +461,15 @@ def delete_dataset_path_structure(
 
     if key in dps_in_cache_file:
         dps_in_cache_file.pop(key)
-    cache.update('$DATASET_PATH_STRUCTURE', dps_in_cache_file)
+    cache.update("$DATASET_PATH_STRUCTURE", dps_in_cache_file)
 
 
 def get_dataset_path(
-        dataset_label:str,
-        data_type:str,
-        data_id:int,
-        subtype:str="Ven",
-        cachefile="~/.io3d_cache.yaml"
+    dataset_label: str,
+    data_type: str,
+    data_id: int,
+    subtype: str = "Ven",
+    cachefile="~/.io3d_cache.yaml",
 ):
     """
 
@@ -485,31 +490,32 @@ def get_dataset_path(
             dps0.update(dps)
     selected_dataset = dps0[dataset_label]
 
-
     pth_fmt_str = (
         selected_dataset[data_type]
         if data_type in selected_dataset
         else selected_dataset["_"]
     )
-    pth = pth_fmt_str.format(dataset_label=dataset_label, data_type=data_type, id=data_id, subtype=subtype)
+    pth = pth_fmt_str.format(
+        dataset_label=dataset_label, data_type=data_type, id=data_id, subtype=subtype
+    )
     datapath = joinp(pth)
     return datapath
 
 
 def read_dataset(
-    dataset_label:str,
-    data_type:str,
-    data_id:int,
-    qt_app:"PyQt5.QtGuiApplication"=None,
-    dataplus_format:bool=True,
-    gui:bool=False,
-    start:int=0,
-    stop:Optional[int]=None,
-    step:int=1,
-    convert_to_gray:bool=True,
-    series_number:Optional[int]=None,
-    dicom_expected:Optional[bool]=None,
-    subtype:str="Ven",
+    dataset_label: str,
+    data_type: str,
+    data_id: int,
+    qt_app: "PyQt5.QtGuiApplication" = None,
+    dataplus_format: bool = True,
+    gui: bool = False,
+    start: int = 0,
+    stop: Optional[int] = None,
+    step: int = 1,
+    convert_to_gray: bool = True,
+    series_number: Optional[int] = None,
+    dicom_expected: Optional[bool] = None,
+    subtype: str = "Ven",
     **kwargs,
 ):
     """
@@ -531,8 +537,10 @@ def read_dataset(
     :return:
     """
     datapath = get_dataset_path(
-        dataset_label=dataset_label, data_type=data_type, data_id=data_id,
-        subtype=subtype
+        dataset_label=dataset_label,
+        data_type=data_type,
+        data_id=data_id,
+        subtype=subtype,
     )
     dr = datareader.DataReader()
     output = dr.Get3DData(
@@ -1248,6 +1256,7 @@ def remove(local_file_name):
         )
         print(e)
 
+
 def fetch_file(url, dest=None, filename=None):
     """
     Download file from url if necessary.
@@ -1257,6 +1266,7 @@ def fetch_file(url, dest=None, filename=None):
     :return:
     """
     from . import network
+
     if dest is not None:
         dest = joinp("/downloads/")
     filename = network.get_filename(url, dest, filename)

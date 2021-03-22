@@ -572,7 +572,7 @@ class DicomDirectory:
             "voxelsize_mm": voxelsize_mm,
             "Modality": data1.Modality,
             "SeriesNumber": series_number,
-            "orientation_axcodes": "SPL"
+            "orientation_axcodes": "SPL",
         }
 
         try:

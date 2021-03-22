@@ -10,14 +10,14 @@ def read_nifti(filename: Union[Path, str]) -> Tuple[np.ndarray, dict]:
     data3d = np.asarray(img.dataobj)
     voxelsize_mm = img.header.get_zooms()
     metadata = {
-        'voxelsize_mm': voxelsize_mm,
-        'affine': img.affine,
-        'orientation_axcodes': nib.orientations.aff2axcodes(img.affine)
+        "voxelsize_mm": voxelsize_mm,
+        "affine": img.affine,
+        "orientation_axcodes": nib.orientations.aff2axcodes(img.affine),
     }
     return data3d, metadata
 
 
-def write_nifti(datap:Union[dict, io3d.image.DataPlus], filename:Union[str, Path]):
+def write_nifti(datap: Union[dict, io3d.image.DataPlus], filename: Union[str, Path]):
     """
     Write dict with image data into nifti file. There should be fallowing keys in the dict:
     * 'data3d'
@@ -29,13 +29,13 @@ def write_nifti(datap:Union[dict, io3d.image.DataPlus], filename:Union[str, Path
         datap = io3d.image.DataPlus(datap)
     datap.transform_orientation("RAS")
     if "affine" in datap:
-        affine = datap.pop('affine')
+        affine = datap.pop("affine")
     else:
         if "voxelsize_mm" in datap and "orientation_axcodes":
             input_axcodes = datap["orientation_axcodes"]
             ornt_my = nib.orientations.axcodes2ornt(input_axcodes)
 
-    data3d = datap.pop('data3d')
+    data3d = datap.pop("data3d")
 
     diag = np.ones([4])
     diag[:3] = datap.voxelsize_mm[:]

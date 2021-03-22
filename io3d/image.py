@@ -5,8 +5,8 @@ import numpy as np
 from pathlib import Path
 from loguru import logger
 
-class DataPlus(dict):
 
+class DataPlus(dict):
     @property
     def voxelsize_mm(self):
         return self["voxelsize_mm"]
@@ -55,7 +55,7 @@ class DataPlus(dict):
     def affine(self, value):
         self["affine"] = value
 
-    def transform_orientation(self, axcodes:str):
+    def transform_orientation(self, axcodes: str):
         """
         Change the orientation of data3d and voxelsize_mm.
 
@@ -70,15 +70,17 @@ class DataPlus(dict):
         # if "orientations_axcodes" in self.keys():
         input_axcodes = self["orientation_axcodes"]
         self["data3d"] = transform_orientation(self["data3d"], input_axcodes, axcodes)
-        self["voxelsize_mm"] = transform_orientation_voxelsize(self["voxelsize_mm"], input_axcodes, axcodes)
+        self["voxelsize_mm"] = transform_orientation_voxelsize(
+            self["voxelsize_mm"], input_axcodes, axcodes
+        )
         self["orientation_axcodes"] = axcodes
         if "affine" in self:
             logger.warning("Affine transfomation is not implemented.")
 
-    def write(self, path:Union[str, Path], *args, **kwargs):
+    def write(self, path: Union[str, Path], *args, **kwargs):
         import io3d.datawriter
-        return io3d.datawriter.write(self["data3d"], path=path, *args, **kwargs)
 
+        return io3d.datawriter.write(self["data3d"], path=path, *args, **kwargs)
 
     # def __getattr__(self, attr):
     #     print(f"attr: {attr}")
@@ -90,7 +92,7 @@ class DataPlus(dict):
     #     self[attr] = value
 
 
-def as_datap(obj:Union[dict,DataPlus])->DataPlus:
+def as_datap(obj: Union[dict, DataPlus]) -> DataPlus:
     """
     Convert dict to DataPlus format if necessary.
     :param obj:
@@ -106,7 +108,7 @@ def as_datap(obj:Union[dict,DataPlus])->DataPlus:
         raise TypeError("Type Dict or type DataPlus expected.")
 
 
-def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
+def transform_orientation(arr: np.ndarray, input_axcodes, output_axcodes):
     """
     Change the orientation of the array. Most used axcodes are LPS (Left, Posterior and Superior) and RAS (Right,
     Anterior and Superior).  First letters of words Left, Right, Superior,
@@ -131,6 +133,7 @@ def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
     # ║ Front  ║ Anterior   ║
     # ║ Back   ║ Posterior
     import nibabel
+
     ornt_my = nibabel.orientations.axcodes2ornt(input_axcodes)
     ornt_ras = nibabel.orientations.axcodes2ornt(output_axcodes)
     ornt = nibabel.orientations.ornt_transform(ornt_my, ornt_ras)
@@ -138,7 +141,9 @@ def transform_orientation(arr:np.ndarray, input_axcodes, output_axcodes):
     return data3d_ornt
 
 
-def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_axcodes):
+def transform_orientation_voxelsize(
+    voxelsize: np.ndarray, input_axcodes, output_axcodes
+):
     """
     Change the orientation of the array. We use 'SPL'. Most used axcodes are LPS (Left, Posterior and Superior) and
     RAS (Right, Anterior and Superior).  First letters of words Left, Right, Superior,
@@ -155,9 +160,10 @@ def transform_orientation_voxelsize(voxelsize:np.ndarray, input_axcodes, output_
     :return: transformed array
     """
     import nibabel
+
     ornt_my = nibabel.orientations.axcodes2ornt(input_axcodes)
     ornt_ras = nibabel.orientations.axcodes2ornt(output_axcodes)
-    voxelsize_mid = [0,0,0]
+    voxelsize_mid = [0, 0, 0]
     voxelsize_mid[int(ornt_my[0][0])] = voxelsize[0]
     voxelsize_mid[int(ornt_my[1][0])] = voxelsize[1]
     voxelsize_mid[int(ornt_my[2][0])] = voxelsize[2]

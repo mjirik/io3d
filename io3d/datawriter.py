@@ -32,7 +32,13 @@ from . import dcmtools
 from . import image
 
 
-def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str], filetype="auto", metadata:dict=None, allow_rescale_intercept:bool=False):
+def write(
+    data3d: Union[np.ndarray, dict, image.DataPlus],
+    path: Union[Path, str],
+    filetype="auto",
+    metadata: dict = None,
+    allow_rescale_intercept: bool = False,
+):
     """
 
     :param data3d: input ndarray or DataPlus
@@ -54,7 +60,13 @@ def write(data3d:Union[np.ndarray, dict, image.DataPlus], path:Union[Path, str],
     #         raise ValueError("Cannot use first argument of type dict or DataPlus together with")
 
     dw = DataWriter()
-    dw.Write3DData(data3d, path, filetype, metadata, allow_rescale_intercept=allow_rescale_intercept)
+    dw.Write3DData(
+        data3d,
+        path,
+        filetype,
+        metadata,
+        allow_rescale_intercept=allow_rescale_intercept,
+    )
 
 
 class DataWriter:
@@ -80,7 +92,7 @@ class DataWriter:
         metadata=None,
         progress_callback=None,
         sfin=True,
-        allow_rescale_intercept=False
+        allow_rescale_intercept=False,
     ):
         """
         :param data3d: input ndarray data
@@ -144,12 +156,15 @@ class DataWriter:
                 pass
             else:
                 logger.warning(
-                    f"Datatype {data3d.dtype} is not supported by io3d due to SimpleITK. Changed to np.int16)")
+                    f"Datatype {data3d.dtype} is not supported by io3d due to SimpleITK. Changed to np.int16)"
+                )
                 data3d = data3d.astype(np.int16)
             self._write_with_sitk(path, data3d, metadata, allow_rescale_intercept)
             self._fix_sitk_bug(path, metadata)
             if sfin and segmentation is not None:
-                self._write_with_sitk(segmentation_path, segmentation, metadata, allow_rescale_intercept)
+                self._write_with_sitk(
+                    segmentation_path, segmentation, metadata, allow_rescale_intercept
+                )
                 self._fix_sitk_bug(segmentation_path, metadata)
         elif filetype in ["rawiv"]:
             rawN.write(path, data3d, metadata)
@@ -157,7 +172,7 @@ class DataWriter:
             self.save_image_stack(data3d, path, metadata)
         elif filetype in ["hdf5", "hdf", "h5", "he5"]:
             self.save_hdf5(data3d, path, metadata)
-        elif str(path).lower().endswith(".nii.gz") or ext == 'nii':
+        elif str(path).lower().endswith(".nii.gz") or ext == "nii":
             import io3d.nifti_io
 
             metadata["data3d"] = data3d
@@ -182,15 +197,13 @@ class DataWriter:
         self._makedirs(path)
         import SimpleITK as sitk
 
-        dim = dcmtools.get_sitk_image_from_ndarray(data3d, allow_rescale_intercept=allow_rescale_intercept)
+        dim = dcmtools.get_sitk_image_from_ndarray(
+            data3d, allow_rescale_intercept=allow_rescale_intercept
+        )
         vsz = metadata["voxelsize_mm"]
 
         # simple itk does not work with np.float32
-        dim.SetSpacing([
-            float(vsz[1]),
-            float(vsz[2]),
-            float(vsz[0])
-        ])
+        dim.SetSpacing([float(vsz[1]), float(vsz[2]), float(vsz[0])])
         sitk.WriteImage(dim, path)
 
     def _fix_sitk_bug(self, path, metadata):
@@ -408,22 +421,45 @@ class DataWriter:
                 vsz = np.asarray(metadata["voxelsize_mm"]).astype("double")
                 dim.SetSpacing([vsz[2], vsz[1]])
                 if dataext in (".dcm", ".DCM"):
-                    self._set_dicom_tag(dim, metadata, "PatientName", f"patient")  # 0010|0010 Patient Name
-                    self._set_dicom_tag(dim, metadata, "PatientID", f"0")  # 0010|0020 PatientID
-                    self._set_dicom_tag(dim, metadata, "SliceThickness", f"{z_vs}")  # 0018|050 Slice Thickness
-                    self._set_dicom_tag(dim, metadata, "SpacingBetweenSlices", f"{z_vs}")  # 0018|0088
+                    self._set_dicom_tag(
+                        dim, metadata, "PatientName", f"patient"
+                    )  # 0010|0010 Patient Name
+                    self._set_dicom_tag(
+                        dim, metadata, "PatientID", f"0"
+                    )  # 0010|0020 PatientID
+                    self._set_dicom_tag(
+                        dim, metadata, "SliceThickness", f"{z_vs}"
+                    )  # 0018|050 Slice Thickness
+                    self._set_dicom_tag(
+                        dim, metadata, "SpacingBetweenSlices", f"{z_vs}"
+                    )  # 0018|0088
                     # self._set_dicom_tag(dim, metadata, "Nominal Scanned Pixel Spacing", f"{z_vs}")  # 0018|2010
-                    self._set_dicom_tag(dim, metadata, "StudyNumber", str(0))  # 0020|0010
-                    self._set_dicom_tag(dim, metadata, "SeriesNumber", str(series_number))  # 0020|0011
-                    self._set_dicom_tag(dim, metadata, "InstanceNumber", str(i))  # 0020|0013
-                    self._set_dicom_tag(dim, metadata, "ImagePosition", f"0\\0\\{z_position}")  # 0020|0032
-                    self._set_dicom_tag(dim, metadata, "ImageOrientationPatient", r"1\0\0\0\1\0")  # 0020|0037
+                    self._set_dicom_tag(
+                        dim, metadata, "StudyNumber", str(0)
+                    )  # 0020|0010
+                    self._set_dicom_tag(
+                        dim, metadata, "SeriesNumber", str(series_number)
+                    )  # 0020|0011
+                    self._set_dicom_tag(
+                        dim, metadata, "InstanceNumber", str(i)
+                    )  # 0020|0013
+                    self._set_dicom_tag(
+                        dim, metadata, "ImagePosition", f"0\\0\\{z_position}"
+                    )  # 0020|0032
+                    self._set_dicom_tag(
+                        dim, metadata, "ImageOrientationPatient", r"1\0\0\0\1\0"
+                    )  # 0020|0037
                     # self._set_dicom_tag(dim, metadata, "0020|1041", z_position)  # Slice Location
-                    self._set_dicom_tag(dim, metadata, "SliceLocation", str(z_position))  # 0020|1041
+                    self._set_dicom_tag(
+                        dim, metadata, "SliceLocation", str(z_position)
+                    )  # 0020|1041
                     # self._set_dicom_tag(dim, metadata, "0028|0030", str(vsz[1]))  # Pixel Spacing
-                    self._set_dicom_tag(dim, metadata, "PixelSpacing", f"{vsz[1]}\\{vsz[2]}")  # 0028|0030
-                    self._set_dicom_tag(dim, metadata, "Modality", f"{metadata['Modality']}")
-
+                    self._set_dicom_tag(
+                        dim, metadata, "PixelSpacing", f"{vsz[1]}\\{vsz[2]}"
+                    )  # 0028|0030
+                    self._set_dicom_tag(
+                        dim, metadata, "Modality", f"{metadata['Modality']}"
+                    )
 
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
@@ -442,7 +478,12 @@ class DataWriter:
         if "|" in tagname:
             sitk_dicom_tag = tagname
         else:
-            sitk_dicom_tag = str(dicom.tag.Tag(tagname)).replace(", ", "|").replace("(", "").replace(")", "")
+            sitk_dicom_tag = (
+                str(dicom.tag.Tag(tagname))
+                .replace(", ", "|")
+                .replace("(", "")
+                .replace(")", "")
+            )
         value = metadata[tagname] if tagname in metadata else default
         dim.SetMetaData(sitk_dicom_tag, value)
 

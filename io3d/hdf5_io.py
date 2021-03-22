@@ -16,7 +16,7 @@ def save_dict_to_hdf5(dic, filename):
     """
     ....
     """
-    delimiter = '/'
+    delimiter = "/"
     with h5py.File(filename, "w") as h5file:
         print("start writing h5")
         rf = recursively_save_dict_contents_to_group(h5file, delimiter, dic)
@@ -35,7 +35,7 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
     """
     ....
     """
-    delimiter = '/'
+    delimiter = "/"
     # print(f"saving {path}, type={type(dic)}, {list(dic.keys())}")
     reconstruction_flags = {}
     # reconstruction_key_flags = {}
@@ -74,7 +74,8 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
         elif isinstance(item, dict):
             # reconstruction_flags[wholekey] = "dict"
             rf = recursively_save_dict_contents_to_group(
-                h5file, path + key + delimiter, item)
+                h5file, path + key + delimiter, item
+            )
             reconstruction_flags.update(rf)
             # reconstruction_key_flags.update(rkf)
         elif isinstance(item, list):
@@ -96,6 +97,7 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             reconstruction_flags.update(rf)
         elif isinstance(item, str):
             import json
+
             jitem = json.dumps(item)
             h5file[path + key] = jitem
             reconstruction_flags[wholekey] = "str"
@@ -128,7 +130,7 @@ def recursively_load_dict_contents_from_group(h5file, path):
     else:
         rf = {}
     # rkf = h5file["_reconstruction_key_flags"]
-    delimiter = '/'
+    delimiter = "/"
     ans = {}
     for key, item in h5file[path].items():
         dest_key = key
@@ -174,6 +176,7 @@ def recursively_load_dict_contents_from_group(h5file, path):
                 continue
             elif flag == b"str":
                 import json
+
                 ans[dest_key] = str(json.loads(item[()]))
                 # ans[dest_key] = str(item[()])
                 continue

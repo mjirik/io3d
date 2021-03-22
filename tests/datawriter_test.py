@@ -22,6 +22,7 @@ import shutil
 
 import numpy as np
 import pydicom as dicom
+
 dicom.config.debug(False)
 
 #
@@ -99,7 +100,13 @@ class DicomWriterTest(unittest.TestCase):
         metadata = {"voxelsize_mm": [1, 2, 3]}
         dw = dwriter.DataWriter()
         logger.debug(filename)
-        dw.Write3DData(data, filename, filetype="dcm", metadata=metadata, allow_rescale_intercept=True)
+        dw.Write3DData(
+            data,
+            filename,
+            filetype="dcm",
+            metadata=metadata,
+            allow_rescale_intercept=True,
+        )
 
         dr = dreader.DataReader()
         newdata, newmetadata = dr.Get3DData(filename, dataplus_format=False)
@@ -240,11 +247,13 @@ class DicomWriterTest(unittest.TestCase):
         ]:
             data3d = self.make_data10(*args[:-1])
             logger.debug(f"{args}")
-            if args[-1]: # one file
+            if args[-1]:  # one file
                 self.write_and_read_dicom(data3d, voxelsize_mm, "test_file.dcm")
                 self.write_and_read_dicom_directly_with_simpleitk(data3d, voxelsize_mm)
             else:
-                self.write_and_read_dicom(data3d, voxelsize_mm, "test_dir", "test_dir/image_{:04d}.dcm")
+                self.write_and_read_dicom(
+                    data3d, voxelsize_mm, "test_dir", "test_dir/image_{:04d}.dcm"
+                )
 
     def make_data10(self, mini, maxi, dtype, zshape):
         data3d = np.zeros([zshape, 10, 10], dtype=dtype)
@@ -278,6 +287,7 @@ class DicomWriterTest(unittest.TestCase):
             filename.unlink()
         import SimpleITK as sitk
         from scipy.stats import describe
+
         logger.debug(data3d.dtype)
         logger.debug(describe(data3d.ravel()))
         sitkim = sitk.GetImageFromArray(data3d)
@@ -289,7 +299,6 @@ class DicomWriterTest(unittest.TestCase):
         assert np.array_equal(sitkd3d, data3d)
         assert sitkd3d.dtype == data3d.dtype
         filename.unlink()
-
 
     def test_read_and_write_dicom(self):
         import SimpleITK as sitk
