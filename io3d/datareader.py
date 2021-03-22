@@ -113,7 +113,7 @@ class DataReader:
         # NOTE(:param qt_app:) If it is set to None (as default) all dialogs for series selection are performed in
         terminal. If qt_app is set to QtGui.QApplication() dialogs are in Qt.
 
-        :param datapath: directory with input data
+        :param datapath: directory with input data, if url is give, the file is downloaded into `~/data/downloads/`
         :param qt_app: Dialog destination. If None (default) -> terminal, if 'QtGui.QApplication()' -> Qt
         :param dataplus_format: New data format. Metadata and data are returned in one structure.
         :param gui: True if 'QtGui.QApplication()' instead of terminal should be used

@@ -2,6 +2,10 @@
 
 Latest version 2.10.0
 
+## 2.10
+
+* [Added] Read by url
+
 ## 2.9
 
 * [Changed] Dicom files uint are stored directly. The int dtype in 3D can be stored with intercept in metadata.
