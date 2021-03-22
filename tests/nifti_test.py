@@ -19,8 +19,8 @@ def test_read_nifti():
     img = nib.load(pth)
     data3d = img.dataobj
     img.shape
-    plt.imshow(data3d[:, :, 50])
-    plt.show()
+    # plt.imshow(data3d[:, :, 50])
+    # plt.show()
 
     logger.debug(img.header.get_zooms())
     logger.debug(img.affine)
