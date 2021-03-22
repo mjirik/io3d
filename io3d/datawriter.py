@@ -421,21 +421,16 @@ class DataWriter:
                 vsz = np.asarray(metadata["voxelsize_mm"]).astype("double")
                 dim.SetSpacing([vsz[2], vsz[1]])
                 if dataext in (".dcm", ".DCM"):
-                    self._set_dicom_tag(
-                        dim, metadata, "PatientName", f"patient"
-                    )  # 0010|0010 Patient Name
-                    self._set_dicom_tag(
-                        dim, metadata, "PatientID", f"0"
-                    )  # 0010|0020 PatientID
-                    self._set_dicom_tag(
-                        dim, metadata, "SliceThickness", f"{z_vs}"
+                    self._set_dicom_tag( dim, metadata, "PatientName", f"patient" )  # 0010|0010
+                    self._set_dicom_tag( dim, metadata, "PatientID", f"0" )  # 0010|0020
+                    self._set_dicom_tag( dim, metadata, "SliceThickness", f"{z_vs}"
                     )  # 0018|050 Slice Thickness
                     self._set_dicom_tag(
                         dim, metadata, "SpacingBetweenSlices", f"{z_vs}"
                     )  # 0018|0088
                     # self._set_dicom_tag(dim, metadata, "Nominal Scanned Pixel Spacing", f"{z_vs}")  # 0018|2010
                     self._set_dicom_tag(
-                        dim, metadata, "StudyNumber", str(0)
+                        dim, metadata, "StudyID", str(0)
                     )  # 0020|0010
                     self._set_dicom_tag(
                         dim, metadata, "SeriesNumber", str(series_number)
