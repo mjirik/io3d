@@ -5,7 +5,6 @@
 from loguru import logger
 
 from typing import Union
-import argparse
 
 # import numpy as np
 # import h5py
@@ -15,14 +14,8 @@ import os.path
 import sys
 from .image import DataPlus, transform_orientation, transform_orientation_voxelsize
 
-try:
-    import dicom
-
-    dicom.debug(False)
-except ImportError:
-    import pydicom as dicom
-
-    dicom.config.debug(False)
+import pydicom as dicom
+dicom.config.debug(False)
 
 # NOTE(mareklovci - 2018_05_13): Absolute imports are prefered in Python, so eg. "from io3d import tgz" should be used.
 # https://www.python.org/dev/peps/pep-0008/#imports
@@ -36,6 +29,14 @@ from . import datasets
 # Decorator used for labeling old or unsuitable functions as 'deprecated'
 from io3d.deprecation import deprecated
 
+# def is_documented_by(original):
+#   def wrapper(target):
+#     target.__doc__ = original.__doc__
+#     return target
+#   return wrapper
+#
+# @is_documented_by
+
 
 def read(
     datapath,
@@ -47,14 +48,34 @@ def read(
     step=1,
     convert_to_gray=True,
     series_number=None,
+    use_economic_dtype=True,
     dicom_expected=None,
     orientation_axcodes='original',
     **kwargs
 ):
-    """Simple read function. Internally calls DataReader.Get3DData()
+    """Returns 3D data and its metadata.
 
-        :param orientation_axcodes: 'LPS' right to Left, anterior to Posetrior, inferior to Superior. We use 'SPL'.
+    # NOTE(:param qt_app:) If it is set to None (as default) all dialogs for series selection are performed in
+    terminal. If qt_app is set to QtGui.QApplication() dialogs are in Qt.
+
+    :param datapath: directory with input data, if url is give, the file is downloaded into `~/data/downloads/`
+    :param qt_app: Dialog destination. If None (default) -> terminal, if 'QtGui.QApplication()' -> Qt
+    :param dataplus_format: New data format. Metadata and data are returned in one structure.
+    :param gui: True if 'QtGui.QApplication()' instead of terminal should be used
+    :param int start: used for DicomReader, defines where 3D data reading should start
+    :param int stop: used for DicomReader, defines where 3D data reading should stop
+    :param int step: used for DicomReader, defines step for 3D data reading
+    :param bool convert_to_gray: if True -> RGB is converted to gray
+    :param int series_number: used in DicomReader, essential in metadata
+    :param use_economic_dtype: if True, casts 3D data array to less space consuming dtype
+    :param dicom_expected: set true if it is known that data is in dicom format. Set False to suppress
+    dicom warnings.
+    :param orientation_axcodes: 'SPL' inferior to Superior, anterior to Posetrior, right to Left. Standard is for nifty
+    is RAS.
+    :return: tuple (data3d, metadata)
     """
+    # Simple read function. Internally calls DataReader.Get3DData()
+
     dr = DataReader()
     return dr.Get3DData(
         datapath=datapath,
@@ -66,7 +87,7 @@ def read(
         step=step,
         convert_to_gray=convert_to_gray,
         series_number=series_number,
-        use_economic_dtype=True,
+        use_economic_dtype=use_economic_dtype,
         dicom_expected=dicom_expected,
         orientation_axcodes=orientation_axcodes,
         **kwargs
@@ -344,7 +365,6 @@ class DataReader:
         metadata = _metadata(image, datapath)
         metadata["orientation_axcodes"] = "IPL"
         return data3d, metadata
-
 
     @staticmethod
     def _fix_sitk_bug(path, metadata):

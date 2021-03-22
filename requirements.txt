@@ -5,5 +5,6 @@ h5py
 numpy
 sed3
 pydicom
+loguru
 # requirements for development only
 # coveralls
