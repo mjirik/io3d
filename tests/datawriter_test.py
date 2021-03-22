@@ -528,6 +528,21 @@ class DicomWriterTest(unittest.TestCase):
         self.assertEqual(np.sum(np.abs(data3d - data3dnew)), 0)
         shutil.rmtree(testdatadir)
 
+    def test_write_dicom(self):
+        path1 = "new_dcmfile1.dcm"
+        path2 = "new_dcmfile2.dcm"
+        data3d = np.zeros([10, 15, 20], dtype="uint16")
+        vsz = np.asarray([2, 3, 1.5])
+
+        dp = io3d.image.DataPlus(
+            dict(data3d=data3d, voxelsize_mm=vsz)
+        )
+        io3d.write(dp, path1)
+        io3d.write(dp, path2)
+        assert Path(path1).exists()
+        assert Path(path2).exists()
+
+
     def test_SimpleITK(self):
         logger.debug(logger)
         logger.debug("test SimpleITK started")

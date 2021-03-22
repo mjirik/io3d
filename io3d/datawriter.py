@@ -12,14 +12,8 @@ import os.path
 
 import re
 
-try:
-    import dicom
-
-    dicom.debug(False)
-except:
-    import pydicom as dicom
-
-    dicom.config.debug(False)
+import pydicom as dicom
+dicom.config.debug(False)
 
 import os.path as op
 from typing import Union
@@ -112,12 +106,12 @@ class DataWriter:
         self.orig_path = path
         path = os.path.expanduser(path)
 
-        try:
-            d3d = data3d.pop("data3d")
-            metadata = data3d
-            data3d = d3d
-        except:
-            pass
+        tp = type(data3d)
+        if tp in (image.DataPlus, np.ndarray):
+            # copy
+            datap = dict(data3d)
+            data3d = datap.pop("data3d")
+            metadata = datap
 
         if progress_callback is not None:
             self.progress_callback = progress_callback
