@@ -64,7 +64,7 @@ print(datap.voxelsize_mm)
 # size of voxel can be accessed also by datap["voxelsize_mm"]
 
 # see slice 10
-plt.imshow(datap.data3d[10,:,:], cmap='gray')
+plt.imshow(datap.data3d[5,:,:], cmap='gray')
 plt.show()
 ```
 
