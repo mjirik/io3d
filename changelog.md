@@ -1,6 +1,6 @@
 # Changelog
 
-Latest version 2.10.3
+Latest version 2.10.4
 
 ## 2.10
 
