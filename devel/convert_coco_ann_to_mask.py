@@ -9,6 +9,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.draw import polygon
+import skimage.io
 from pathlib import Path
 from loguru import logger
 
@@ -150,8 +151,13 @@ def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type=
     #file_path = 'task_cell track 20200226-dii-30las-2pre1-2020_10_26_13_28_36-coco 1.0/annotations/instances_default.json'
 
     file_path = coco_filename
+    import datetime
+    t0 = datetime.datetime.now()
     cv_an = AnnotationTOmask(file_path)
+    t1 = datetime.datetime.now()
     cv_an1=cv_an.getImgIds()
+    t2 = datetime.datetime.now()
+    logger.debug(f"{t1 - t0}, {t2 - t1}")
     logger.debug('getImgIds', cv_an1)
     # extract the region we want to mask ( Right Kidny,  Liver)
 
@@ -173,7 +179,8 @@ def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type=
         M = np.zeros([imgName['width'], imgName['height']])
         image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
         logger.debug(image_path)
-        plt.imsave(image_path, np.uint8(M), cmap = 'gray')
+        skimage.io.imsave(image_path, np.uint8(M))
+        # plt.imsave(image_path, np.uint8(M), cmap = 'gray')
 
     # rewrite images with label
     for im in imgIds:
@@ -182,7 +189,7 @@ def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type=
         anns_ids = cv_an.getAnnIds(imgIds=imgName['id'], catIds=catIds)
         anns = cv_an.loadAnns(anns_ids)
         S = cv_an.getSeg(anns)
-        M = cv_an.segToMask(S, imgName['width'], imgName['height'])
+        M = cv_an.segToMask(S, imgName['width'], imgName['height']) * 255
         if show:
             plt.figure()
             plt.imshow(M)
@@ -190,6 +197,7 @@ def CocoToMask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type=
             plt.close()
         image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
         logger.debug(image_path)
-        plt.imsave(image_path, np.uint8(M), cmap='gray')
+        skimage.io.imsave(image_path, np.uint8(M))
+        # plt.imsave(image_path, np.uint8(M), cmap='gray')
 
     logger.debug('Done')
