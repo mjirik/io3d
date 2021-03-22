@@ -406,13 +406,45 @@ class DataWriter:
 
             if metadata is not None:
                 vsz = np.asarray(metadata["voxelsize_mm"]).astype("double")
-                dim.SetSpacing([vsz[0], vsz[2], vsz[1]])
+                dim.SetSpacing([vsz[2], vsz[1]])
                 if dataext in (".dcm", ".DCM"):
-                    dim.SetMetaData("0020|1041", str(z_position))
-                    dim.SetMetaData("0020|0011", str(series_number))
+                    self._set_dicom_tag(dim, metadata, "PatientName", f"patient")  # 0010|0010 Patient Name
+                    self._set_dicom_tag(dim, metadata, "PatientID", f"0")  # 0010|0020 PatientID
+                    self._set_dicom_tag(dim, metadata, "SliceThickness", f"{z_vs}")  # 0018|050 Slice Thickness
+                    self._set_dicom_tag(dim, metadata, "SpacingBetweenSlices", f"{z_vs}")  # 0018|0088
+                    # self._set_dicom_tag(dim, metadata, "Nominal Scanned Pixel Spacing", f"{z_vs}")  # 0018|2010
+                    self._set_dicom_tag(dim, metadata, "StudyNumber", str(0))  # 0020|0010
+                    self._set_dicom_tag(dim, metadata, "SeriesNumber", str(series_number))  # 0020|0011
+                    self._set_dicom_tag(dim, metadata, "InstanceNumber", str(i))  # 0020|0013
+                    self._set_dicom_tag(dim, metadata, "ImagePosition", f"0\\0\\{z_position}")  # 0020|0032
+                    self._set_dicom_tag(dim, metadata, "ImageOrientationPatient", r"1\0\0\0\1\0")  # 0020|0037
+                    # self._set_dicom_tag(dim, metadata, "0020|1041", z_position)  # Slice Location
+                    self._set_dicom_tag(dim, metadata, "SliceLocation", str(z_position))  # 0020|1041
+                    # self._set_dicom_tag(dim, metadata, "0028|0030", str(vsz[1]))  # Pixel Spacing
+                    self._set_dicom_tag(dim, metadata, "PixelSpacing", f"{vsz[1]}\\{vsz[2]}")  # 0028|0030
+                    self._set_dicom_tag(dim, metadata, "Modality", f"{metadata['Modality']}")
+
+
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
             z_position += z_vs
+
+    def _set_dicom_tag(self, dim, metadata, tagname, default):
+        """
+        Set valude to dicom. Use value from metadata if possible.
+        :param dim:
+        :param metadata:
+        :param tagname:
+        :param default:
+        :return:
+        """
+
+        if "|" in tagname:
+            sitk_dicom_tag = tagname
+        else:
+            sitk_dicom_tag = str(dicom.tag.Tag(tagname)).replace(", ", "|").replace("(", "").replace(")", "")
+        value = metadata[tagname] if tagname in metadata else default
+        dim.SetMetaData(sitk_dicom_tag, value)
 
     def stop(self):
         self.stop_writing = True

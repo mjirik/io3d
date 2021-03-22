@@ -216,7 +216,7 @@ class DicomWriterTest(unittest.TestCase):
         os.remove(filename)
 
     def test_write_single_dicom_dtypes(self):
-        voxelsize_mm = [1.5, 1., 1.]
+        voxelsize_mm = [3.4, 2.4, 1.4]
 
         # one_file = "file.dcm"
         # multi_files = "dir/file{:04d}.dcm"
@@ -231,7 +231,8 @@ class DicomWriterTest(unittest.TestCase):
             # (10, 150, np.uint8, 1, multi_files),
             # (10, 100, np.int8), # fail
             (-10, 100, np.int8, 1, one_file),
-            (-10, 100, np.int8, 10, multi_files), # fail
+            (-10, 100, np.int8, 10, multi_files),
+            (-1000, 100, np.int16, 10, multi_files),
             # (-10, 100, np.int8, 10), # fail
             # (-1010, 100, np.int16),
             # (-5010, 100, np.int16), # fail
@@ -243,7 +244,7 @@ class DicomWriterTest(unittest.TestCase):
                 self.write_and_read_dicom(data3d, voxelsize_mm, "test_file.dcm")
                 self.write_and_read_dicom_directly_with_simpleitk(data3d, voxelsize_mm)
             else:
-                self.write_and_read_dicom(data3d, voxelsize_mm, "test_dir", "test_dir/file{:04d}.dcm")
+                self.write_and_read_dicom(data3d, voxelsize_mm, "test_dir", "test_dir/image_{:04d}.dcm")
 
     def make_data10(self, mini, maxi, dtype, zshape):
         data3d = np.zeros([zshape, 10, 10], dtype=dtype)
