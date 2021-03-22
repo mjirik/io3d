@@ -30,8 +30,21 @@ pip install sed3
 
 [Check the tutorial](examples/tutorial_read_dataset_and_see_with_sed3.ipynb)
 
+### Read and show data from url
+
+```python
+import io3d
+import matplotlib.pyplot as plt
+
+datap = io3d.read("http://home.zcu.cz/~mjirik/lisa/sample_data/nrn4.pklz")
+plt.imshow(datap.data3d[10,:,:], cmap='gray')
+plt.show()
+```
+
 
 ### Get sample data
+
+Data will be automatically downloaded to `~\data\`
 
 command line:
 ```shell

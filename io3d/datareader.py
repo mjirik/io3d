@@ -4,11 +4,13 @@
 
 from loguru import logger
 
+from typing import Union
 import argparse
 
 # import numpy as np
 # import h5py
 
+from pathlib import Path
 import os.path
 import sys
 from .image import DataPlus, transform_orientation, transform_orientation_voxelsize
@@ -28,6 +30,8 @@ from . import dcmreaddata as dcmr
 from . import tgz
 from . import misc
 from . import dcmtools
+from . import network
+from . import datasets
 
 # Decorator used for labeling old or unsuitable functions as 'deprecated'
 from io3d.deprecation import deprecated
@@ -90,7 +94,7 @@ class DataReader:
     # noinspection PyAttributeOutsideInit,PyUnboundLocalVariable,PyPep8Naming
     def Get3DData(
         self,
-        datapath,
+        datapath:Union[str,Path],
         qt_app=None,
         dataplus_format=True,
         gui=False,
@@ -124,6 +128,8 @@ class DataReader:
         dicom warnings.
         :return: tuple (data3d, metadata)
         """
+        if network.is_url(datapath):
+            datapath = datasets.fetch_file(str(datapath))
         self.orig_datapath = datapath
         datapath = os.path.expanduser(datapath)
 

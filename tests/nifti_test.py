@@ -5,11 +5,15 @@ from matplotlib import pylab as plt
 from loguru import logger
 import numpy as np
 import io3d
+import io3d.network
 from io3d import nifti_io
 
 
+# @unittest.skipIf(os.environ.get("TRAVIS", True), "Skip on Travis-CI")
 def test_read_nifti():
-    pth = Path('~/Downloads/avg152T1_LR_nifti2.nii.gz').expanduser()
+    pth = io3d.datasets.fetch_file(r"https://nifti.nimh.nih.gov/pub/dist/data/nifti2/avg152T1_LR_nifti2.nii.gz")
+
+    # pth = Path('~/Downloads/avg152T1_LR_nifti2.nii.gz').expanduser()
     img = nib.load(pth)
     data3d = img.dataobj
     img.shape

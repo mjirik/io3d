@@ -18,7 +18,9 @@ import shutil
 import sys
 import numpy as np
 import io3d
+import io3d.network
 import os
+import datetime
 
 # from pathlib import Path
 
@@ -272,6 +274,31 @@ def test_read_dataset_example():
     # plt.title(datap1["voxelsize_mm"])
     # plt.show()
     assert datap2["data3d"].shape[0] == datap1["data3d"].shape[0]
+
+
+def test_read_url():
+    """
+    Open file from url. If file is already downloaded, just open it.
+    :return:
+    """
+    __url_server = "http://home.zcu.cz/~mjirik/lisa/"
+    url = __url_server + "sample_data/nrn4.pklz"
+    fn = io3d.network.get_filename(url)
+    if fn.exists():
+        fn.unlink()
+
+    t0 = datetime.datetime.now()
+    datap = io3d.read(url)
+    t1 = datetime.datetime.now() - t0
+    assert fn.exists()
+    assert datap.data3d.shape[0] > 0
+
+    # second r
+    t0 = datetime.datetime.now()
+    datap = io3d.read(url)
+    t2 = datetime.datetime.now() - t0
+
+    assert t2 < t1, "Second run should be faster"
 
 
 if __name__ == "__main__":
