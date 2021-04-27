@@ -2,7 +2,7 @@
 
 
 def prepare_pilsen_pigs_dataset(input_dir, output_dir, output_format=".mhd"):
-    from google_drive_downloader import GoogleDriveDownloader as gdd
+    # from google_drive_downloader import GoogleDriveDownloader as gdd
     import io3d
     from pathlib import Path
     import SimpleITK
