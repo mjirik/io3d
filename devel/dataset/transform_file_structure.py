@@ -17,7 +17,7 @@ def prepare_pilsen_pigs_dataset(input_dir, output_dir, output_format=".mhd"):
 
     # ukladani obsahu slozek
     k = 0
-
+    file_list = list(p.glob('*04?D_V*'))
     for f_name in file_list:
         p = str(r'C:\Users\janar\data\biomedical\orig\Pilsen_pigs\pig_')
         p = p + str(k)
