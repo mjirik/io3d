@@ -137,7 +137,7 @@ class AnnotationTOmask:
          return M
 
 
-def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type="JPG", show=False):
+def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type="JPG", show=False, name_prefix="MaskOfPig_"):
     """
 
     :param coco_filename: coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC
@@ -173,13 +173,18 @@ def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_typ
     logger.debug(f'imgIds={imgIds}')
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
+    #TODO allow storing into one file
+    #  imgName = cv_an.dataset['images'][0]
+    #  M = np.zeros([imgName['width'], imgName['height'],len(cv_an["images"])])
+    #  ...
+
     # create empty files
     for imgName in cv_an.dataset['images']:
         logger.debug(f'imgName={imgName}')
         M = np.zeros([imgName['width'], imgName['height']])
-        image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
-        logger.debug(image_path)
-        skimage.io.imsave(image_path, np.uint8(M))
+        image_path = Path(output_dir) / (name_prefix+Path(imgName['file_name']).name+'.'+output_type)
+        logger.debug(f"image_path={image_path}")
+        skimage.io.imsave(image_path, np.uint8(M), check_contrast=False)
         # plt.imsave(image_path, np.uint8(M), cmap = 'gray')
 
     # rewrite images with label
@@ -195,9 +200,13 @@ def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_typ
             plt.imshow(M)
             plt.show()
             plt.close()
-        image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
+        # image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
+        image_path = Path(output_dir) / (name_prefix+Path(imgName['file_name']).name+'.'+output_type)
         logger.debug(image_path)
-        skimage.io.imsave(image_path, np.uint8(M))
+        un = np.unique(M)
+        if len(un) < 2:
+            logger.warning(f"No data found in annotation {imgName['file_name']}")
+        skimage.io.imsave(image_path, np.uint8(M), check_contrast=False)
         # plt.imsave(image_path, np.uint8(M), cmap='gray')
 
     logger.debug('Done')
