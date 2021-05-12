@@ -108,7 +108,9 @@ datap = w.datap
 ![load_widget](imgs/load_widget.png)
 
 
-## Test data
+## Dataset
+
+Read more about [dataset setup](examples/dataset_setup.ipynb) and how to [use datasets](examples/datasets_read.ipynb).
 
 Get sample data with `io3d` package:
 
