@@ -22,6 +22,7 @@ var/
 .installed.cfg
 *.egg
 venv/
+venv-nechci/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -63,3 +64,4 @@ tests/tmp/
 
 #
 examples/.ipynb_checkpoints/*
+venv-nechci/pyvenv.cfg
