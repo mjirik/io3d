@@ -27,6 +27,7 @@ def test_pilsen_pigs():
 @unittest.skipIf(os.environ.get("TRAVIS", False), "Skip on Travis-CI")
 def test_pilsen_pigs_create_in_dataset_dir():
     input_mask="*Tx029D_Ven*"
+    # input_mask="*D_Ven*" # to run all data
     input_dir = io3d.joinp("biomedical/orig/pilsen_pigs_raw/transplantation")   # r'H:\biomedical\orig\pilsen_pigs_raw\transplantation'
     output_type = ".mhd"
     output_dir = io3d.datasets.get_dataset_path("pilsen_pigs", "data3d", data_id=1).parents[2]
