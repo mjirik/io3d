@@ -32,28 +32,24 @@ def prepare_pilsen_pigs_dataset(input_dir, output_dir, input_mask='*_Ven*', star
 
         p1 = Path(p1)
         p1.mkdir(parents=True, exist_ok=True)
-
         # dp = io3d.read(f_name)
-        output_f = p1 / (f_name.stem + output_format)
+        # output_f = p1 / (f_name.stem + output_format)
         # io3d.write(dp, output_f)
 
         p2 = Path(p2)
         p2.mkdir(parents=True, exist_ok=True)
-
         # dp = io3d.read(f_name)
-        output_f = p2 / (f_name.stem + output_format)
+        # output_f = p2 / (f_name.stem + output_format)
         # io3d.write(dp, output_f)
 
         p3 = Path(p3)
         p3.mkdir(parents=True, exist_ok=True)
-
-        # dp = io3d.read(f_name)
-        output_f = p3 / (f_name.stem + output_format)
-        # io3d.write(dp, output_f)
+        dp = io3d.read(f_name)
+        output_f = p3 / (f_name.stem + '.vkt')
+        io3d.write(dp, output_f)
 
         p4 = Path(p4)
         p4.mkdir(parents=True, exist_ok=True)
-
         dp = io3d.read(f_name)
         output_f = p4 / (f_name.stem + output_format)
         logger.debug(f"writiong into {output_f}")
