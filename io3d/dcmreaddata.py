@@ -140,6 +140,8 @@ class DicomReader:
     ):
         self.valid = False
         self.dirpath = os.path.expanduser(dirpath)
+        if isinstance(self.dirpath, bytes):
+            self.dirpath = self.dirpath.decode()
         self.dicomdirectory = DicomDirectory(
             self.dirpath,
             force_create_dicomdir=force_create_dicomdir,
