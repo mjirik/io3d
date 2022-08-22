@@ -1165,7 +1165,7 @@ def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
     e2c = center + r * np.array([0.35, -0.2])
 
     eyes = (x - e1c[0]) ** 2 + (y - e1c[1]) ** 2 <= (r * eye_r) ** 2
-    eyes += (x - e2c[0]) ** 2 + (y - e1c[1]) ** 2 <= (r * eye_r) ** 2
+    eyes += (x - e2c[0]) ** 2 + (y - e2c[1]) ** 2 <= (r * eye_r) ** 2
 
     face = head & ~smile & ~eyes
     return face
