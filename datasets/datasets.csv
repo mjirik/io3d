@@ -4,3 +4,4 @@ czi_scaffold01,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysi
 2channel_r2d2,http://home.zcu.cz/~mjirik/lisa/data/biology/orig/roots/2channel/20200305-r2d2-PRE3.tif,,20200305-r2d2-PRE3.tif,biology/orig/roots/2channel/
 czi_scaffold,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysis-czi/Zeiss-scans/05_2019_11_12__-1-2.czi,,05_2019_11_12__-1-2.czi,medical/orig/scaffan-analysis-czi/Zeiss-scans
 czi_scaffold_annotation,http://home.zcu.cz/~mjirik/lisa/data/medical/orig/scaffan-analysis-czi/Zeiss-scans/05_2019_11_12__-1-2.czi.roi.zip,,05_2019_11_12__-1-2.czi.roi.zip,medical/orig/scaffan-analysis-czi/Zeiss-scans
+3Dircadb1.1,https://cloud.ircad.fr/index.php/s/JN3z7EynBiwYyjy/download?path=%2F3Dircadb1.1,2f29b5a66946c4d76cbea38fd643e7d2,3Dircadb1.1/**/image_*
