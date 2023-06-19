@@ -186,7 +186,8 @@ data_urls = {
         "path_structure": {},
     },
     "3Dircadb1.1": [
-        "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
+        "https://cloud.ircad.fr/index.php/s/JN3z7EynBiwYyjy/download?path=%2F3Dircadb1.1"
+        # "http://ircad.fr/softwares/3Dircadb/3Dircadb1/3Dircadb1.1.zip",
         "2f29b5a66946c4d76cbea38fd643e7d2",
         "3Dircadb1.1/**/image_*"
         # "6408942626845de25a36ece2e32600e8", "3Dircadb1.1/**/image_*"

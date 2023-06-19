@@ -161,6 +161,8 @@ class DicomReader:
                 get_series_number_callback = get_series_number_console
         elif get_series_number_callback == "guess for liver":
             get_series_number_callback = get_series_number_by_guess_for_liver
+        elif get_series_number_callback == "first":
+            get_series_number_callback = get_series_number_callback_give_me_first
 
         self.get_series_number_callback = get_series_number_callback
         self.__check_series_number()
@@ -1043,6 +1045,11 @@ def get_series_number_console(dcmreader, counts, bins, qt_app=None):  # pragma: 
     sn = int(snstring)
     return sn
 
+
+def get_series_number_callback_give_me_first(
+        counts, bins, qt_app=None
+) -> int:
+    return bins[0]
 
 def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no cover
 
