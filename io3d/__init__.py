@@ -1,5 +1,5 @@
 __all__ = ["dcmreaddata", "datareader", "datawriter", "rawN", "datasets"]
-__version__ = "2.10.6"
+__version__ = "2.10.7"
 # from pycut import Model, ImageGraphCut
 # from seed_editor_qt import QTSeedEditor
 from loguru import logger
