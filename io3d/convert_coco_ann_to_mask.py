@@ -17,32 +17,32 @@ from loguru import logger
 class AnnotationTOmask:
     def __init__(self, annotation_file):
         # load dataset
-        print('loading annotations ...')
-        dataset = json.load(open(annotation_file, 'r'))
-        print('annotations loaded!')
+        print("loading annotations ...")
+        dataset = json.load(open(annotation_file, "r"))
+        print("annotations loaded!")
 
         # creating index
-        print('creating index...')
-        imgToAnns = {ann['image_id']: [] for ann in dataset['annotations']}
-        anns =      {ann['id']:       [] for ann in dataset['annotations']}
-        for ann in dataset['annotations']:
-            imgToAnns[ann['image_id']] += [ann]
-            anns[ann['id']] = ann
+        print("creating index...")
+        imgToAnns = {ann["image_id"]: [] for ann in dataset["annotations"]}
+        anns = {ann["id"]: [] for ann in dataset["annotations"]}
+        for ann in dataset["annotations"]:
+            imgToAnns[ann["image_id"]] += [ann]
+            anns[ann["id"]] = ann
 
-        imgs      = {im['id']: {} for im in dataset['images']}
-        for img in dataset['images']:
-            imgs[img['id']] = img
+        imgs = {im["id"]: {} for im in dataset["images"]}
+        for img in dataset["images"]:
+            imgs[img["id"]] = img
 
         cats = []
         catToImgs = []
-        cats = {cat['id']: [] for cat in dataset['categories']}
-        for cat in dataset['categories']:
-            cats[cat['id']] = cat
-        catToImgs = {cat['id']: [] for cat in dataset['categories']}
-        for ann in dataset['annotations']:
-            catToImgs[ann['category_id']] += [ann['image_id']]
+        cats = {cat["id"]: [] for cat in dataset["categories"]}
+        for cat in dataset["categories"]:
+            cats[cat["id"]] = cat
+        catToImgs = {cat["id"]: [] for cat in dataset["categories"]}
+        for ann in dataset["annotations"]:
+            catToImgs[ann["category_id"]] += [ann["image_id"]]
 
-        print('index created!')
+        print("index created!")
 
         # create class members
         self.anns = anns
@@ -52,7 +52,6 @@ class AnnotationTOmask:
         self.cats = cats
         self.dataset = dataset
 
-
     def getAnnIds(self, imgIds, catIds):
         """
         Get ann ids for given cats from all images
@@ -61,32 +60,47 @@ class AnnotationTOmask:
         catIds = catIds if type(catIds) == list else [catIds]
 
         if not len(imgIds) == 0:
-            anns = sum([self.imgToAnns[imgId] for imgId in imgIds if imgId in self.imgToAnns],[])
+            anns = sum(
+                [self.imgToAnns[imgId] for imgId in imgIds if imgId in self.imgToAnns],
+                [],
+            )
         else:
-            anns = self.dataset['annotations']
-        anns = anns if len(catIds)  == 0 else [ann for ann in anns if ann['category_id'] in catIds]
-        ids = [ann['id'] for ann in anns]
+            anns = self.dataset["annotations"]
+        anns = (
+            anns
+            if len(catIds) == 0
+            else [ann for ann in anns if ann["category_id"] in catIds]
+        )
+        ids = [ann["id"] for ann in anns]
 
         return ids
 
     def getCatIds(self, catNms=[], catIds=[]):
-        """ 
+        """
         get integer array of cat ids for given cat names, given cat ids
         """
         if len(catNms) == len(catIds) == 0:
-            cats = self.dataset['categories']
+            cats = self.dataset["categories"]
         else:
-            print('+++++++++++++++++++++')
-            cats = self.dataset['categories']
-            cats = cats if len(catNms) == 0 else [cat for cat in cats if cat['name']          in catNms]
-            cats = cats if len(catIds) == 0 else [cat for cat in cats if cat['id']            in catIds]
-        ids = [cat['id'] for cat in cats]
+            print("+++++++++++++++++++++")
+            cats = self.dataset["categories"]
+            cats = (
+                cats
+                if len(catNms) == 0
+                else [cat for cat in cats if cat["name"] in catNms]
+            )
+            cats = (
+                cats
+                if len(catIds) == 0
+                else [cat for cat in cats if cat["id"] in catIds]
+            )
+        ids = [cat["id"] for cat in cats]
         return ids
 
     def getImgIds(self, imgIds=[], catIds=[]):
-        '''
+        """
         return an integer array of img ids for given ids with all given cats
-        '''
+        """
         ids = set(imgIds)
         for catId in catIds:
             if len(ids) == 0:
@@ -115,29 +129,37 @@ class AnnotationTOmask:
         get annotations segmentatins
         """
         if len(anns) == 0:
-            print('no annotations found')
+            print("no annotations found")
             return 0
 
         S = []
         for ann in anns:
-            for seg in ann['segmentation']:
+            for seg in ann["segmentation"]:
                 S.append(seg)
         return S
 
-    def segToMask(self, S, h, w ):
-         """
-         Convert polygon segmentation to binary mask.
-           S: polygon segmentation mask, h: target mask height, w: target mask width
-         """
-         M = np.zeros((h,w))
-         for s in S:
-             N = len(s)
-             rr, cc = polygon(np.array(s[1:N:2]), np.array(s[0:N:2])) # (y, x)
-             M[rr, cc] = 1
-         return M
+    def segToMask(self, S, h, w):
+        """
+        Convert polygon segmentation to binary mask.
+          S: polygon segmentation mask, h: target mask height, w: target mask width
+        """
+        M = np.zeros((h, w))
+        for s in S:
+            N = len(s)
+            rr, cc = polygon(np.array(s[1:N:2]), np.array(s[0:N:2]))  # (y, x)
+            M[rr, cc] = 1
+        return M
 
 
-def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_type="JPG", show=False, name_prefix="MaskOfPig_"):
+def coco_to_mask(
+    coco_filename,
+    output_dir,
+    organ,
+    voxelsize_mm=None,
+    output_type="JPG",
+    show=False,
+    name_prefix="MaskOfPig_",
+):
     """
 
     :param coco_filename: coco_filename must include not only name of Coco file, but also it`s full direction (location) in your PC
@@ -148,41 +170,44 @@ def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_typ
     :param show:
     :return:
     """
-    #file_path = 'task_cell track 20200226-dii-30las-2pre1-2020_10_26_13_28_36-coco 1.0/annotations/instances_default.json'
+    # file_path = 'task_cell track 20200226-dii-30las-2pre1-2020_10_26_13_28_36-coco 1.0/annotations/instances_default.json'
 
     file_path = coco_filename
     import datetime
+
     t0 = datetime.datetime.now()
     cv_an = AnnotationTOmask(file_path)
     t1 = datetime.datetime.now()
-    cv_an1=cv_an.getImgIds()
+    cv_an1 = cv_an.getImgIds()
     t2 = datetime.datetime.now()
     logger.debug(f"{t1 - t0}, {t2 - t1}")
-    logger.debug('getImgIds', cv_an1)
+    logger.debug("getImgIds", cv_an1)
     # extract the region we want to mask ( Right Kidny,  Liver)
 
-    #catIds = cv_an.getCatIds(catNms=['cell'])
+    # catIds = cv_an.getCatIds(catNms=['cell'])
     catIds = cv_an.getCatIds(catNms=[organ])
-    #catIds = cv_an.getCatIds(catNms=['Liver'])
-    #catIds = cv_an.getCatIds(catNms=['Left Kidney'])
+    # catIds = cv_an.getCatIds(catNms=['Liver'])
+    # catIds = cv_an.getCatIds(catNms=['Left Kidney'])
 
-    logger.debug('catIds', catIds)
+    logger.debug("catIds", catIds)
     imgIds = cv_an.getImgIds(catIds=catIds)
     if len(imgIds) == 0:
         logger.warning(f"Label '{organ}' not found.")
-    logger.debug(f'imgIds={imgIds}')
+    logger.debug(f"imgIds={imgIds}")
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    #TODO allow storing into one file
+    # TODO allow storing into one file
     #  imgName = cv_an.dataset['images'][0]
     #  M = np.zeros([imgName['width'], imgName['height'],len(cv_an["images"])])
     #  ...
 
     # create empty files
-    for imgName in cv_an.dataset['images']:
-        logger.debug(f'imgName={imgName}')
-        M = np.zeros([imgName['width'], imgName['height']])
-        image_path = Path(output_dir) / (name_prefix+Path(imgName['file_name']).name+'.'+output_type)
+    for imgName in cv_an.dataset["images"]:
+        logger.debug(f"imgName={imgName}")
+        M = np.zeros([imgName["width"], imgName["height"]])
+        image_path = Path(output_dir) / (
+            name_prefix + Path(imgName["file_name"]).name + "." + output_type
+        )
         logger.debug(f"image_path={image_path}")
         skimage.io.imsave(image_path, np.uint8(M), check_contrast=False)
         # plt.imsave(image_path, np.uint8(M), cmap = 'gray')
@@ -191,17 +216,19 @@ def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_typ
     for im in imgIds:
         logger.debug(f"iM{im}")
         imgName = cv_an.loadImgs(im)[0]
-        anns_ids = cv_an.getAnnIds(imgIds=imgName['id'], catIds=catIds)
+        anns_ids = cv_an.getAnnIds(imgIds=imgName["id"], catIds=catIds)
         anns = cv_an.loadAnns(anns_ids)
         S = cv_an.getSeg(anns)
-        M = cv_an.segToMask(S, imgName['width'], imgName['height']) * 255
+        M = cv_an.segToMask(S, imgName["width"], imgName["height"]) * 255
         if show:
             plt.figure()
             plt.imshow(M)
             plt.show()
             plt.close()
         # image_path = Path(output_dir) / ('MaskOfPIG_'+str(imgName['file_name'])+'.'+output_type)
-        image_path = Path(output_dir) / (name_prefix+Path(imgName['file_name']).name+'.'+output_type)
+        image_path = Path(output_dir) / (
+            name_prefix + Path(imgName["file_name"]).name + "." + output_type
+        )
         logger.debug(image_path)
         un = np.unique(M)
         if len(un) < 2:
@@ -209,4 +236,4 @@ def coco_to_mask(coco_filename, output_dir, organ, voxelsize_mm=None, output_typ
         skimage.io.imsave(image_path, np.uint8(M), check_contrast=False)
         # plt.imsave(image_path, np.uint8(M), cmap='gray')
 
-    logger.debug('Done')
+    logger.debug("Done")

@@ -1154,7 +1154,7 @@ def _get_face2(shape=None, face_r=1.0, smile_r1=0.5, smile_r2=0.7, eye_r=0.2):
     # data3d[center[0], center[1], center[2]] = 1
     x, y = np.meshgrid(range(shape[1]), range(shape[0]))
 
-    head = (x - center[0]) ** 2 + (y - center[1]) ** 2 < r ** 2
+    head = (x - center[0]) ** 2 + (y - center[1]) ** 2 < r**2
 
     smile = (
         ((x - center[0]) ** 2 + (y - center[1]) ** 2 < (r * smile_r2) ** 2)

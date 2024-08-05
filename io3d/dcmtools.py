@@ -45,15 +45,15 @@ def get_sitk_image_from_ndarray(data3d, allow_rescale_intercept=False):
     if allow_rescale_intercept and data3d.ndim == 3 and data3d.shape[0] != 1:
         if sitk.Version.MajorVersion() > 0:
             if data3d.dtype == np.int8:
-                rescale_intercept = -(2 ** 7)
+                rescale_intercept = -(2**7)
                 data3d = (data3d - rescale_intercept).astype(np.uint8)
             elif data3d.dtype == np.int16:
                 # simpleitk is not able to store this. It uses only 11 bites
                 # rescale_intercept = -2**15
-                rescale_intercept = -(2 ** 10)
+                rescale_intercept = -(2**10)
                 data3d = (data3d - rescale_intercept).astype(np.uint16)
             elif data3d.dtype == np.int32:
-                rescale_intercept = -(2 ** 31)
+                rescale_intercept = -(2**31)
                 data3d = (data3d - rescale_intercept).astype(np.uint16)
 
     dim = sitk.GetImageFromArray(data3d)

@@ -8,8 +8,8 @@ import json
 
 logger.enable("io3d")
 
-base_path = Path(r'H:\biomedical\orig\pilsen_pigs_raw\transplantation')
-output_path = Path(r'H:\biomedical\orig\pilsen_pigs')
+base_path = Path(r"H:\biomedical\orig\pilsen_pigs_raw\transplantation")
+output_path = Path(r"H:\biomedical\orig\pilsen_pigs")
 
 metafn = base_path / "meta.csv"
 
@@ -21,9 +21,9 @@ else:
 
 def create_meta(base_path, metafn):
     data = {
-        'dirname': [],
-        'dataset_type': [],
-        'id': [],
+        "dirname": [],
+        "dataset_type": [],
+        "id": [],
     }
     i_train = 0
     i_test = 0
@@ -52,9 +52,9 @@ def create_meta(base_path, metafn):
         data["dataset_type"].append(tp)
         data["id"].append(ii)
 
-
     df = pd.DataFrame(data)
     df.to_csv(metafn, index=None)
+
 
 create_meta(base_path, metafn)
 
@@ -67,24 +67,26 @@ print(df)
 
 for i, row in df.iterrows():
     fn_in = base_path / row["dirname"]
-    fn_out = output_path / row["dataset_type"] / f"PP_{row['id']:04}"/"PATIENT_DICOM"/f"PP_{row['id']:04}.mhd"
+    fn_out = (
+        output_path
+        / row["dataset_type"]
+        / f"PP_{row['id']:04}"
+        / "PATIENT_DICOM"
+        / f"PP_{row['id']:04}.mhd"
+    )
     fn_meta = fn_out.parent / "meta.json"
     logger.debug(fn_in)
     logger.debug(fn_out)
 
-
     fn_out.parent.mkdir(parents=True, exist_ok=True)
-    if not fn_meta.exists(): # we do not need to read the data again if everything is done. We are checkin:w
+    if (
+        not fn_meta.exists()
+    ):  # we do not need to read the data again if everything is done. We are checkin:w
 
         datap = io3d.read(fn_in)
         io3d.write(datap, fn_out)
         with open(fn_meta, "w") as f:
             json.dump(dict(row), f)
-
-
-
-
-
 
 
 # # preprocessing for to prepare dicomdir.pkl to every directory
@@ -110,5 +112,3 @@ for i, row in df.iterrows():
 #         # io3d.read(fn)
 #
 #         logger.debug(f"{(fn /'dicomdir.pkl').exists()}")
-
-

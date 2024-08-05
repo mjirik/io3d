@@ -65,7 +65,7 @@ def suggest_filename(file_path, exists=None):
 
 
 def obj_from_file(filename="annotation.yaml", filetype="auto", yaml_typ="unsafe"):
-    """ Read object from file """
+    """Read object from file"""
 
     if filetype == "auto":
         _, ext = os.path.splitext(filename)
@@ -263,7 +263,7 @@ def suits_with_dtype(mn, mx, dtype):
 
 
 def use_economic_dtype(data3d, slope=1, inter=0, dtype=None):
-    """ Use more economic integer-like dtype if it is possible.
+    """Use more economic integer-like dtype if it is possible.
 
     :param data3d:
     :param dtype: if dtype is not used, the automatic is used

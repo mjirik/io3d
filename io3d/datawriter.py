@@ -13,6 +13,7 @@ import os.path
 import re
 
 import pydicom as dicom
+
 dicom.config.debug(False)
 
 import os.path as op
@@ -62,7 +63,7 @@ class DataWriter:
         self.progress_callback = None
 
     def __get_segmentation_path(self, path):
-        """ Create path with "_segmentation" suffix and keep extension.
+        """Create path with "_segmentation" suffix and keep extension.
 
         :param path:
         :return:
@@ -290,8 +291,7 @@ class DataWriter:
     def add_overlay_to_slice_file(
         self, filename, overlay, i_overlay, filename_out=None
     ):
-        """ Function adds overlay to existing file.
-        """
+        """Function adds overlay to existing file."""
         if filename_out is None:
             filename_out = filename
         filename = op.expanduser(filename)
@@ -300,8 +300,7 @@ class DataWriter:
         data.save_as(filename_out)
 
     def encode_overlay_slice(self, data, overlay, i_overlay):
-        """
-        """
+        """ """
         # overlay index
         n_bits = 8
 
@@ -412,17 +411,18 @@ class DataWriter:
                 vsz = np.asarray(metadata["voxelsize_mm"]).astype("double")
                 dim.SetSpacing([vsz[2], vsz[1]])
                 if dataext in (".dcm", ".DCM"):
-                    self._set_dicom_tag( dim, metadata, "PatientName", f"patient" )  # 0010|0010
-                    self._set_dicom_tag( dim, metadata, "PatientID", f"0" )  # 0010|0020
-                    self._set_dicom_tag( dim, metadata, "SliceThickness", f"{z_vs}"
+                    self._set_dicom_tag(
+                        dim, metadata, "PatientName", f"patient"
+                    )  # 0010|0010
+                    self._set_dicom_tag(dim, metadata, "PatientID", f"0")  # 0010|0020
+                    self._set_dicom_tag(
+                        dim, metadata, "SliceThickness", f"{z_vs}"
                     )  # 0018|050 Slice Thickness
                     self._set_dicom_tag(
                         dim, metadata, "SpacingBetweenSlices", f"{z_vs}"
                     )  # 0018|0088
                     # self._set_dicom_tag(dim, metadata, "Nominal Scanned Pixel Spacing", f"{z_vs}")  # 0018|2010
-                    self._set_dicom_tag(
-                        dim, metadata, "StudyID", str(0)
-                    )  # 0020|0010
+                    self._set_dicom_tag(dim, metadata, "StudyID", str(0))  # 0020|0010
                     self._set_dicom_tag(
                         dim, metadata, "SeriesNumber", str(series_number)
                     )  # 0020|0011
@@ -443,9 +443,7 @@ class DataWriter:
                     self._set_dicom_tag(
                         dim, metadata, "PixelSpacing", f"{vsz[1]}\\{vsz[2]}"
                     )  # 0028|0030
-                    self._set_dicom_tag(
-                        dim, metadata, "Modality", f""
-                    )
+                    self._set_dicom_tag(dim, metadata, "Modality", f"")
 
             # import ipdb; ipdb.set_trace()
             sitk.WriteImage(dim, newfilename)
@@ -664,7 +662,7 @@ def filename_format(filepattern, series_number=1, slice_number=0, slice_position
 def saveOverlayToDicomCopy(
     input_dcmfilelist, output_dicom_dir, overlays, crinfo, orig_shape
 ):
-    """ Save overlay to dicom. """
+    """Save overlay to dicom."""
     from . import datawriter as dwriter
 
     # import qmisc

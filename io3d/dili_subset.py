@@ -10,8 +10,7 @@ import numpy as np
 
 
 def ndarray_to_list_in_structure(item, squeeze=True):
-    """ Change ndarray in structure of lists and dicts into lists.
-    """
+    """Change ndarray in structure of lists and dicts into lists."""
     tp = type(item)
 
     if tp == np.ndarray:

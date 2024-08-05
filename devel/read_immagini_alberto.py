@@ -1,4 +1,3 @@
-
 # import dicom
 import SimpleITK as sitk
 

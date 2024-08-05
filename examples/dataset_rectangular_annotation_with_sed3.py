@@ -13,7 +13,7 @@ import io3d
 import sed3
 
 ann = {}
-for item in itertools.product(['sliver07', '3Dircadb1'], ['data3d'], range(1, 2)):
+for item in itertools.product(["sliver07", "3Dircadb1"], ["data3d"], range(1, 2)):
     print(item)
     datap1 = io3d.read_dataset(*item)
     improj = np.sum(datap1["data3d"], axis=1)
@@ -22,10 +22,3 @@ for item in itertools.product(['sliver07', '3Dircadb1'], ['data3d'], range(1, 2)
     plt.close()
     print(pts)
     ann[item] = pts
-
-
-
-
-
-
-

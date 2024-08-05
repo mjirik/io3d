@@ -14,7 +14,7 @@ def readim(pth):
     imnp = sitk.GetArrayFromImage(im)
 
     print(f"shape={imnp.shape}")
-    mx =np.max(imnp)
+    mx = np.max(imnp)
     print(f"max={mx}")
     print(f"min={np.min(imnp)}")
 

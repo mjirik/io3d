@@ -43,7 +43,7 @@ __version__ = [1, 6]
 
 
 def dicomdir_info(dirpath, *args, **kwargs):
-    """ Get information about series in dir"""
+    """Get information about series in dir"""
     dr = DicomReader(dirpath=dirpath, *args, **kwargs)
     info = dr.dicomdirectory.get_stats_of_series_in_dir()
     return info
@@ -625,7 +625,7 @@ class DicomDirectory:
         return study_df
 
     def get_stats_of_series_in_dir(self, study_id=None):
-        """ Dicom series staticstics, input is dcmdir, not dirpath
+        """Dicom series staticstics, input is dcmdir, not dirpath
         Information is generated from dicomdir.pkl and first files of series
         """
         if study_id is not None:
@@ -740,7 +740,7 @@ class DicomDirectory:
         return dcmdir
 
     def series_in_dir(self):
-        """input is dcmdir, not dirpath """
+        """input is dcmdir, not dirpath"""
 
         # none_count = 0
         countsd = {}
@@ -902,7 +902,7 @@ class DicomDirectory:
 
 
 def get_slice_location(dcmdata, teil=None):
-    """ get location of the slice
+    """get location of the slice
 
     :param dcmdata: dicom data structure
     :param teil: filename. Used when slice location doesnt exist
@@ -1046,10 +1046,9 @@ def get_series_number_console(dcmreader, counts, bins, qt_app=None):  # pragma: 
     return sn
 
 
-def get_series_number_callback_give_me_first(
-        counts, bins, qt_app=None
-) -> int:
+def get_series_number_callback_give_me_first(counts, bins, qt_app=None) -> int:
     return bins[0]
+
 
 def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no cover
 
