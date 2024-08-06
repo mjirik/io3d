@@ -330,16 +330,16 @@ class DicomReader:
                 logger.warning(msg)
                 print(msg)
 
-            logger.debug(
-                "Data size: "
-                + str(data3d.nbytes)
-                + ", shape: "
-                + str(shp2)
-                + "x"
-                + str(len(dcmlist))
-                + " file "
-                + onefile
-            )
+            # logger.debug(
+            #     "Data size: "
+            #     + str(data3d.nbytes)
+            #     + ", shape: "
+            #     + str(shp2)
+            #     + "x"
+            #     + str(len(dcmlist))
+            #     + " file "
+            #     + onefile
+            # )
         data3d = misc.use_economic_dtype(data3d, slope=slope, inter=inter)
         # if original_dtype == np.uint16 and data3d.dtype == np.int16:
         #     data3d = data3d.astype(np.int32)
