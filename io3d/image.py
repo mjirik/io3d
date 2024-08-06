@@ -61,14 +61,18 @@ class DataPlus(dict):
 
         NiBabel package is used internally (https://nipy.org/nibabel/reference/nibabel.orientations.html)
 
-        :param axcodes: Three letter code. Most used axcodes are LPS (Left, Posterior and Superior) and RAS (Right,
+        :param axcodes: Three-letter code. Most used axcodes are LPS (Left, Posterior and Superior) and RAS (Right,
         Anterior and Superior).  First letters of words Left, Right, Superior,
         Inferior, Anterior and Posterior can be used to describe anatomical orientation.
         To describe common orientation can be used words Left, Right, Up, Down, Front and Back.
         Left means from right to left, Superior means from inferior to superior.
+        We use SPL as default orientation.
         """
-        # if "orientations_axcodes" in self.keys():
-        input_axcodes = self["orientation_axcodes"]
+        if "orientations_axcodes" in self.keys():
+             input_axcodes = self["orientation_axcodes"]
+        else:
+            self["orientation_axcodes"] = "SPL"
+            input_axcodes = "SPL"
         self["data3d"] = transform_orientation(self["data3d"], input_axcodes, axcodes)
         self["voxelsize_mm"] = transform_orientation_voxelsize(
             self["voxelsize_mm"], input_axcodes, axcodes

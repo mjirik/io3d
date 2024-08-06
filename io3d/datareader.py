@@ -15,6 +15,7 @@ import sys
 from .image import DataPlus, transform_orientation, transform_orientation_voxelsize
 
 import pydicom as dicom
+from typing import Optional
 
 dicom.config.debug(False)
 
@@ -48,7 +49,7 @@ def read(
     stop=None,
     step=1,
     convert_to_gray=True,
-    series_number=None,
+    series_number:Optional[Union[int, str]]=None,
     use_economic_dtype=True,
     dicom_expected=None,
     orientation_axcodes="original",
@@ -67,7 +68,7 @@ def read(
     :param int stop: used for DicomReader, defines where 3D data reading should stop
     :param int step: used for DicomReader, defines step for 3D data reading
     :param bool convert_to_gray: if True -> RGB is converted to gray
-    :param int series_number: used in DicomReader, essential in metadata
+    :param int series_number: used in DicomReader, essential in metadata, int, or "first"
     :param use_economic_dtype: if True, casts 3D data array to less space consuming dtype
     :param dicom_expected: set true if it is known that data is in dicom format. Set False to suppress
     dicom warnings.
@@ -156,7 +157,13 @@ class DataReader:
         datapath = os.path.expanduser(datapath)
 
         if series_number is not None and type(series_number) != int:
-            series_number = int(series_number)
+            if series_number == "first":
+                pass
+            elif series_number == "guess for liver":
+                pass
+            else:
+                logger.debug(series_number)
+                series_number = int(series_number)
 
         if not os.path.exists(datapath):
             logger.error("Path '" + datapath + "' does not exist")
@@ -180,11 +187,11 @@ class DataReader:
         self.gui = gui
 
         if os.path.isfile(datapath):
-            logger.debug("file read recognized")
+            logger.trace("file read recognized")
             data3d, metadata = self.__ReadFromFile(datapath)
 
         elif os.path.exists(datapath):
-            logger.debug("directory read recognized")
+            logger.trace("directory read recognized")
             data3d, metadata = self.__ReadFromDirectory(
                 datapath=datapath, dicom_expected=dicom_expected
             )
@@ -216,11 +223,11 @@ class DataReader:
             data3d = self.__use_economic_dtype(data3d)
 
         if dataplus_format:
-            logger.debug("dataplus format")
+            # logger.debug("dataplus format")
             # metadata = {'voxelsize_mm': [1, 1, 1]}
             datap = metadata
             datap["data3d"] = data3d
-            logger.debug("datap keys () : " + str(datap.keys()))
+            logger.trace("datap keys () : " + str(datap.keys()))
             return DataPlus(datap)
         else:
             return data3d, metadata
@@ -241,8 +248,6 @@ class DataReader:
         if (dicom_expected is not False) and (
             dcmr.is_dicom_dir(datapath)
         ):  # reading dicom
-            logger.debug("Dir - DICOM")
-            logger.debug("dicom_expected " + str(dicom_expected))
             reader = dcmr.DicomReader(
                 datapath, series_number=self.series_number, gui=gui, **kwargs
             )  # qt_app=None, gui=True)
@@ -274,7 +279,7 @@ class DataReader:
                 flist.append(os.path.join(datapath, f))
             flist.sort()
 
-            logger.debug("Reading image data...")
+            # logger.debug("Reading image data...")
             image = SimpleITK.ReadImage(flist)
             logger.debug("Getting numpy array from image data...")
             data3d = SimpleITK.GetArrayFromImage(image)

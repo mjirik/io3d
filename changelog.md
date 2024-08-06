@@ -2,6 +2,11 @@
 
 Latest version 2.10.7
 
+## 2024
+
+* [changed] Less log messages
+* [added] export of masks from COCO annotation files in devel
+
 ## 2.10
 
 * [Added] Read by url

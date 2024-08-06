@@ -169,7 +169,6 @@ class DataWriter:
 
             metadata["data3d"] = data3d
             datap = metadata
-            logger.debug(f'orientation_axcodes={datap["orientation_axcodes"]}')
             io3d.nifti_io.write_nifti(datap, path)
         elif filetype in ["pkl", "pklz"]:
             from . import misc

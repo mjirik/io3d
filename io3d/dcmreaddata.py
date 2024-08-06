@@ -154,6 +154,12 @@ class DicomReader:
         self.files_in_serie = []
         self.files_in_serie_with_info = []
         self.qt_app = qt_app
+
+        if (series_number == "first") or (series_number == "guess for liver"):
+
+            get_series_number_callback = series_number
+            self.series_number = None
+
         if get_series_number_callback is None:
             if (qt_app is not None) or gui:
                 get_series_number_callback = get_series_number_qt
@@ -533,7 +539,7 @@ class DicomDirectory:
         if len(dcmlist) == 0:
             return {}
 
-        logger.debug("Filename: " + dcmlist[ifile])
+        logger.trace("Filename: " + dcmlist[ifile])
         data1 = self._read_file(dcmlist[ifile])
         try:
             # try to get difference from the beginning and also from the end
@@ -813,7 +819,7 @@ class DicomDirectory:
             dcmdir = [line for line in dcmdir if line["SeriesNumber"] == series_number]
         dcmdir = sort_list_of_dicts(dcmdir, keys=sort_keys)
 
-        logger.debug("SeriesNumber: " + str(series_number))
+        # logger.debug("SeriesNumber: " + str(series_number))
 
         if remove_doubled_slice_locations:
             dcmdir = self._remove_doubled_slice_locations(dcmdir)
@@ -1046,8 +1052,11 @@ def get_series_number_console(dcmreader, counts, bins, qt_app=None):  # pragma: 
     return sn
 
 
-def get_series_number_callback_give_me_first(counts, bins, qt_app=None) -> int:
+def get_series_number_callback_give_me_first(dcmreader, counts, bins, qt_app=None) -> int:
     return bins[0]
+    # series_info = dcmreader.dicomdirectory.get_stats_of_series_in_dir()
+    # series_nums = list(series_info.keys())
+    # return series_nums[0]
 
 
 def get_series_number_qt(dcmreader, counts, bins, qt_app=None):  # pragma: no cover
