@@ -2,7 +2,7 @@ import nibabel as nib
 from pathlib import Path
 import numpy as np
 from typing import Tuple, Union
-import io3d.image
+from . import image
 
 
 def read_nifti(filename: Union[Path, str]) -> Tuple[np.ndarray, dict]:
@@ -17,7 +17,7 @@ def read_nifti(filename: Union[Path, str]) -> Tuple[np.ndarray, dict]:
     return data3d, metadata
 
 
-def write_nifti(datap: Union[dict, io3d.image.DataPlus], filename: Union[str, Path]):
+def write_nifti(datap: Union[dict, image.DataPlus], filename: Union[str, Path]):
     """
     Write dict with image data into nifti file. There should be fallowing keys in the dict:
     * 'data3d'
@@ -26,7 +26,7 @@ def write_nifti(datap: Union[dict, io3d.image.DataPlus], filename: Union[str, Pa
     :return:
     """
     if type(datap) == dict:
-        datap = io3d.image.DataPlus(datap)
+        datap = image.DataPlus(datap)
     datap.transform_orientation("RAS")
     if "affine" in datap:
         affine = datap.pop("affine")
