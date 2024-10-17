@@ -1,6 +1,6 @@
 # Changelog
 
-Latest version 2.10.7
+Latest version 2.10.8
 
 ## 2024
 
