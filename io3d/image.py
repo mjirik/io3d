@@ -86,6 +86,30 @@ class DataPlus(dict):
 
         return io3d.datawriter.write(self["data3d"], path=path, *args, **kwargs)
 
+    def get_projection(
+            self,
+            # datap: io3d.image.DataPlus,
+            axis: Union[int, str]='axial', method: str = "max"
+    ):
+        """Get projection of 3D data to 2D."""
+        if isinstance(axis, str):
+            dict_axis = {"axial": 0, "coronal": 1, "sagittal": 2}
+            if axis in dict_axis:
+                axis = dict_axis[axis]
+            else:
+                raise ValueError(f"Unknown axis {axis}, use one of {list(dict_axis.keys())} or 0, 1, 2")
+
+        data3d = self.data3d
+        axcodes = self.orientation_axcodes
+        data3d = transform_orientation(data3d, axcodes, "SPL")
+        if method == "max":
+            data2d = data3d.max(axis=axis)
+        elif method == "mean":
+            data2d = data3d.mean(axis=axis)
+        else:
+            raise ValueError(f"Unknown method {method}")
+        return data2d
+
     # def __getattr__(self, attr):
     #     print(f"attr: {attr}")
     #     return self[attr]
