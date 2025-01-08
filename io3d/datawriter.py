@@ -100,16 +100,16 @@ class DataWriter:
         self.orig_path = path
         path = os.path.expanduser(path)
 
-        tp = type(data3d)
-        if tp in (image.DataPlus, dict):
+        # check if data3d is in DataPlus format
+        if isinstance(data3d, image.DataPlus) or isinstance(data3d, dict):
             # copy
             datap = dict(data3d)
             data3d = datap.pop("data3d")
             metadata = datap
-        elif tp == np.ndarray:
+        elif isinstance(data3d, np.ndarray):
             pass
         else:
-            logger.warning(f"Type '{tp}' may not be compatible with datawriter.")
+            logger.warning(f"Type '{type(data3d)}' may not be compatible with datawriter.")
 
         if progress_callback is not None:
             self.progress_callback = progress_callback
@@ -164,9 +164,8 @@ class DataWriter:
             self.save_image_stack(data3d, path, metadata)
         elif filetype in ["hdf5", "hdf", "h5", "he5"]:
             self.save_hdf5(data3d, path, metadata)
-        elif str(path).lower().endswith(".nii.gz") or ext == "nii":
+        elif str(path).lower().endswith(".nii.gz") or filetype == "nii":
             import io3d.nifti_io
-
             metadata["data3d"] = data3d
             datap = metadata
             io3d.nifti_io.write_nifti(datap, path)

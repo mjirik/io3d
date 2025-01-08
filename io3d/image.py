@@ -16,19 +16,19 @@ class DataPlus(dict):
         self["voxelsize_mm"] = voxelsize_mm
 
     @property
-    def data3d(self):
+    def data3d(self) -> np.ndarray:
         return self["data3d"]
 
     @data3d.setter
-    def data3d(self, value):
+    def data3d(self, value: np.ndarray):
         self["data3d"] = value
 
     @property
-    def segmentation(self):
+    def segmentation(self) -> np.ndarray:
         return self["segmentation"]
 
     @segmentation.setter
-    def segmentation(self, value):
+    def segmentation(self, value:np.ndarray):
         self["segmentation"] = value
 
     @property
@@ -164,8 +164,19 @@ def transform_orientation(arr: np.ndarray, input_axcodes, output_axcodes):
 
     ornt_my = nibabel.orientations.axcodes2ornt(input_axcodes)
     ornt_ras = nibabel.orientations.axcodes2ornt(output_axcodes)
-    ornt = nibabel.orientations.ornt_transform(ornt_my, ornt_ras)
-    data3d_ornt = nibabel.orientations.apply_orientation(arr, ornt)
+
+
+    try:
+        ornt = nibabel.orientations.ornt_transform(ornt_my, ornt_ras)
+        data3d_ornt = nibabel.orientations.apply_orientation(arr, ornt)
+    except Exception as e:
+        logger.error(f"Error in orientation transformation: {e}")
+        logger.error(f"Input axcodes: {input_axcodes}, ornt_my: {ornt_my}")
+        logger.error(f"Output axcodes: {output_axcodes}, ornt_ras: {ornt_ras}")
+        import traceback
+        traceback.print_exc()
+
+
     return data3d_ornt
 
 
@@ -175,7 +186,6 @@ def transform_orientation_voxelsize(
     """
     Change the orientation of the array. We use 'SPL'. Most used axcodes are LPS (Left, Posterior and Superior) and
     RAS (Right, Anterior and Superior).  First letters of words Left, Right, Superior,
-
     Inferior, Anterior and Posterior can be used to describe anatomical orientation.
     To describe common orientation can be used words Left, Right, Up, Down, Front and Back.
     Left means from right to left, Superior means from inferior to superior.

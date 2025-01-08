@@ -5,6 +5,7 @@
 import os
 
 from loguru import logger
+from pathlib import Path
 
 import sys
 import os.path
@@ -106,6 +107,28 @@ def read_pkl_and_pklz(filename):
     Try read zipped or not zipped pickle file
     """
     fcontent = None
+    filename = Path(filename)
+    if not filename.exists():
+        logger.error(f"File {filename} does not exists")
+        return None
+    if filename.suffix == ".pklz":
+        import gzip
+
+        f = gzip.open(filename, "rb")
+        fcontent = f.read()
+        f.close()
+    elif filename.suffix == ".pkl":
+        # if the problem is in not gzip file
+        f = open(filename, "rb")
+        fcontent = f.read()
+        f.close()
+    else:
+        fcontent = force_read_pkl_and_pklz(filename)
+
+    return fcontent
+
+def force_read_pkl_and_pklz(filename):
+
     try:
         import gzip
 

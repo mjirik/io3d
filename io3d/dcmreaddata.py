@@ -545,9 +545,10 @@ class DicomDirectory:
             # try to get difference from the beginning and also from the end
             voxeldepth = self._get_slice_location_difference(dcmlist, ifile)
             voxeldepth_end = self._get_slice_location_difference(dcmlist, -2)
-            if voxeldepth != voxeldepth_end:
+            # check if the depth is close enough
+            if np.abs(voxeldepth - voxeldepth_end) > (np.abs(voxeldepth) * 0.0001):
                 logger.warning(
-                    "Depth of slices is not the same in beginning and end of the sequence"
+                    f"Depth of slices is not the same in beginning ({str(voxeldepth)}) and end ({voxeldepth_end}) of the sequence"
                 )
                 voxeldepth_1 = self._get_slice_location_difference(dcmlist, 1)
                 voxeldepth = np.median([voxeldepth, voxeldepth_end, voxeldepth_1])
