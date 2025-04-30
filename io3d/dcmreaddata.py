@@ -42,6 +42,13 @@ if sys.version_info[0] >= 3:
 __version__ = [1, 6]
 
 
+def dcm_read_data(filepath, *arg, **kwargs):
+    if hasattr(pydicom, "dcmread"):
+        dcmdata = pydicom.dcmread(filepath, *arg, **kwargs)
+    else:
+        dcmdata = pydicom.read_file(filepath, *arg, **kwargs)
+    return dcmdata
+
 def dicomdir_info(dirpath, *args, **kwargs):
     """Get information about series in dir"""
     dr = DicomReader(dirpath=dirpath, *args, **kwargs)
@@ -65,7 +72,8 @@ def is_dicom_dir(datapath):
             return True
         # @todo not working and I dont know why
         try:
-            pydicom.read_file(os.path.join(datapath, f))
+            dcm_read_data(os.path.join(datapath, f))
+            # pydicom.read_file(os.path.join(datapath, f))
 
             retval = True
         # except pydicom.errors.InvalidDicomError:
@@ -266,7 +274,8 @@ class DicomReader:
         return overlay
 
     def _read_file(self, dcmfile):
-        data = pydicom.read_file(dcmfile, force=self.force_read)
+        # data = pydicom.read_file(dcmfile, force=self.force_read)
+        data = dcm_read_data(dcmfile, force=self.force_read)
         return data
 
     def get_3Ddata(self, start=0, stop=None, step=1):
@@ -451,7 +460,8 @@ class DicomDirectory:
         self.__prepare_info_from_dicomdir_file()
 
     def _read_file(self, dcmfile):
-        data = pydicom.read_file(dcmfile, force=self.force_read)
+        # data = pydicom.read_file(dcmfile, force=self.force_read)
+        data = dcm_read_data(dcmfile, force=self.force_read)
         return data
 
     def create_standard_dicomdir(self):
@@ -874,12 +884,14 @@ class DicomDirectory:
                 )
                 continue
             try:
-                dcmdata = pydicom.read_file(filepath)
+                # dcmdata = pydicom.read_file(filepath)
+                dcmdata = dcm_read_data(filepath)
 
             except pydicom.errors.InvalidDicomError as e:
                 # some files doesnt have DICM marker
                 try:
-                    dcmdata = pydicom.read_file(filepath, force=self.force_read)
+                    # dcmdata = pydicom.read_file(filepath, force=self.force_read)
+                    dcmdata = dcm_read_data(filepath, force=self.force_read)
 
                     # if e.[0].startswith("File is missing \\'DICM\\' marker. Use force=True to force reading")
                 except Exception as e:
