@@ -258,9 +258,7 @@ class DataReader:
             # metadata["orientation_axcodes"] # inserted in dicomreader
             self.overlay_fcn = reader.get_overlay
         else:  # reading image sequence
-            logger.debug("Dir - Image sequence")
-
-            logger.debug("Getting list of readable files...")
+            logger.debug("Getting list of readable files in dir...")
             flist = []
             try:
                 import SimpleITK
@@ -281,7 +279,7 @@ class DataReader:
 
             # logger.debug("Reading image data...")
             image = SimpleITK.ReadImage(flist)
-            logger.debug("Getting numpy array from image data...")
+            # logger.debug("Getting numpy array from image data...")
             data3d = SimpleITK.GetArrayFromImage(image)
             metadata = _metadata(image, datapath)
             metadata["orientation_axcodes"] = "SPL"
