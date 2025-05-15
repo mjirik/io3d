@@ -42,6 +42,13 @@ if sys.version_info[0] >= 3:
 __version__ = [1, 6]
 
 
+
+def get_stats_of_series_in_dir(dir_path:str):
+    dicomdirectory = DicomDirectory(
+        dir_path
+    )
+    return dicomdirectory.get_stats_of_series_in_dir()
+
 def dcm_read_data(filepath, *arg, **kwargs):
     if hasattr(pydicom, "dcmread"):
         dcmdata = pydicom.dcmread(filepath, *arg, **kwargs)
@@ -552,36 +559,34 @@ class DicomDirectory:
         logger.trace("Filename: " + dcmlist[ifile])
         data1 = self._read_file(dcmlist[ifile])
         try:
-            # try to get difference from the beginning and also from the end
-            voxeldepth = self._get_slice_location_difference(dcmlist, ifile)
-            voxeldepth_end = self._get_slice_location_difference(dcmlist, -2)
-            # check if the depth is close enough
-            if np.abs(voxeldepth - voxeldepth_end) > (np.abs(voxeldepth) * 0.0001):
-                logger.warning(
-                    f"Depth of slices is not the same in beginning ({str(voxeldepth)}) and end ({voxeldepth_end}) of the sequence"
-                )
-                voxeldepth_1 = self._get_slice_location_difference(dcmlist, 1)
-                voxeldepth = np.median([voxeldepth, voxeldepth_end, voxeldepth_1])
+            if len(dcmlist) > 1:
+                # try to get difference from the beginning and also from the end
+                voxeldepth = self._get_slice_location_difference(dcmlist, ifile)
+                voxeldepth_end = self._get_slice_location_difference(dcmlist, -2)
+                # check if the depth is close enough
+                if np.abs(voxeldepth - voxeldepth_end) > (np.abs(voxeldepth) * 0.0001):
+                    logger.warning(
+                        f"Depth of slices is not the same in beginning ({str(voxeldepth)}) and end ({voxeldepth_end}) of the sequence"
+                    )
+                    voxeldepth_1 = self._get_slice_location_difference(dcmlist, 1)
+                    voxeldepth = np.median([voxeldepth, voxeldepth_end, voxeldepth_1])
 
-            # head1, teil1 = os.path.split(dcmlist[ifile])
-            # head2, teil2 = os.path.split(dcmlist[ifile + 1])
-            #
-            # data2 = self._read_file(dcmlist[ifile + 1])
-            # loc1 = get_slice_location(data1, teil1)
-            # loc2 = get_slice_location(data2, teil2)
-            # voxeldepth = float(np.abs(loc1 - loc2))
+                # head1, teil1 = os.path.split(dcmlist[ifile])
+                # head2, teil2 = os.path.split(dcmlist[ifile + 1])
+                #
+                # data2 = self._read_file(dcmlist[ifile + 1])
+                # loc1 = get_slice_location(data1, teil1)
+                # loc2 = get_slice_location(data2, teil2)
+                # voxeldepth = float(np.abs(loc1 - loc2))
+            else:
+                logger.warning("Only one file in series. Using SliceThickness")
+                voxeldepth = self.voxeldepth_from_slice_thickness(data1, 0)
         except Exception:
             logger.warning("Problem with voxel depth. Using SliceThickness")
             logger.debug(traceback.format_exc())
             # + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
-            try:
-                voxeldepth = float(data1.SliceThickness)
-            except Exception:
-                logger.warning(
-                    "Probem with SliceThicknes, setting zero. " + traceback.format_exc()
-                )
-                voxeldepth = 0
+            voxeldepth = self.voxeldepth_from_slice_thickness(data1, voxeldepth)
 
         try:
             pixelsize_mm = data1.PixelSpacing
@@ -629,6 +634,20 @@ class DicomDirectory:
 
         metadata["dcmfilelist"] = dcmlist
         return metadata
+
+    def voxeldepth_from_slice_thickness(self, data1, voxeldepth):
+        try:
+            if data1.SliceThickness is None:
+                logger.warning("SliceThickness is None, setting zero.")
+                voxeldepth = 0
+            else:
+                voxeldepth = float(data1.SliceThickness)
+        except Exception:
+            logger.warning(
+                "Probem with SliceThicknes, setting zero. " + traceback.format_exc()
+            )
+            voxeldepth = 0
+        return voxeldepth
 
     def get_stats_of_studies_and_series_in_dir(self):
         retval = {1: {"info": None, "series": self.get_stats_of_series_in_dir()}}
