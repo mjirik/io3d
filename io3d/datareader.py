@@ -162,7 +162,6 @@ class DataReader:
             elif series_number == "guess for liver":
                 pass
             else:
-                logger.debug(series_number)
                 series_number = int(series_number)
 
         if not os.path.exists(datapath):

@@ -285,6 +285,14 @@ class DicomReader:
         data = dcm_read_data(dcmfile, force=self.force_read)
         return data
 
+    def _read_file_and_get_array(self, dcmfile):
+        # data = pydicom.read_file(dcmfile, force=self.force_read)
+        data = dcm_read_data(dcmfile, force=self.force_read)
+        if hasattr(data, "_pixel_array"):
+            return data.pixel_array
+        else:
+            return None
+
     def get_3Ddata(self, start=0, stop=None, step=1):
         """
         Function make 3D data from dicom file slices
@@ -302,12 +310,19 @@ class DicomReader:
 
         # sometimes there is render in series
         if len(self.files_in_serie) > 1:
-            data = self._read_file(dcmlist[0])
-            data2d1 = data.pixel_array
-            data = self._read_file(dcmlist[1])
-            data2d2 = data.pixel_array
-            if (data2d1.shape[0] == data2d2.shape[0]) and (
-                data2d1.shape[1] == data2d2.shape[1]
+
+            data2d2 = self._read_file_and_get_array(dcmlist[1])
+            data2d1 = self._read_file_and_get_array(dcmlist[0])
+            if data2d2 is None:
+                dcmlist.pop(1)
+            if data2d1 is None:
+                dcmlist.pop(0)
+
+            if (
+                    data2d1 is not None and
+                    data2d2 is not None and
+                    (data2d1.shape[0] == data2d2.shape[0]) and
+                    (data2d1.shape[1] == data2d2.shape[1])
             ):
                 pass
             else:
@@ -321,6 +336,8 @@ class DicomReader:
             onefile = dcmlist[i]
             data = self._read_file(onefile)
             new_data2d = data.pixel_array
+            if new_data2d.ndim == 3:
+                return
             # new_data2d, slope, inter = dcmtools.get_pixel_array_from_pdcm(data)
             # mport pdb; pdb.set_trace()
 
@@ -336,6 +353,10 @@ class DicomReader:
             if (data3d.shape[1] == new_data2d.shape[0]) and (
                 data3d.shape[2] == new_data2d.shape[1]
             ):
+
+                if new_data2d.ndim == 3 and new_data2d.shape[2] == 3:
+                    data3d[-i - 1, :, :] = new_data2d[...,0]
+                    logger.warning("RGB data found, using only first channel")
                 data3d[-i - 1, :, :] = new_data2d
             else:
                 msg = (
@@ -429,7 +450,8 @@ def files_in_dir(dirpath, wildcard="*", startpath=None):
         completedirpath = dirpath
 
     if os.path.exists(completedirpath):
-        logger.info("completedirpath = " + completedirpath)
+        pass
+        # logger.info("completedirpath = " + completedirpath)
 
     else:
         logger.error("Wrong path: " + completedirpath)
@@ -538,6 +560,12 @@ class DicomDirectory:
         data2 = self._read_file(dcmlist[ifile + step])
         loc1 = get_slice_location(data1, teil1)
         loc2 = get_slice_location(data2, teil2)
+        if loc1 is None or loc2 is None:
+            logger.warning(
+                "SliceLocation is None for file {} or {}".format(teil1, teil2)
+            )
+            return float("nan")
+
         voxeldepth = float(np.abs(loc1 - loc2))
         return voxeldepth
 
@@ -580,13 +608,13 @@ class DicomDirectory:
                 # voxeldepth = float(np.abs(loc1 - loc2))
             else:
                 logger.warning("Only one file in series. Using SliceThickness")
-                voxeldepth = self.voxeldepth_from_slice_thickness(data1, 0)
+                voxeldepth = self.voxeldepth_from_slice_thickness(data1)
         except Exception:
             logger.warning("Problem with voxel depth. Using SliceThickness")
-            logger.debug(traceback.format_exc())
+            # logger.debug(traceback.format_exc())
             # + ' SeriesNumber: ' + str(data1.SeriesNumber))
 
-            voxeldepth = self.voxeldepth_from_slice_thickness(data1, voxeldepth)
+            voxeldepth = self.voxeldepth_from_slice_thickness(data1)
 
         try:
             pixelsize_mm = data1.PixelSpacing
@@ -635,7 +663,7 @@ class DicomDirectory:
         metadata["dcmfilelist"] = dcmlist
         return metadata
 
-    def voxeldepth_from_slice_thickness(self, data1, voxeldepth):
+    def voxeldepth_from_slice_thickness(self, data1):
         try:
             if data1.SliceThickness is None:
                 logger.warning("SliceThickness is None, setting zero.")

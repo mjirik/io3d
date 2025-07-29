@@ -204,7 +204,7 @@ def obj_to_file(
         #         yaml.dump(obj, f)
     elif filetype in ("pickle", "pkl"):
         f = open(filename, "wb")
-        logger.info("filename " + filename)
+        # logger.info("filename " + filename)
         # if sys.version_info[0] < 3: import cPickle as pickle
         # else: import _pickle as pickle
         import pickle
